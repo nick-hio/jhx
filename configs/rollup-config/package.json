@@ -1,0 +1,13 @@
+{
+  "name": "@repo/rollup-config",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "exports": {
+    "./base": "./base.js"
+  },
+  "devDependencies": {
+    "rollup": "^4.46.2",
+    "rollup-plugin-dts": "^6.2.1"
+  }
+}
