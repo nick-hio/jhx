@@ -1,0 +1,63 @@
+{
+  "name": "@jhxdev/hono",
+  "version": "0.0.1",
+  "author": "nick-hio",
+  "homepage": "https://github.com/nick-hio/jhx#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nick-hio/jhx.git"
+  },
+  "keywords": [
+    "jhx",
+    "htmx",
+    "jsx",
+    "react",
+    "hono"
+  ],
+  "type": "module",
+  "main": "./dist/cjs/index.cjs",
+  "module": "./dist/mjs/index.mjs",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/mjs/index.mjs",
+      "require": "./dist/cjs/index.cjs"
+    }
+  },
+  "files": [
+    "dist/**/*",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "pnpm run build:lib && pnpm run build:types",
+    "build:lib": "bun esbuild.config.js",
+    "build:types": "rollup -c rollup.config.js",
+    "check-types": "tsc -p tsconfig.json --jsx react-jsx",
+    "format": "prettier --write . --list-different",
+    "lint": "eslint .",
+    "test": "bun test ./tests",
+    "test:watch": "bun test --watch ./tests"
+  },
+  "dependencies": {
+    "hono": "^4.9.7",
+    "jhx": "workspace:*"
+  },
+  "devDependencies": {
+    "@repo/esbuild-config": "workspace:*",
+    "@repo/eslint-config": "workspace:*",
+    "@repo/prettier-config": "workspace:*",
+    "@repo/rollup-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@rollup/plugin-alias": "^5.1.1",
+    "@types/bun": "^1.2.22",
+    "@types/node": "^24.5.2",
+    "@types/react": "^19.1.13",
+    "@types/react-dom": "^19.1.9",
+    "esbuild": "^0.25.10",
+    "eslint": "^9.36.0",
+    "prettier": "^3.6.2",
+    "rollup": "^4.52.2",
+    "typescript": "^5.9.2"
+  }
+}

@@ -1,0 +1,46 @@
+import type { HtmxConfig } from '../../types';
+
+/**
+ * @see https://htmx.org/reference/#config
+ */
+export const defaultHtmxConfig: HtmxConfig = {
+    addedClass: 'hx-added',
+    allowEval: true,
+    allowNestedOobSwaps: true,
+    allowScriptTags: true,
+    attributesToSettle: ['class', 'style', 'width', 'height'],
+    defaultFocusScroll: false,
+    defaultSettleDelay: 20,
+    defaultSwapDelay: 0,
+    defaultSwapStyle: 'innerHTML',
+    disableInheritance: false,
+    disableSelector: '[hx-disable], [data-hx-disable]',
+    getCacheBusterParam: false,
+    globalViewTransitions: false,
+    historyCacheSize: 10,
+    historyEnabled: true,
+    historyRestoreAsHxRequest: true,
+    ignoreTitle: false,
+    includeIndicatorStyles: true,
+    indicatorClass: 'hx-indicator',
+    inlineScriptNonce: '',
+    inlineStyleNonce: '',
+    methodsThatUseUrlParams: ['get', 'delete'],
+    refreshOnHistoryMiss: false,
+    requestClass: 'htmx-request',
+    responseHandling: [
+        { code: '204', swap: false },
+        { code: '[23]..', swap: true },
+        { code: '[45]..', swap: false, error: true },
+    ],
+    scrollBehavior: 'instant',
+    scrollIntoViewOnBoost: true,
+    selfRequestsOnly: true,
+    settlingClass: 'htmx-settling',
+    swappingClass: 'htmx-swapping',
+    timeout: 0,
+    triggerSpecsCache: null,
+    withCredentials: false,
+    wsBinaryType: 'blob',
+    wsReconnectDelay: 'full-jitter',
+} as const;

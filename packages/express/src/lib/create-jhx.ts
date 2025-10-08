@@ -1,0 +1,193 @@
+import type {
+    Express as ExpressInstance,
+    Request as ExpressRequest,
+    Response as ExpressResponse,
+} from 'express';
+
+import { createServerJhx, JhxServerException } from '@jhxdev/server';
+
+import { isResponseHandled } from '../helpers/is-response-handled';
+import { sendPayload } from '../helpers/send-payload';
+import type {
+    CreateJhxConfig,
+    Jhx,
+    JhxComponentProps,
+    JhxComponentType,
+    JhxErrorHandler,
+    JhxErrorType,
+    JhxHandler,
+    JhxHandlerReturn,
+    JhxPartialRoute,
+    JhxProps,
+    JhxRenderHandler,
+    JhxRenderReturn,
+    JhxRoute,
+    Resolved,
+} from '../types';
+import { defaultConfig } from './default-config';
+
+export const createJhx = <
+    TDomBase extends object = object,
+    TReturn extends JhxHandlerReturn = JhxHandlerReturn,
+    TError extends JhxErrorType = JhxErrorType,
+    TRequest extends ExpressRequest = ExpressRequest,
+    TResponse extends ExpressResponse = ExpressResponse,
+    TBaseStringify extends boolean | undefined = undefined,
+>(
+    express: ExpressInstance,
+    config: CreateJhxConfig<TReturn, JhxRenderReturn, TError, TRequest, TResponse> & {
+        stringify?: TBaseStringify;
+    } = {},
+): {
+    jhx: Jhx<TDomBase, TReturn, TRequest, TResponse, TBaseStringify>;
+    JhxComponent: JhxComponentType<TDomBase, TReturn, TRequest, TResponse>;
+} => {
+    return createServerJhx<
+        TDomBase,
+        TReturn,
+        Resolved<TReturn>,
+        JhxRenderReturn,
+        TError,
+        TRequest,
+        TResponse,
+        TBaseStringify,
+        JhxHandler<TReturn, TRequest, TResponse>,
+        JhxErrorHandler<TError, TReturn, TRequest, TResponse>,
+        JhxRenderHandler<Resolved<TReturn>, JhxRenderReturn, TRequest, TResponse>,
+        JhxProps<TDomBase, TReturn, TRequest, TResponse>,
+        JhxComponentProps<TDomBase, TReturn, TRequest, TResponse>,
+        JhxRoute<TReturn, TRequest, TResponse>,
+        JhxPartialRoute<TReturn, TRequest, TResponse>
+    >(config, defaultConfig.notFoundHandler, (baseConfig, routes) => {
+        express.all(`${baseConfig.prefix}/*`, async (req, res) => {
+            const route = decodeURIComponent(req.url.split('?')[0] as string);
+            const jhxRoute = routes.get(`${req.method}::${route}`);
+
+            if (baseConfig.contentType !== null) {
+                res.header('content-type', baseConfig.contentType);
+            }
+
+            if (jhxRoute) {
+                // middleware
+                for (const middleware of baseConfig.middleware) {
+                    try {
+                        const middlewareResult = await middleware(req as TRequest, res as TResponse);
+                        if (isResponseHandled(res, middlewareResult)) {
+                            return;
+                        }
+
+                        if (middlewareResult !== undefined) {
+                            const renderResult =
+                                baseConfig.render && baseConfig.renderMiddleware
+                                    ? await baseConfig.render(
+                                          middlewareResult,
+                                          req as TRequest,
+                                          res as TResponse,
+                                      )
+                                    : middlewareResult;
+                            return sendPayload(res, renderResult);
+                        }
+                    } catch (e) {
+                        const error = e as TError;
+
+                        if (baseConfig.debug) {
+                            baseConfig.logger.error(
+                                `[jhx] Middleware error from '${req.method} ${route}': ${(e as Error).message}`,
+                            );
+                        }
+                        if (baseConfig.errorHandler) {
+                            res.status(500);
+                            const errorResult = await baseConfig.errorHandler(
+                                error,
+                                req as TRequest,
+                                res as TResponse,
+                            );
+                            if (isResponseHandled(res, errorResult)) {
+                                return;
+                            }
+
+                            const renderResult =
+                                baseConfig.render && baseConfig.renderError
+                                    ? await baseConfig.render(errorResult, req as TRequest, res as TResponse)
+                                    : errorResult;
+                            return sendPayload(res, renderResult);
+                        }
+
+                        throw new JhxServerException('[jhx] Unhandled middleware error', {
+                            type: 'middleware:error',
+                            method: req.method,
+                            route,
+                            cause: error,
+                        });
+                    }
+                }
+
+                // route
+                try {
+                    const routeResult = await jhxRoute(req as TRequest, res as TResponse);
+                    if (isResponseHandled(res, routeResult)) {
+                        return;
+                    }
+
+                    const renderResult = baseConfig.render
+                        ? await baseConfig.render(routeResult, req as TRequest, res as TResponse)
+                        : routeResult;
+                    return sendPayload(res, renderResult);
+                } catch (e) {
+                    const error = e as TError;
+
+                    if (baseConfig.debug) {
+                        baseConfig.logger.error(
+                            `[jhx] Route error from '${req.method} ${route}': ${(e as Error).message}`,
+                        );
+                    }
+                    if (baseConfig.errorHandler) {
+                        res.status(500);
+                        const errorResult = await baseConfig.errorHandler(
+                            error,
+                            req as TRequest,
+                            res as TResponse,
+                        );
+                        if (isResponseHandled(res, errorResult)) {
+                            return;
+                        }
+
+                        const renderResult =
+                            baseConfig.render && baseConfig.renderError
+                                ? await baseConfig.render(errorResult, req as TRequest, res as TResponse)
+                                : errorResult;
+                        return sendPayload(res, renderResult);
+                    }
+
+                    throw new JhxServerException('[jhx] Unhandled endpoint or rendering error', {
+                        type: 'handler:error',
+                        method: req.method,
+                        route,
+                        cause: error,
+                    });
+                }
+            }
+
+            if (baseConfig.debug) {
+                baseConfig.logger.info(
+                    `[jhx] Request to unknown route '${req.method} ${route}' from IP address '${req.ip}'`,
+                );
+            }
+
+            res.status(404);
+            const notFoundResult = await baseConfig.notFoundHandler(req as TRequest, res as TResponse);
+            if (isResponseHandled(res, notFoundResult)) {
+                return;
+            }
+
+            const renderResult =
+                baseConfig.render && baseConfig.renderNotFound
+                    ? await baseConfig.render(notFoundResult, req as TRequest, res as TResponse)
+                    : notFoundResult;
+            return sendPayload(res, renderResult);
+        });
+    }) as {
+        jhx: Jhx<TDomBase, TReturn, TRequest, TResponse, TBaseStringify>;
+        JhxComponent: JhxComponentType<TDomBase, TReturn, TRequest, TResponse>;
+    };
+};

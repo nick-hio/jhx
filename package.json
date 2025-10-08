@@ -1,5 +1,5 @@
 {
-  "name": "jhx",
+  "name": "jhx-turborepo",
   "private": true,
   "scripts": {
     "build": "turbo run build",

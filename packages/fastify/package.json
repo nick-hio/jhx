@@ -1,0 +1,69 @@
+{
+  "name": "@jhxdev/fastify",
+  "author": "nick-hio",
+  "version": "0.0.1",
+  "type": "module",
+  "homepage": "https://github.com/nick-hio/jhx#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nick-hio/jhx.git"
+  },
+  "keywords": [
+    "jhx",
+    "htmx",
+    "jsx",
+    "react",
+    "fastify"
+  ],
+  "main": "./dist/cjs/index.cjs",
+  "module": "./dist/mjs/index.mjs",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/mjs/index.mjs",
+      "require": "./dist/cjs/index.cjs"
+    }
+  },
+  "files": [
+    "dist/**/*",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "pnpm run build:lib && pnpm run build:types",
+    "build:lib": "bun esbuild.config.js",
+    "build:types": "rollup -c rollup.config.js",
+    "check-types": "tsc -p tsconfig.json --jsx react-jsx",
+    "format": "prettier --write . --list-different",
+    "lint": "eslint .",
+    "test": "bun test ./tests",
+    "test:watch": "bun test --watch ./tests"
+  },
+  "dependencies": {
+    "fastify-plugin": "^5.1.0",
+    "jhx": "workspace:*"
+  },
+  "peerDependencies": {
+    "fastify": "^5",
+    "react": "^18 || ^19",
+    "react-dom": "^18 || ^19"
+  },
+  "devDependencies": {
+    "@repo/esbuild-config": "workspace:*",
+    "@repo/eslint-config": "workspace:*",
+    "@repo/prettier-config": "workspace:*",
+    "@repo/rollup-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@rollup/plugin-alias": "^5.1.1",
+    "@types/bun": "^1.2.23",
+    "@types/node": "^24.7.0",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.1",
+    "esbuild": "^0.25.10",
+    "eslint": "^9.37.0",
+    "prettier": "^3.6.2",
+    "rollup": "^4.52.4",
+    "rollup-plugin-dts": "^6.2.3",
+    "typescript": "^5.9.3"
+  }
+}

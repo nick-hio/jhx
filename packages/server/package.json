@@ -1,0 +1,51 @@
+{
+  "name": "@jhxdev/server",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": {
+        "source": "./src/index.ts",
+        "default": "./src/index.ts"
+      },
+      "import": {
+        "source": "./src/index.ts",
+        "default": "./src/index.ts"
+      }
+    }
+  },
+  "files": [
+    "src/**/*",
+    "README.md"
+  ],
+  "scripts": {
+    "check-types": "tsc -p tsconfig.json --jsx react-jsx",
+    "format": "prettier --write . --list-different",
+    "lint": "eslint .",
+    "test": "bun test ./tests",
+    "test:watch": "bun test --watch ./tests"
+  },
+  "dependencies": {
+    "jhx": "workspace:*"
+  },
+  "peerDependencies": {
+    "@types/react": "^18 || ^19",
+    "@types/react-dom": "^18 || ^19",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/prettier-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/bun": "^1.2.23",
+    "@types/node": "^24.5.2",
+    "@types/react": "^19.1.13",
+    "@types/react-dom": "^19.1.9",
+    "prettier": "^3.6.2",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "typescript": "5.9.2"
+  }
+}
