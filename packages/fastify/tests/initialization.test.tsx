@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'bun:test';
-import { buildServer } from "./build-server";
+
+import { buildServer } from './build-server';
 
 describe('[jhx-fastify] initialization', async () => {
     it('pre-registered route (GET)', async () => {
@@ -41,7 +42,7 @@ describe('[jhx-fastify] initialization', async () => {
                     method: 'POST',
                     route: '/pre-reg-post',
                     handler: (_req, res) => res.send('ok'),
-                }
+                },
             ],
         });
 
@@ -55,17 +56,20 @@ describe('[jhx-fastify] initialization', async () => {
     });
 
     it('pre-registered routes cannot use same route', async () => {
-        expect(async () => await buildServer({
-            routes: [
-                {
-                    route: '/test',
-                    handler: () => 'handler-one',
-                },
-                {
-                    route: '/test',
-                    handler: () => 'handler-two',
-                }
-            ],
-        })).toThrow(Error);
+        expect(
+            async () =>
+                await buildServer({
+                    routes: [
+                        {
+                            route: '/test',
+                            handler: () => 'handler-one',
+                        },
+                        {
+                            route: '/test',
+                            handler: () => 'handler-two',
+                        },
+                    ],
+                }),
+        ).toThrow(Error);
     });
 });

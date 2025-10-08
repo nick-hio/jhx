@@ -4,7 +4,8 @@
   "type": "module",
   "private": true,
   "exports": {
-    "./base": "./base.js"
+    "./build": "./build.js",
+    "./config": "./config.js"
   },
   "devDependencies": {
     "esbuild": "^0.25.8"

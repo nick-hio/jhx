@@ -1,3 +1,3 @@
 # `@turbo/prettier-config`
 
-Internal prettier configuration.
+Internal Prettier configuration.

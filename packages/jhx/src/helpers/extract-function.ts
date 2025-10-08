@@ -68,7 +68,7 @@ const splitParams = (paramStr: string): string[] => {
 };
 
 export const extractFunction = (
-    func: Function | ((...args: any[]) => any),
+    func: (...args: any[]) => any,
 ): {
     params: string[];
     body: string;

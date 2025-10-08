@@ -5,7 +5,7 @@ export const toJhxTargetAttribute = (target: JhxTargetAttribute | string): strin
         return undefined;
     }
 
-    let result: string[] = [];
+    const result: string[] = [];
 
     if (typeof target === 'object') {
         if (target.op === 'this') {

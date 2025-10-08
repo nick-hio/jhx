@@ -1,7 +1,8 @@
+import fs from 'fs';
+import path from 'path';
 import { describe, expect, it } from 'bun:test';
-import { buildServer } from "./build-server";
-import path from "path";
-import fs from "fs";
+
+import { buildServer } from './build-server';
 
 describe('[jhx-fastify] route error handling', () => {
     it('route errorHandler returns sent response', async () => {
@@ -92,7 +93,9 @@ describe('[jhx-fastify] route error handling', () => {
         });
 
         const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.body).toBe('{"statusCode":500,"code":"FST_ERR_REP_INVALID_PAYLOAD_TYPE","error":"Internal Server Error","message":"Attempted to send payload of invalid type \'object\'. Expected a string or Buffer."}');
+        expect(res.body).toBe(
+            '{"statusCode":500,"code":"FST_ERR_REP_INVALID_PAYLOAD_TYPE","error":"Internal Server Error","message":"Attempted to send payload of invalid type \'object\'. Expected a string or Buffer."}',
+        );
         expect(res.statusCode).toBe(500);
     });
 
@@ -165,7 +168,7 @@ describe('[jhx-fastify] route error handling', () => {
                 res.raw.writeHead(500, { 'Content-Type': 'text/plain' });
                 const chunks = ['route', '-', 'error'];
 
-                for await (let chunk of chunks) {
+                for await (const chunk of chunks) {
                     await new Promise((r) => setTimeout(r, 25));
                     res.raw.write(chunk);
                 }
@@ -211,7 +214,7 @@ describe('[jhx-fastify] route error handling', () => {
         const fastify = await buildServer({
             contentType: null,
             errorHandler: (error) => {
-                return { message: error.message }
+                return { message: error.message };
             },
         });
 
@@ -232,7 +235,7 @@ describe('[jhx-fastify] route error handling', () => {
         const fastify = await buildServer({
             errorHandler: (error, _req, res) => {
                 res.header('content-type', 'application/json; charset=utf-8');
-                return { message: error.message }
+                return { message: error.message };
             },
         });
 
@@ -242,7 +245,6 @@ describe('[jhx-fastify] route error handling', () => {
                 throw new Error('route-error');
             },
         });
-
 
         const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
         expect(res.json() as object).toEqual({ message: 'route-error' });

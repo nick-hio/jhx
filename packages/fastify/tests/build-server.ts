@@ -1,7 +1,8 @@
-import type { CreateJhxConfig } from "../src";
-import type { FastifyServerOptions } from "fastify";
-import { fastifyJhx } from "../src";
-import Fastify from "fastify";
+import type { FastifyServerOptions } from 'fastify';
+import Fastify from 'fastify';
+
+import type { CreateJhxConfig } from '../src';
+import { fastifyJhx } from '../src';
 
 export const buildServer = async (
     jhxConfig: CreateJhxConfig = {},
@@ -22,4 +23,4 @@ export const buildServer = async (
     });
 
     return fastify;
-}
+};

@@ -7,7 +7,7 @@ export const config = {
     ],
     input: './src/index.ts',
     output: {
-        file: 'dist/types/index.d.ts',
+        file: 'dist/index.d.ts',
         format: 'es',
     },
     plugins: [
@@ -18,7 +18,7 @@ export const config = {
                 emitDeclarationOnly: true,
                 declaration: true,
                 declarationMap: false,
-                outDir: './dist/types',
+                outDir: './dist',
             },
             exclude: [
                 './src/helpers',

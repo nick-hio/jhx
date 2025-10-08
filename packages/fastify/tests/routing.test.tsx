@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'bun:test';
-import { buildServer } from "./build-server";
+
+import { buildServer } from './build-server';
 
 describe('[jhx-fastify] routing', async () => {
     it('duplicate route handlers use the same route', async () => {

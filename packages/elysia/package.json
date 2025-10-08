@@ -15,14 +15,23 @@
     "elysia"
   ],
   "type": "module",
-  "main": "./dist/cjs/index.cjs",
-  "module": "./dist/mjs/index.mjs",
-  "types": "./dist/types/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/types/index.d.ts",
-      "import": "./dist/mjs/index.mjs",
-      "require": "./dist/cjs/index.cjs"
+      "types": {
+        "source": "./src/index.ts",
+        "default": "./dist/index.d.ts"
+      },
+      "import": {
+        "source": "./src/index.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "source": "./src/index.ts",
+        "default": "./dist/index.cjs"
+      }
     }
   },
   "files": [
@@ -33,9 +42,9 @@
     "build": "pnpm run build:lib && pnpm run build:types",
     "build:lib": "bun esbuild.config.js",
     "build:types": "rollup -c rollup.config.js",
-    "check-types": "tsc -p tsconfig.json --jsx react-jsx",
+    "check-types": "tsc -p tsconfig.json --jsx preserve",
     "format": "prettier --write . --list-different",
-    "lint": "eslint .",
+    "lint": "eslint . --max-warnings 0",
     "test": "bun test ./tests",
     "test:watch": "bun test --watch ./tests"
   },

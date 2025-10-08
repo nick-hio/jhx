@@ -14,19 +14,22 @@
     "react"
   ],
   "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": {
         "source": "./src/index.ts",
-        "default": "./dist/types/index.d.ts"
+        "default": "./dist/index.d.ts"
       },
       "import": {
         "source": "./src/index.ts",
-        "default": "./dist/mjs/index.mjs"
+        "default": "./dist/index.js"
       },
       "require": {
         "source": "./src/index.ts",
-        "default": "./dist/cjs/index.cjs"
+        "default": "./dist/index.cjs"
       }
     }
   },
@@ -38,16 +41,16 @@
     "build": "pnpm run build:lib && pnpm run build:types",
     "build:lib": "bun esbuild.config.js",
     "build:types": "rollup -c rollup.config.js",
-    "check-types": "tsc -p tsconfig.json --jsx react-jsx",
+    "check-types": "tsc -p tsconfig.json --jsx preserve",
     "format": "prettier --write . --list-different",
-    "lint": "eslint .",
+    "lint": "eslint . --max-warnings 0",
     "test": "bun test ./tests",
     "test:watch": "bun test --watch ./tests"
   },
   "dependencies": {
     "htmx.org": "^2.0.7",
-    "react": "^19.2.0",
-    "react-dom": "^19.1.0"
+    "react": "^18 || ^19",
+    "react-dom": "^18 || ^19"
   },
   "devDependencies": {
     "@repo/esbuild-config": "workspace:*",

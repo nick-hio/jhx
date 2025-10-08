@@ -1,4 +1,5 @@
-import { describe, it, expect } from 'bun:test';
+import { describe, expect, it } from 'bun:test';
+
 import { buildServer } from './build-server';
 
 describe('[jhx-fastify] utilities & config.trailingSlash="slash"', async () => {
@@ -36,7 +37,7 @@ describe('[jhx-fastify] utilities & config.trailingSlash="slash"', async () => {
         fastify.jhx({
             route: '/test',
             handler: () => 'ok',
-        })
+        });
         expect(fastify.jhx.getRoutes()).toHaveLength(1);
 
         fastify.jhx.clearRoutes();
@@ -51,11 +52,11 @@ describe('[jhx-fastify] utilities & config.trailingSlash="slash"', async () => {
         fastify.jhx({
             route: '/test1',
             handler: () => 'ok',
-        })
+        });
         fastify.jhx({
             route: '/test2',
             handler: () => 'ok',
-        })
+        });
 
         const routes = fastify.jhx.getRoutes();
         expect(routes).toHaveLength(2);
@@ -66,7 +67,7 @@ describe('[jhx-fastify] utilities & config.trailingSlash="slash"', async () => {
                 method: 'GET',
                 route: '/_jhx/test1/',
                 handler: expect.any(Function),
-            })
+            }),
         );
 
         const route2 = routes[1];
@@ -75,7 +76,7 @@ describe('[jhx-fastify] utilities & config.trailingSlash="slash"', async () => {
                 method: 'GET',
                 route: '/_jhx/test2/',
                 handler: expect.any(Function),
-            })
+            }),
         );
     });
 
@@ -87,7 +88,7 @@ describe('[jhx-fastify] utilities & config.trailingSlash="slash"', async () => {
         fastify.jhx({
             route: '/test',
             handler: () => 'ok',
-        })
+        });
         expect(fastify.jhx.getRoutes()).toHaveLength(1);
 
         fastify.jhx.removeRoute('get', '/test');
@@ -131,7 +132,7 @@ describe('[jhx-fastify] utilities & config.trailingSlash="no-slashes"', async ()
         fastify.jhx({
             route: '/test',
             handler: () => 'ok',
-        })
+        });
         expect(fastify.jhx.getRoutes()).toHaveLength(1);
 
         fastify.jhx.clearRoutes();
@@ -146,11 +147,11 @@ describe('[jhx-fastify] utilities & config.trailingSlash="no-slashes"', async ()
         fastify.jhx({
             route: '/test1',
             handler: () => 'ok',
-        })
+        });
         fastify.jhx({
             route: '/test2',
             handler: () => 'ok',
-        })
+        });
 
         const routes = fastify.jhx.getRoutes();
         expect(routes).toHaveLength(2);
@@ -161,7 +162,7 @@ describe('[jhx-fastify] utilities & config.trailingSlash="no-slashes"', async ()
                 method: 'GET',
                 route: '/_jhx/test1',
                 handler: expect.any(Function),
-            })
+            }),
         );
 
         const route2 = routes[1];
@@ -170,7 +171,7 @@ describe('[jhx-fastify] utilities & config.trailingSlash="no-slashes"', async ()
                 method: 'GET',
                 route: '/_jhx/test2',
                 handler: expect.any(Function),
-            })
+            }),
         );
     });
 
@@ -182,7 +183,7 @@ describe('[jhx-fastify] utilities & config.trailingSlash="no-slashes"', async ()
         fastify.jhx({
             route: '/test',
             handler: () => 'ok',
-        })
+        });
         expect(fastify.jhx.getRoutes()).toHaveLength(1);
 
         fastify.jhx.removeRoute('get', '/test');

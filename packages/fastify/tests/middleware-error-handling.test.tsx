@@ -1,7 +1,8 @@
+import fs from 'fs';
+import path from 'path';
 import { describe, expect, it } from 'bun:test';
-import { buildServer } from "./build-server";
-import path from "path";
-import fs from "fs";
+
+import { buildServer } from './build-server';
 
 describe('[jhx-fastify] middleware error handling', () => {
     it('middleware errorHandler returns sent response', async () => {
@@ -107,7 +108,9 @@ describe('[jhx-fastify] middleware error handling', () => {
         });
 
         const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.body).toBe('{"statusCode":500,"code":"FST_ERR_REP_INVALID_PAYLOAD_TYPE","error":"Internal Server Error","message":"Attempted to send payload of invalid type \'object\'. Expected a string or Buffer."}');
+        expect(res.body).toBe(
+            '{"statusCode":500,"code":"FST_ERR_REP_INVALID_PAYLOAD_TYPE","error":"Internal Server Error","message":"Attempted to send payload of invalid type \'object\'. Expected a string or Buffer."}',
+        );
         expect(res.statusCode).toBe(500);
     });
 
@@ -189,7 +192,7 @@ describe('[jhx-fastify] middleware error handling', () => {
                 res.raw.writeHead(500, { 'Content-Type': 'text/plain' });
                 const chunks = ['mw', '-', 'error'];
 
-                for await (let chunk of chunks) {
+                for await (const chunk of chunks) {
                     await new Promise((r) => setTimeout(r, 25));
                     res.raw.write(chunk);
                 }
@@ -237,7 +240,7 @@ describe('[jhx-fastify] middleware error handling', () => {
                 throw new Error('mw-error');
             },
             errorHandler: (error) => {
-                return { message: error.message }
+                return { message: error.message };
             },
         });
 
@@ -259,7 +262,7 @@ describe('[jhx-fastify] middleware error handling', () => {
             },
             errorHandler: (error, _req, res) => {
                 res.header('content-type', 'application/json; charset=utf-8');
-                return { message: error.message }
+                return { message: error.message };
             },
         });
 

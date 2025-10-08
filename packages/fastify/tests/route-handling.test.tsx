@@ -1,7 +1,8 @@
+import fs from 'fs';
+import path from 'path';
 import { describe, expect, it } from 'bun:test';
-import { buildServer } from "./build-server";
-import fs from "fs";
-import path from "path";
+
+import { buildServer } from './build-server';
 
 describe('[jhx-fastify] route handling', async () => {
     it('route returns sent response', async () => {
@@ -126,7 +127,7 @@ describe('[jhx-fastify] route handling', async () => {
                 res.raw.writeHead(200, { 'Content-Type': 'text/plain' });
                 const chunks = ['stream', '-', 'ok'];
 
-                for await (let chunk of chunks) {
+                for await (const chunk of chunks) {
                     await new Promise((r) => setTimeout(r, 25));
                     res.raw.write(chunk);
                 }
@@ -215,7 +216,9 @@ describe('[jhx-fastify] route handling', async () => {
         });
 
         const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.body).toBe('{"statusCode":500,"error":"Internal Server Error","message":"Unexpected jhx route error"}');
+        expect(res.body).toBe(
+            '{"statusCode":500,"error":"Internal Server Error","message":"Unexpected jhx route error"}',
+        );
         expect(res.headers['content-type']).toContain('application/json');
         expect(res.statusCode).toBe(500);
     });

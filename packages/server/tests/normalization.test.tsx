@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'bun:test';
+
 import { normalizeEndpoint } from '../src';
 
 describe('[jhx-shared] normalizeEndpoint', async () => {
@@ -59,7 +60,6 @@ describe('[jhx-shared] normalizeEndpoint', async () => {
         expect(withSlash).toBe('/test/endpoint/');
     });
 
-
     it('prefix & endpoint with leading and trailing slashes', async () => {
         const route = '/test/endpoint/';
         const prefix = '/jhx/';
@@ -104,7 +104,6 @@ describe('[jhx-shared] normalizeEndpoint', async () => {
         expect(noSlash).toBe('/jhx/test/endpoint');
         expect(withSlash).toBe('/jhx/test/endpoint/');
     });
-
 
     it('duplicate prefix in route #1', async () => {
         const route = '/test/endpoint/';

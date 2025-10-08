@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'bun:test';
-import { buildServer } from "./build-server";
+
+import { buildServer } from './build-server';
 
 describe('[jhx-fastify] initialization', async () => {
     it('jhx.addRoute', async () => {
@@ -27,7 +28,7 @@ describe('[jhx-fastify] initialization', async () => {
             {
                 route: '/test2',
                 handler: () => 'ok',
-            }
+            },
         ]);
         expect(fastify.jhx.getRoutes()).toHaveLength(4);
     });
@@ -38,7 +39,7 @@ describe('[jhx-fastify] initialization', async () => {
         fastify.jhx({
             route: '/test',
             handler: () => 'ok',
-        })
+        });
         expect(fastify.jhx.getRoutes()).toHaveLength(2);
 
         fastify.jhx.clearRoutes();
@@ -51,7 +52,7 @@ describe('[jhx-fastify] initialization', async () => {
         fastify.jhx({
             route: '/test',
             handler: () => 'ok',
-        })
+        });
 
         const route1a = fastify.jhx.getRoute('get', '/test');
         expect(route1a).toEqual(
@@ -59,7 +60,7 @@ describe('[jhx-fastify] initialization', async () => {
                 method: 'GET',
                 route: '/_jhx/test',
                 handler: expect.any(Function),
-            })
+            }),
         );
 
         const route1b = fastify.jhx.getRoute('get', '/test/');
@@ -68,7 +69,7 @@ describe('[jhx-fastify] initialization', async () => {
                 method: 'GET',
                 route: '/_jhx/test/',
                 handler: expect.any(Function),
-            })
+            }),
         );
     });
 
@@ -78,11 +79,11 @@ describe('[jhx-fastify] initialization', async () => {
         fastify.jhx({
             route: '/test1',
             handler: () => 'ok',
-        })
+        });
         fastify.jhx({
             route: '/test2',
             handler: () => 'ok',
-        })
+        });
 
         const routes = fastify.jhx.getRoutes();
         expect(routes).toHaveLength(4);
@@ -93,7 +94,7 @@ describe('[jhx-fastify] initialization', async () => {
                 method: 'GET',
                 route: '/_jhx/test1',
                 handler: expect.any(Function),
-            })
+            }),
         );
 
         const route1b = routes[1];
@@ -102,7 +103,7 @@ describe('[jhx-fastify] initialization', async () => {
                 method: 'GET',
                 route: '/_jhx/test1/',
                 handler: expect.any(Function),
-            })
+            }),
         );
 
         const route2a = routes[2];
@@ -111,7 +112,7 @@ describe('[jhx-fastify] initialization', async () => {
                 method: 'GET',
                 route: '/_jhx/test2',
                 handler: expect.any(Function),
-            })
+            }),
         );
 
         const route2b = routes[3];
@@ -120,7 +121,7 @@ describe('[jhx-fastify] initialization', async () => {
                 method: 'GET',
                 route: '/_jhx/test2/',
                 handler: expect.any(Function),
-            })
+            }),
         );
     });
 
@@ -130,7 +131,7 @@ describe('[jhx-fastify] initialization', async () => {
         fastify.jhx({
             route: '/test',
             handler: () => 'ok',
-        })
+        });
 
         expect(fastify.jhx.hasRoute('get', '/test')).toBe(true);
         expect(fastify.jhx.hasRoute('post', '/test')).toBe(false);
@@ -142,7 +143,7 @@ describe('[jhx-fastify] initialization', async () => {
         fastify.jhx({
             route: '/test',
             handler: () => 'ok',
-        })
+        });
         expect(fastify.jhx.getRoutes()).toHaveLength(2);
 
         fastify.jhx.removeRoute('get', '/test');

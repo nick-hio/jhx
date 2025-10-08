@@ -1,7 +1,8 @@
+import fs from 'fs';
+import path from 'path';
 import { describe, expect, it } from 'bun:test';
-import { buildServer } from "./build-server";
-import path from "path";
-import fs from "fs";
+
+import { buildServer } from './build-server';
 
 describe('[jhx-fastify] not found handling', async () => {
     it('notFoundHandler returns sent response', async () => {
@@ -57,7 +58,9 @@ describe('[jhx-fastify] not found handling', async () => {
         });
 
         const res = await fastify.inject({ method: 'GET', url: '/_jhx/dne' });
-        expect(res.body).toBe('{"statusCode":500,"code":"FST_ERR_REP_INVALID_PAYLOAD_TYPE","error":"Internal Server Error","message":"Attempted to send payload of invalid type \'object\'. Expected a string or Buffer."}');
+        expect(res.body).toBe(
+            '{"statusCode":500,"code":"FST_ERR_REP_INVALID_PAYLOAD_TYPE","error":"Internal Server Error","message":"Attempted to send payload of invalid type \'object\'. Expected a string or Buffer."}',
+        );
         expect(res.statusCode).toBe(500);
     });
 
@@ -109,7 +112,7 @@ describe('[jhx-fastify] not found handling', async () => {
                 res.raw.writeHead(404, { 'Content-Type': 'text/plain' });
                 const chunks = ['not', '-', 'found'];
 
-                for await (let chunk of chunks) {
+                for await (const chunk of chunks) {
                     await new Promise((r) => setTimeout(r, 25));
                     res.raw.write(chunk);
                 }

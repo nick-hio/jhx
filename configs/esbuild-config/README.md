@@ -1,3 +1,3 @@
-# `@turbo/prettier-config`
+# `@turbo/esbuild-config`
 
-Internal Prettier configuration.
+Internal esbuild configuration.

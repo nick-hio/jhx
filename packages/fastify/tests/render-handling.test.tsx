@@ -1,7 +1,8 @@
+import fs from 'fs';
+import path from 'path';
 import { describe, expect, it } from 'bun:test';
-import { buildServer } from "./build-server";
-import fs from "fs";
-import path from "path";
+
+import { buildServer } from './build-server';
 
 describe('[jhx-fastify] custom render handling', () => {
     it('render returns sent response', async () => {
@@ -83,7 +84,7 @@ describe('[jhx-fastify] custom render handling', () => {
                 res.raw.writeHead(200, { 'Content-Type': 'text/plain' });
                 const chunks = [data, '-', 'rendered'];
 
-                for await (let chunk of chunks) {
+                for await (const chunk of chunks) {
                     await new Promise((r) => setTimeout(r, 25));
                     res.raw.write(chunk);
                 }
@@ -123,7 +124,7 @@ describe('[jhx-fastify] custom render handling', () => {
         const fastify = await buildServer({
             contentType: null,
             render: (data) => {
-                return { message: data + '-rendered' }
+                return { message: data + '-rendered' };
             },
         });
 
@@ -142,7 +143,7 @@ describe('[jhx-fastify] custom render handling', () => {
         const fastify = await buildServer({
             render: (data, _req, res) => {
                 res.header('content-type', 'application/json; charset=utf-8');
-                return { message: data + '-rendered' }
+                return { message: data + '-rendered' };
             },
         });
 
@@ -186,7 +187,9 @@ describe('[jhx-fastify] custom render handling', () => {
         });
 
         const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.body).toBe('{"statusCode":500,"error":"Internal Server Error","message":"Unexpected jhx route error"}');
+        expect(res.body).toBe(
+            '{"statusCode":500,"error":"Internal Server Error","message":"Unexpected jhx route error"}',
+        );
         expect(res.headers['content-type']).toContain('application/json');
         expect(res.statusCode).toBe(500);
     });

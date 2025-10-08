@@ -5,7 +5,7 @@ export const config = {
     external: [
         'node:*',
     ],
-    jsx: 'transform',
+    jsx: 'preserve',
     keepNames: true,
     logLevel: 'info',
     minify: true,

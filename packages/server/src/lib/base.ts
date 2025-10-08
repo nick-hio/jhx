@@ -1,13 +1,5 @@
-export type {
-    HttpMethod,
-    HttpMethodLowerCase,
-    HttpMethodUpperCase,
-    JhxOnRegistered,
-} from '../types';
-export type {
-    JhxServerErrorType,
-    JhxServerError,
-} from './jhx-server-error';
+export type { HttpMethod, HttpMethodLowerCase, HttpMethodUpperCase, JhxOnRegistered } from '../types';
+export type { JhxServerErrorType, JhxServerError } from './jhx-server-error';
 
 export { htmx, attributesToString, JhxComponent as BaseJhxComponent } from 'jhx';
 
