@@ -39,7 +39,7 @@ export const createServerJhx = <
     TCompProps extends ServerJhxComponentProps<TDomBase, TReturn, TReq, TRes, THandler, TBaseProps>,
     TRoute extends ServerJhxRoute<TReturn, TReq, TRes, THandler>,
     TPartialRoute extends ServerJhxPartialRoute<TReturn, TReq, TRes, THandler>,
-    TInstanceOptions = undefined
+    TInstanceOptions = undefined,
 >(
     config: ServerCreateJhxConfig<
         TReturn,

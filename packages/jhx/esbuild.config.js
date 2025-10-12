@@ -1,6 +1,6 @@
 import path from 'path';
-import { config } from '@repo/esbuild-config/config';
 import { createBuild } from '@repo/esbuild-config/build';
+import { config } from '@repo/esbuild-config/config';
 
 /** @type {import('esbuild').BuildOptions} */
 const esbuildConfig = {

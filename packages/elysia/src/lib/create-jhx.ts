@@ -1,5 +1,6 @@
 import type { Context as ElysiaContext, Elysia as ElysiaInstance } from 'elysia';
 import type { ElysiaConfig } from 'elysia/types';
+
 import { createServerJhx, JhxServerException } from '@jhxdev/server';
 
 import { isResponseHandled } from '../helpers/is-response-handled';

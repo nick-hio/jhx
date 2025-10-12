@@ -18,7 +18,11 @@ export const fastifyJhx = fp<CreateJhxConfig>(
             const { jhx } = createJhx(fastify, options);
 
             if (fastify.hasDecorator('jhx')) {
-                done(new Error('Multiple `jhx` functions cannot be instantiated with the same Fastify instance'));
+                done(
+                    new Error(
+                        'Multiple `jhx` functions cannot be instantiated with the same Fastify instance',
+                    ),
+                );
             }
 
             fastify.decorate('jhx', jhx);

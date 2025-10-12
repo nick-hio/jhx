@@ -1,4 +1,5 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import type { RouteShorthandOptions } from 'fastify/types/route';
 
 import { createServerJhx, JhxServerException } from '@jhxdev/server';
 
@@ -21,7 +22,6 @@ import type {
     Resolved,
 } from '../types';
 import { defaultConfig } from './default-config';
-import type { RouteShorthandOptions } from 'fastify/types/route';
 
 export const createJhx = <
     TDomBase extends object = object,
