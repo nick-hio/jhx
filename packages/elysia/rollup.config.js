@@ -10,7 +10,7 @@ export default {
     ...config,
     external: [...config.external, 'elysia'],
     plugins: [
-        ...(config.plugins || []),
+        ...config.plugins,
         alias({
             entries: [
                 {

@@ -39,6 +39,7 @@ export const createServerJhx = <
     TCompProps extends ServerJhxComponentProps<TDomBase, TReturn, TReq, TRes, THandler, TBaseProps>,
     TRoute extends ServerJhxRoute<TReturn, TReq, TRes, THandler>,
     TPartialRoute extends ServerJhxPartialRoute<TReturn, TReq, TRes, THandler>,
+    TInstanceOptions = undefined
 >(
     config: ServerCreateJhxConfig<
         TReturn,
@@ -50,7 +51,8 @@ export const createServerJhx = <
         THandler,
         TErrorHandler,
         TRenderHandler,
-        TPartialRoute
+        TPartialRoute,
+        TInstanceOptions
     > & {
         stringify?: TBaseStringify;
     },
@@ -66,7 +68,8 @@ export const createServerJhx = <
             THandler,
             TErrorHandler,
             TRenderHandler,
-            TPartialRoute
+            TPartialRoute,
+            TInstanceOptions
         >,
         routes: Map<string, ServerJhxHandler<TReturn, TReq, TRes>>,
     ) => void,
@@ -103,6 +106,7 @@ export const createServerJhx = <
                 : serverDefaultConfig.renderNotFound,
         stringify: typeof config.stringify === 'boolean' ? config.stringify : serverDefaultConfig.stringify,
         trailingSlash: config.trailingSlash ?? serverDefaultConfig.trailingSlash,
+        instanceOptions: config.instanceOptions,
     } as const as NormalizedServerJhxConfig<
         TReturn,
         TResolved,
@@ -113,7 +117,8 @@ export const createServerJhx = <
         THandler,
         TErrorHandler,
         TRenderHandler,
-        TPartialRoute
+        TPartialRoute,
+        TInstanceOptions
     >;
 
     const routeMap: Map<string, ServerJhxHandler<TReturn, TReq, TRes>> = config.routes

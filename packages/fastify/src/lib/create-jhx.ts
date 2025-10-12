@@ -21,55 +21,8 @@ import type {
     Resolved,
 } from '../types';
 import { defaultConfig } from './default-config';
+import type { RouteShorthandOptions } from 'fastify/types/route';
 
-/**
- * Creates a `jhx` function which will generate server routes for HTMX interactions
- * and returns an object containing HTMX and HTML attributes that can be applied to DOM elements.
- *
- * @example
- * ```javascript
- * // Initialization
- * import Fastify from 'fastify';
- * import { createJhx } from 'jhx-fastify';
- *
- * const fastify = Fastify();
- * export const { jhx } = createJhx(fastify);
- * ```
- *
- * @example
- * ```javascript
- * // Usage
- * import { renderToStaticMarkup } from "react-dom/server";
- *
- * fastify.get('/basic-example', (_, reply) => {
- *   const attributes = jhx({
- *     handler: () => <div>Hello World!</div>
- *   });
- *
- *   reply.send(renderToStaticMarkup(
- *     <body>
- *       <button {...attributes}>
- *         Click Me
- *       </button>
- *     </body>
- *   ));
- * });
- *
- * fastify.get('/inline-example', async (_, reply) => {
- *   return reply.send(renderToStaticMarkup(
- *     <body>
- *       <button
- *         {...jhx({
- *           handler: () => <div>Hello World!</div>
- *         })}
- *       >
- *         Click Me
- *       </button>
- *     </body>
- *   ));
- * });
- * ```
- */
 export const createJhx = <
     TDomBase extends object = object,
     TReturn extends JhxHandlerReturn = JhxHandlerReturn,
@@ -101,9 +54,10 @@ export const createJhx = <
         JhxProps<TDomBase, TReturn, TRequest, TReply>,
         JhxComponentProps<TDomBase, TReturn, TRequest, TReply>,
         JhxRoute<TReturn, TRequest, TReply>,
-        JhxPartialRoute<TReturn, TRequest, TReply>
+        JhxPartialRoute<TReturn, TRequest, TReply>,
+        RouteShorthandOptions
     >(config, defaultConfig.notFoundHandler, (baseConfig, routes) => {
-        fastify.all(`${baseConfig.prefix}/*`, config.routeOptions ?? {}, async (req, res) => {
+        fastify.all(`${baseConfig.prefix}/*`, config.instanceOptions ?? {}, async (req, res) => {
             const method = req.method.toUpperCase();
             const route = decodeURIComponent(req.url.split('?')[0] as string);
             const jhxRoute = routes.get(`${method}::${route}`);

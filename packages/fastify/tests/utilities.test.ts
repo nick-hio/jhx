@@ -2,8 +2,8 @@ import { describe, expect, it } from 'bun:test';
 
 import { buildServer } from './build-server';
 
-describe('[jhx-fastify] initialization', async () => {
-    it('jhx.addRoute', async () => {
+describe('[jhx-fastify] Utilities Tests', async () => {
+    it('jhx.addRoute Function', async () => {
         const fastify = await buildServer();
 
         expect(fastify.jhx.getRoutes()).toHaveLength(0);
@@ -15,7 +15,7 @@ describe('[jhx-fastify] initialization', async () => {
         expect(fastify.jhx.getRoutes()).toHaveLength(2);
     });
 
-    it('jhx.addRoutes', async () => {
+    it('jhx.addRoutes Function', async () => {
         const fastify = await buildServer();
 
         expect(fastify.jhx.getRoutes()).toHaveLength(0);
@@ -33,7 +33,7 @@ describe('[jhx-fastify] initialization', async () => {
         expect(fastify.jhx.getRoutes()).toHaveLength(4);
     });
 
-    it('jhx.clearRoutes', async () => {
+    it('jhx.clearRoutes Function', async () => {
         const fastify = await buildServer();
 
         fastify.jhx({
@@ -46,7 +46,7 @@ describe('[jhx-fastify] initialization', async () => {
         expect(fastify.jhx.getRoutes()).toHaveLength(0);
     });
 
-    it('jhx.getRoute', async () => {
+    it('jhx.getRoute Function', async () => {
         const fastify = await buildServer();
 
         fastify.jhx({
@@ -73,7 +73,7 @@ describe('[jhx-fastify] initialization', async () => {
         );
     });
 
-    it('jhx.getRoutes', async () => {
+    it('jhx.getRoutes Function', async () => {
         const fastify = await buildServer();
 
         fastify.jhx({
@@ -125,7 +125,7 @@ describe('[jhx-fastify] initialization', async () => {
         );
     });
 
-    it('jhx.hasRoute', async () => {
+    it('jhx.hasRoute Function', async () => {
         const fastify = await buildServer();
 
         fastify.jhx({
@@ -137,7 +137,7 @@ describe('[jhx-fastify] initialization', async () => {
         expect(fastify.jhx.hasRoute('post', '/test')).toBe(false);
     });
 
-    it('jhx.removeRoute', async () => {
+    it('jhx.removeRoute Function', async () => {
         const fastify = await buildServer();
 
         fastify.jhx({

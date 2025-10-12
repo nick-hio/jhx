@@ -85,6 +85,7 @@ export type ServerCreateJhxConfig<
     TErrorHandler extends ServerJhxErrorHandler<TError, TReturn, TReq, TRes>,
     TRenderHandler extends ServerJhxRenderHandler<TResolved, TRendered, TReq, TRes>,
     TPartialRoute extends ServerJhxPartialRoute<TReturn, TReq, TRes, THandler>,
+    TInstanceOptions = undefined,
 > = BaseJhxConfig & {
     /**
      * The default `Content-Type` header for the JHX handler responses.
@@ -172,6 +173,12 @@ export type ServerCreateJhxConfig<
     routes?: TPartialRoute | Array<TPartialRoute>;
 
     trailingSlash?: 'slash' | 'no-slash' | 'both';
+
+    /**
+     * Framework-specific options.
+     * (e.g., Fastify `routeOptions` type, Elysia `ElysiaConfig` type)
+     */
+    instanceOptions?: TInstanceOptions;
 };
 
 export type NormalizedServerJhxConfig<
@@ -185,6 +192,7 @@ export type NormalizedServerJhxConfig<
     TErrorHandler extends ServerJhxErrorHandler<TError, TReturn, TReq, TRes>,
     TRenderHandler extends ServerJhxRenderHandler<TResolved, TRendered, TReq, TRes>,
     TPartialRoute extends ServerJhxPartialRoute<TReturn, TReq, TRes, THandler>,
+    TInstanceOptions = undefined,
 > = Required<
     Omit<
         ServerCreateJhxConfig<
@@ -197,7 +205,8 @@ export type NormalizedServerJhxConfig<
             THandler,
             TErrorHandler,
             TRenderHandler,
-            TPartialRoute
+            TPartialRoute,
+            TInstanceOptions
         >,
         'routes' | 'errorHandler' | 'middleware' | 'notFoundHandler' | 'render'
     >

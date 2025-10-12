@@ -1,5 +1,5 @@
 import type { Context as ElysiaContext, Elysia as ElysiaInstance } from 'elysia';
-
+import type { ElysiaConfig } from 'elysia/types';
 import { createServerJhx, JhxServerException } from '@jhxdev/server';
 
 import { isResponseHandled } from '../helpers/is-response-handled';
@@ -52,7 +52,8 @@ export const createJhx = <
         JhxProps<TDomBase, TReturn, TContext>,
         JhxComponentProps<TDomBase, TReturn, TContext>,
         JhxRoute<TReturn, TContext>,
-        JhxPartialRoute<TReturn, TContext>
+        JhxPartialRoute<TReturn, TContext>,
+        ElysiaConfig<string>
     >(config, defaultConfig.notFoundHandler, (baseConfig, routes) => {
         elysia.all(`${baseConfig.prefix}/*`, async (context: ElysiaContext) => {
             const method = context.request.method;

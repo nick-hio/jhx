@@ -10,7 +10,7 @@ export default {
     ...config,
     external: [...config.external, 'hono'],
     plugins: [
-        ...(config.plugins || []),
+        ...config.plugins,
         alias({
             entries: [
                 {

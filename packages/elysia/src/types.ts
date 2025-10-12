@@ -94,10 +94,9 @@ export type CreateJhxConfig<
     JhxHandler<TReturn, TContext>,
     JhxErrorHandler<TError, TReturn, TContext>,
     JhxRenderHandler<Resolved<TReturn>, TRendered, TContext>,
-    JhxPartialRoute<TReturn, TContext>
-> & {
-    elysiaConfig?: ElysiaConfig<string>;
-};
+    JhxPartialRoute<TReturn, TContext>,
+    ElysiaConfig<string>
+> & {};
 
 export type JhxProps<
     TDom extends object = object,

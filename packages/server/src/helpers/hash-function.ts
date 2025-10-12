@@ -10,5 +10,5 @@ export const hashFunction = (func: (...args: any[]) => any) => {
         });
     }
 
-    return createHash('sha1').update(func.toString()).digest('hex').slice(0, 10);
+    return createHash('sha256').update(func.toString()).digest('hex').slice(0, 12);
 };

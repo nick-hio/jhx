@@ -118,16 +118,9 @@ export type CreateJhxConfig<
     JhxHandler<TReturn, TRequest, TReply>,
     JhxErrorHandler<TError, TReturn, TRequest, TReply>,
     JhxRenderHandler<Resolved<TReturn>, TRendered, TRequest, TReply>,
-    JhxPartialRoute<TReturn, TRequest, TReply>
-> & {
-    /**
-     * Fastify route options for the JHX routes.
-     *
-     * Note: These options will be applied to all JHX routes;
-     * some options may need to be adjusted to support multiple routes.
-     */
-    routeOptions?: RouteShorthandOptions;
-};
+    JhxPartialRoute<TReturn, TRequest, TReply>,
+    RouteShorthandOptions
+> & {};
 
 /**
  * Options for JHX.
