@@ -12,11 +12,11 @@ describe('not found handling', () => {
         await closeServers(testServers);
     });
 
-    const ports = new PortGenerator(20000);
+    const ports = new PortGenerator(20300);
 
     it('returns sent response', async () => {
         const port = ports.getPort();
-        await buildServer(testServers, port, {
+        buildServer(testServers, port, {
             notFoundHandler: (_req, res) => res.send('dne'),
         });
 
@@ -26,7 +26,7 @@ describe('not found handling', () => {
 
     it('returns JSX (default)', async () => {
         const port = ports.getPort();
-        await buildServer(testServers, port, {
+        buildServer(testServers, port, {
             notFoundHandler: () => <div>dne</div>,
         });
 
@@ -36,7 +36,7 @@ describe('not found handling', () => {
 
     it('returns JSX (config.render=static)', async () => {
         const port = ports.getPort();
-        await buildServer(testServers, port, {
+        buildServer(testServers, port, {
             notFoundHandler: () => <div>dne</div>,
             render: 'static',
         });
@@ -47,7 +47,7 @@ describe('not found handling', () => {
 
     it('returns JSX (config.render=string)', async () => {
         const port = ports.getPort();
-        await buildServer(testServers, port, {
+        buildServer(testServers, port, {
             notFoundHandler: () => <div>dne</div>,
             render: 'string',
         });
@@ -69,7 +69,7 @@ describe('not found handling', () => {
 
     it('returns buffer (config.contentType=null)', async () => {
         const port = ports.getPort();
-        await buildServer(testServers, port, {
+        buildServer(testServers, port, {
             contentType: null,
             notFoundHandler: () => Buffer.from('dne', 'utf-8'),
         });
@@ -80,7 +80,7 @@ describe('not found handling', () => {
 
     it('returns buffer (response header set)', async () => {
         const port = ports.getPort();
-        await buildServer(testServers, port, {
+        buildServer(testServers, port, {
             notFoundHandler: (_req, res) => {
                 res.header('Content-Type', 'application/octet-stream');
                 return Buffer.from('dne', 'utf-8');
@@ -93,7 +93,7 @@ describe('not found handling', () => {
 
     it('returns buffer (fs.readFile; config.contentType=null)', async () => {
         const port = ports.getPort();
-        await buildServer(testServers, port, {
+        buildServer(testServers, port, {
             contentType: null,
             notFoundHandler: (_req, res) => {
                 const filepath = path.join(__dirname, 'data.txt');
@@ -108,7 +108,7 @@ describe('not found handling', () => {
 
     it('returns stream (res.writeHead)', async () => {
         const port = ports.getPort();
-        await buildServer(testServers, port, {
+        buildServer(testServers, port, {
             notFoundHandler: async (_req, res) => {
                 res.writeHead(404, { 'Content-Type': 'text/plain' });
                 const chunks = ['stream', '-', 'ok'];
@@ -128,7 +128,7 @@ describe('not found handling', () => {
 
     it('returns string', async () => {
         const port = ports.getPort();
-        await buildServer(testServers, port, {
+        buildServer(testServers, port, {
             notFoundHandler: () => 'dne',
         });
 
@@ -138,7 +138,7 @@ describe('not found handling', () => {
 
     it('returns object (config.contentType=null)', async () => {
         const port = ports.getPort();
-        await buildServer(testServers, port, {
+        buildServer(testServers, port, {
             contentType: null,
             notFoundHandler: () => ({ message: 'dne' }),
         });
@@ -149,7 +149,7 @@ describe('not found handling', () => {
 
     it('returns object (response header set)', async () => {
         const port = ports.getPort();
-        await buildServer(testServers, port, {
+        buildServer(testServers, port, {
             notFoundHandler: (_req, res) => {
                 res.header('Content-Type', 'application/json; charset=utf-8');
                 return { message: 'dne' }
@@ -162,7 +162,7 @@ describe('not found handling', () => {
 
     it('returns void', async () => {
         const port = ports.getPort();
-        await buildServer(testServers, port, {
+        buildServer(testServers, port, {
             notFoundHandler: () => {},
         });
 

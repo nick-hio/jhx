@@ -2,26 +2,27 @@ import { describe, it, afterAll } from 'bun:test';
 import fs from 'fs';
 import path from 'path';
 
-import { buildServer, closeServers, expectResponse, PortGenerator } from './helpers';
+import { buildServer, closeServers, expectResponse, PortGenerator, ENDPOINT } from './helpers';
 
 const testUrl = (port: number) => `http://localhost:${port}/_jhx/test`;
 const testServers: any[] = [];
+const route = ENDPOINT;
 
 describe('route error handling', () => {
     afterAll(async () => {
         await closeServers(testServers);
     });
 
-    const ports = new PortGenerator(20000);
+    const ports = new PortGenerator(20500);
 
     it('returns sent response', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             errorHandler: (err, _req, res) => res.status(400).send(err.message),
         });
 
         jhx({
-            route: '/test',
+            route,
             handler: () => {
                 throw new Error('route-error');
             },
@@ -33,12 +34,12 @@ describe('route error handling', () => {
 
     it('returns JSX (default)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             errorHandler: (err) => <div>{err.message}</div>,
         });
 
         jhx({
-            route: '/test',
+            route,
             handler: () => {
                 throw new Error('route-error');
             },
@@ -50,13 +51,13 @@ describe('route error handling', () => {
 
     it('returns JSX (config.render=static)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             errorHandler: (err) => <div>{err.message}</div>,
             render: 'static',
         });
 
         jhx({
-            route: '/test',
+            route,
             handler: () => {
                 throw new Error('route-error');
             },
@@ -68,13 +69,13 @@ describe('route error handling', () => {
 
     it('returns JSX (config.render=string)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             errorHandler: (err) => <div>{err.message}</div>,
             render: 'string',
         });
 
         jhx({
-            route: '/test',
+            route,
             handler: () => {
                 throw new Error('route-error');
             },
@@ -86,13 +87,13 @@ describe('route error handling', () => {
 
     it('returns JSX (config.renderError=false)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             errorHandler: (err) => <div>{err.message}</div>,
             renderError: false,
         });
 
         jhx({
-            route: '/test',
+            route,
             handler: () => {
                 throw new Error('route-error');
             },
@@ -104,13 +105,13 @@ describe('route error handling', () => {
 
     it('returns buffer (config.contentType=null)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             contentType: null,
             errorHandler: (err) => Buffer.from(err.message, 'utf-8'),
         });
 
         jhx({
-            route: '/test',
+            route,
             handler: () => {
                 throw new Error('route-error');
             },
@@ -122,7 +123,7 @@ describe('route error handling', () => {
 
     it('returns buffer (response header set)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             errorHandler: (err, _req, res) => {
                 res.header('Content-Type', 'application/octet-stream');
                 return Buffer.from(err.message, 'utf-8');
@@ -130,7 +131,7 @@ describe('route error handling', () => {
         });
 
         jhx({
-            route: '/test',
+            route,
             handler: () => {
                 throw new Error('route-error');
             },
@@ -142,7 +143,7 @@ describe('route error handling', () => {
 
     it('returns buffer (fs.readFile; config.contentType=null)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             contentType: null,
             errorHandler: (_err, _req, res) => {
                 const filepath = path.join(__dirname, 'data.txt');
@@ -152,7 +153,7 @@ describe('route error handling', () => {
         });
 
         jhx({
-            route: '/test',
+            route,
             handler: () => {
                 throw new Error('route-error');
             },
@@ -164,7 +165,7 @@ describe('route error handling', () => {
 
     it('returns stream (res.writeHead)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             errorHandler: async (_err, _res, res) => {
                 res.writeHead(400, { 'Content-Type': 'text/plain' });
                 const chunks = ['stream', '-', 'ok'];
@@ -179,7 +180,7 @@ describe('route error handling', () => {
         });
 
         jhx({
-            route: '/test',
+            route,
             handler: () => {
                 throw new Error('route-error');
             },
@@ -191,12 +192,12 @@ describe('route error handling', () => {
 
     it('returns string', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             errorHandler: (err) => err.message,
         });
 
         jhx({
-            route: '/test',
+            route,
             handler: () => {
                 throw new Error('route-error');
             },
@@ -208,13 +209,13 @@ describe('route error handling', () => {
 
     it('returns object (config.contentType=null)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             contentType: null,
             errorHandler: (err) => ({ message: err.message }),
         });
 
         jhx({
-            route: '/test',
+            route,
             handler: () => {
                 throw new Error('route-error');
             },
@@ -226,7 +227,7 @@ describe('route error handling', () => {
 
     it('returns object (response header set)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             errorHandler: (err, _req, res) => {
                 res.header('Content-Type', 'application/json');
                 return { message: err.message };
@@ -234,7 +235,7 @@ describe('route error handling', () => {
         });
 
         jhx({
-            route: '/test',
+            route,
             handler: () => {
                 throw new Error('route-error');
             },
@@ -246,12 +247,12 @@ describe('route error handling', () => {
 
     it('returns void', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             errorHandler: () => {},
         });
 
         jhx({
-            route: '/test',
+            route,
             handler: () => {
                 throw new Error('route-error');
             },

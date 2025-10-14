@@ -1,12 +1,13 @@
 import { expect, describe, it, afterAll } from 'bun:test';
 
-import { buildServer, closeServers, expectResponse, PortGenerator } from './helpers';
+import { buildServer, closeServers, expectResponse, PortGenerator, testUrl, ENDPOINT } from './helpers';
 import { createJhx } from '../src';
 
 const expectRecord = (v: Record<string, string>) => v; // Compile-time check
 const expectString = (v: string) => v; // Compile-time check
 
 const stringifyTestServers: any[] = [];
+const route = ENDPOINT;
 
 describe('config.stringify Tests', async () => {
     afterAll(async () => {
@@ -15,68 +16,65 @@ describe('config.stringify Tests', async () => {
 
     const ports = new PortGenerator(20000);
 
-    const { app: appDefault } = await buildServer(stringifyTestServers, ports.getPort());
-    const { jhx: jhxDefault } = createJhx(appDefault, {
+    const { app } = buildServer(stringifyTestServers, ports.getPort());
+    const { jhx: jhxDefault } = createJhx(app, {
         prefix: '/stringify-default-test',
     });
 
     it('default, no change', async () => {
-        const result = jhxDefault({ route: '/test' });
+        const result = jhxDefault({ route });
         expectRecord(result);
         expect(typeof result).toBe('object');
     });
 
     it('default to true', async () => {
-        const result = jhxDefault({ route: '/test' }, { stringify: true });
+        const result = jhxDefault({ route }, { stringify: true });
         expectString(result);
         expect(typeof result).toBe('string');
     });
 
     it('default to false', async () => {
-        const result = jhxDefault({ route: '/test' }, { stringify: false });
+        const result = jhxDefault({ route }, { stringify: false });
         expectRecord(result);
         expect(typeof result).toBe('object');
     });
 
-    const { app: appTrue } = await buildServer(stringifyTestServers, ports.getPort());
-    const { jhx: jhxTrue } = createJhx(appTrue, {
+    const { jhx: jhxTrue } = createJhx(app, {
         prefix: '/stringify-true-test',
         stringify: true,
     });
 
     it('true, no change', async () => {
-        const result = jhxTrue({ route: '/test' });
+        const result = jhxTrue({ route });
         expectString(result);
         expect(typeof result).toBe('string');
     });
 
     it('true to false', async () => {
-        const result = jhxTrue({ route: '/test' }, { stringify: false });
+        const result = jhxTrue({ route }, { stringify: false });
         expectRecord(result);
         expect(typeof result).toBe('object');
     });
 
-    const { app: appFalse } = await buildServer(stringifyTestServers, ports.getPort());
-    const { jhx: jhxFalse } = createJhx(appFalse, {
+    const { jhx: jhxFalse } = createJhx(app, {
         prefix: '/stringify-false-test',
         stringify: false,
     });
 
     it('false, no change ', async () => {
-        const result = jhxFalse({ route: '/test' });
+        const result = jhxFalse({ route });
         expectRecord(result);
         expect(typeof result).toBe('object');
     });
 
     it('false to true', async () => {
-        const result = jhxFalse({ route: '/test' }, { stringify: true });
+        const result = jhxFalse({ route }, { stringify: true });
         expectString(result);
         expect(typeof result).toBe('string');
     });
 });
 
 const routesTestServers: any[] = [];
-const testUrl = (port: number) => `http://localhost:${port}/_jhx/pre-reg`;
 
 describe('config.routes Tests', async () => {
     afterAll(async () => {
@@ -85,47 +83,32 @@ describe('config.routes Tests', async () => {
 
     const ports = new PortGenerator(20100);
 
-    it('pre-registered route (GET)', async () => {
+    it('GET route', async () => {
         const port = ports.getPort();
-        await buildServer(routesTestServers, port, {
-            routes: {
-                route: '/pre-reg',
-                handler: (_req, res) => res.send('ok'),
-            },
+        buildServer(routesTestServers, port, {
+            routes: { route, handler: () => 'ok' },
         });
 
         const res = await fetch(testUrl(port));
         await expectResponse(res, 'ok', 'text/html', 200);
     });
 
-    it('pre-registered route (POST)', async () => {
+    it('POST route', async () => {
         const port = ports.getPort();
-        await buildServer(routesTestServers, port, {
-            routes: {
-                method: 'POST',
-                route: '/pre-reg',
-                handler: (_req, res) => res.send('ok'),
-            },
+        buildServer(routesTestServers, port, {
+            routes: { route, handler: () => 'ok', method: 'POST' },
         });
 
         const res = await fetch(testUrl(port), { method: 'POST' });
         await expectResponse(res, 'ok', 'text/html', 200);
     });
 
-    it('pre-registered routes (GET & POST)', async () => {
+    it('GET & POST routes', async () => {
         const port = ports.getPort();
-        await buildServer(routesTestServers, port, {
+        buildServer(routesTestServers, port, {
             routes: [
-                {
-                    method: 'get',
-                    route: '/pre-reg',
-                    handler: (_req, res) => res.send('ok'),
-                },
-                {
-                    method: 'POST',
-                    route: '/pre-reg',
-                    handler: (_req, res) => res.send('ok'),
-                },
+                { route, handler: () => 'ok' },
+                { route, handler: () => 'ok', method: 'POST' },
             ],
         });
 
@@ -136,20 +119,14 @@ describe('config.routes Tests', async () => {
         await expectResponse(postRes, 'ok', 'text/html', 200);
     });
 
-    it('pre-registered routes cannot use same route', async () => {
+    it('routes cannot use same endpoint', async () => {
         expect(
             async () => {
                 const port = ports.getPort();
-                await buildServer(routesTestServers, port, {
+                buildServer(routesTestServers, port, {
                     routes: [
-                        {
-                            route: '/test',
-                            handler: () => 'handler-one',
-                        },
-                        {
-                            route: '/test',
-                            handler: () => 'handler-two',
-                        },
+                        { route, handler: () => 'ok' },
+                        { route, handler: () => 'ok' },
                     ],
                 });
             }

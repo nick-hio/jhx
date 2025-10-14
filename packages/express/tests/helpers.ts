@@ -5,11 +5,11 @@ import type { Express } from 'express';
 import { createJhx } from '../src';
 import type { CreateJhxConfig } from '../src';
 
-export const buildServer = async (
+export const buildServer = (
     serverList: Array<Server>,
     port: number,
     jhxConfig: CreateJhxConfig = {},
-): Promise<{ app: Express; jhx: ReturnType<typeof createJhx>['jhx']; }> => {
+): { app: Express; jhx: ReturnType<typeof createJhx>['jhx']; } => {
     const app = express();
     const { jhx } = createJhx(app, {
         logger: console,
@@ -61,7 +61,7 @@ export const expectResponse = async (
 export class PortGenerator {
     private currentPort: number;
 
-    constructor(startPort: number) {
+    constructor(startPort: number = 20000) {
         this.currentPort = startPort;
     }
 
@@ -69,3 +69,6 @@ export class PortGenerator {
         return this.currentPort++;
     }
 }
+
+export const ENDPOINT = '/test';
+export const testUrl = (port: number) => `http://localhost:${port}/_jhx${ENDPOINT}`;

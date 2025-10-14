@@ -1,56 +1,43 @@
 import { expect, describe, it, afterAll } from 'bun:test';
 
-import { buildServer, closeServers, PortGenerator } from './helpers';
+import { buildServer, closeServers, PortGenerator, ENDPOINT } from './helpers';
 
 const testServers: any[] = [];
+const route = ENDPOINT;
 
-describe('Utilities Tests', async () => {
+describe('utilities', async () => {
     afterAll(async () => {
         await closeServers(testServers);
     });
 
-    const ports = new PortGenerator(20000);
+    const ports = new PortGenerator(20800);
 
     it('jhx.addRoute Function', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port);
-
+        const { jhx } = buildServer(testServers, port);
         expect(jhx.getRoutes()).toHaveLength(0);
 
-        jhx.addRoute({
-            route: '/test',
-            handler: () => 'ok',
-        });
+        jhx.addRoute({ route, handler: () => 'ok' });
         expect(jhx.getRoutes()).toHaveLength(2);
     });
 
     it('jhx.addRoutes Function', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port);
-
+        const { jhx } = buildServer(testServers, port);
         expect(jhx.getRoutes()).toHaveLength(0);
 
         jhx.addRoutes([
-            {
-                route: '/test1',
-                handler: () => 'ok',
-            },
-            {
-                route: '/test2',
-                handler: () => 'ok',
-            },
+            { route: '/test1', handler: () => 'ok' },
+            { route: '/test2', handler: () => 'ok' },
         ]);
         expect(jhx.getRoutes()).toHaveLength(4);
     });
 
     it('jhx.clearRoutes Function', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port);
+        const { jhx } = buildServer(testServers, port);
 
-        jhx({
-            route: '/test',
-            handler: () => 'ok',
-        });
+        jhx({ route, handler: () => 'ok' });
         expect(jhx.getRoutes()).toHaveLength(2);
 
         jhx.clearRoutes();
@@ -59,12 +46,9 @@ describe('Utilities Tests', async () => {
 
     it('jhx.getRoute Function', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port);
+        const { jhx } = buildServer(testServers, port);
 
-        jhx({
-            route: '/test',
-            handler: () => 'ok',
-        });
+        jhx({ route, handler: () => 'ok' });
 
         const route1a = jhx.getRoute('get', '/test');
         expect(route1a).toEqual(
@@ -87,16 +71,10 @@ describe('Utilities Tests', async () => {
 
     it('jhx.getRoutes Function', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port);
+        const { jhx } = buildServer(testServers, port);
 
-        jhx({
-            route: '/test1',
-            handler: () => 'ok',
-        });
-        jhx({
-            route: '/test2',
-            handler: () => 'ok',
-        });
+        jhx({ route: '/test1', handler: () => 'ok' });
+        jhx({ route: '/test2', handler: () => 'ok' });
 
         const routes = jhx.getRoutes();
         expect(routes).toHaveLength(4);
@@ -140,12 +118,9 @@ describe('Utilities Tests', async () => {
 
     it('jhx.hasRoute Function', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port);
+        const { jhx } = buildServer(testServers, port);
 
-        jhx({
-            route: '/test',
-            handler: () => 'ok',
-        });
+        jhx({ route, handler: () => 'ok' });
 
         expect(jhx.hasRoute('get', '/test')).toBe(true);
         expect(jhx.hasRoute('post', '/test')).toBe(false);
@@ -153,12 +128,9 @@ describe('Utilities Tests', async () => {
 
     it('jhx.removeRoute Function', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port);
+        const { jhx } = buildServer(testServers, port);
 
-        jhx({
-            route: '/test',
-            handler: () => 'ok',
-        });
+        jhx({ route, handler: () => 'ok' });
         expect(jhx.getRoutes()).toHaveLength(2);
 
         jhx.removeRoute('get', '/test');

@@ -2,24 +2,25 @@ import { describe, it, afterAll } from 'bun:test';
 import fs from 'fs';
 import path from 'path';
 
-import { buildServer, closeServers, expectResponse, PortGenerator } from './helpers';
+import { buildServer, closeServers, expectResponse, PortGenerator, ENDPOINT } from './helpers';
 
 const testUrl = (port: number) => `http://localhost:${port}/_jhx/test`;
 const testServers: any[] = [];
+const route = ENDPOINT;
 
 describe('route handling', () => {
     afterAll(async () => {
         await closeServers(testServers);
     });
 
-    const ports = new PortGenerator(20000);
+    const ports = new PortGenerator(20600);
 
     it('returns sent response', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port);
+        const { jhx } = buildServer(testServers, port);
 
         jhx({
-            route: '/test',
+            route,
             handler: (_req, res) => res.send('route-ok')
         });
 
@@ -29,10 +30,10 @@ describe('route handling', () => {
 
     it('returns JSX (default)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port);
+        const { jhx } = buildServer(testServers, port);
 
         jhx({
-            route: '/test',
+            route,
             handler: () => <div>route-ok</div>,
         });
 
@@ -42,12 +43,12 @@ describe('route handling', () => {
 
     it('returns JSX (config.render=static)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             render: 'static',
         });
 
         jhx({
-            route: '/test',
+            route,
             handler: () => <div>route-ok</div>,
         });
 
@@ -57,12 +58,12 @@ describe('route handling', () => {
 
     it('returns JSX (config.render=string)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             render: 'string',
         });
 
         jhx({
-            route: '/test',
+            route,
             handler: () => <div>route-ok</div>,
         });
 
@@ -72,12 +73,12 @@ describe('route handling', () => {
 
     it('returns JSX (config.render=false)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             render: false,
         });
 
         jhx({
-            route: '/test',
+            route,
             handler: () => <div>route-ok</div>,
         });
 
@@ -87,12 +88,12 @@ describe('route handling', () => {
 
     it('returns buffer (config.contentType=null)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             contentType: null,
         });
 
         jhx({
-            route: '/test',
+            route,
             handler: () => Buffer.from('route-ok', 'utf-8'),
         });
 
@@ -102,10 +103,10 @@ describe('route handling', () => {
 
     it('returns buffer (response header set)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port);
+        const { jhx } = buildServer(testServers, port);
 
         jhx({
-            route: '/test',
+            route,
             handler: (_req, res) => {
                 res.header('Content-Type', 'application/octet-stream');
                 return Buffer.from('route-ok', 'utf-8');
@@ -118,12 +119,12 @@ describe('route handling', () => {
 
     it('returns buffer (fs.readFile; config.contentType=null)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             contentType: null,
         });
 
         jhx({
-            route: '/test',
+            route,
             handler: (_req, res) => {
                 const filepath = path.join(__dirname, 'data.txt');
                 fs.readFile(filepath, (err, buff) => res.send(err || buff));
@@ -137,10 +138,10 @@ describe('route handling', () => {
 
     it('returns stream (res.writeHead)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port);
+        const { jhx } = buildServer(testServers, port);
 
         jhx({
-            route: '/test',
+            route,
             handler: async (_req, res) => {
                 res.writeHead(200, { 'Content-Type': 'text/plain' });
                 const chunks = ['stream', '-', 'ok'];
@@ -160,10 +161,10 @@ describe('route handling', () => {
 
     it('returns string', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port);
+        const { jhx } = buildServer(testServers, port);
 
         jhx({
-            route: '/test',
+            route,
             handler: () => 'route-ok',
         });
 
@@ -173,12 +174,12 @@ describe('route handling', () => {
 
     it('returns object (config.contentType=null)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             contentType: null,
         });
 
         jhx({
-            route: '/test',
+            route,
             handler: () => ({ message: 'route-ok' }),
         });
 
@@ -188,10 +189,10 @@ describe('route handling', () => {
 
     it('returns object (response header set)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port);
+        const { jhx } = buildServer(testServers, port);
 
         jhx({
-            route: '/test',
+            route,
             handler: (_req, res) => {
                 res.header('Content-Type', 'application/json; charset=utf-8');
                 return { message: 'route-ok' }
@@ -204,10 +205,10 @@ describe('route handling', () => {
 
     it('returns void', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port);
+        const { jhx } = buildServer(testServers, port);
 
         jhx({
-            route: '/test',
+            route,
             handler: () => {},
         });
 
@@ -217,10 +218,10 @@ describe('route handling', () => {
 
     it('throws error', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port);
+        const { jhx } = buildServer(testServers, port);
 
         jhx({
-            route: '/test',
+            route,
             handler: () => {
                 throw new Error('route-error');
             },

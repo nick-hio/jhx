@@ -2,25 +2,26 @@ import { describe, it, afterAll } from 'bun:test';
 import fs from 'fs';
 import path from 'path';
 
-import { buildServer, closeServers, expectResponse, PortGenerator } from './helpers';
+import { buildServer, closeServers, expectResponse, PortGenerator, ENDPOINT } from './helpers';
 
 const testUrl = (port: number) => `http://localhost:${port}/_jhx/test`;
 const testServers: any[] = [];
+const route = ENDPOINT;
 
 describe('middleware handling', () => {
     afterAll(async () => {
         await closeServers(testServers);
     });
 
-    const ports = new PortGenerator(20000);
+    const ports = new PortGenerator(20200);
 
     it('returns sent response', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             middleware: (_req, res) => res.send('middleware-ok'),
         });
 
-        jhx({ route: '/test', handler: () => 'should-not-run' });
+        jhx({ route, handler: () => 'should-not-run' });
 
         const res = await fetch(testUrl(port));
         await expectResponse(res, 'middleware-ok', 'text/html');
@@ -28,11 +29,11 @@ describe('middleware handling', () => {
 
     it('returns JSX (default)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             middleware: () => <div>middleware-ok</div>,
         });
 
-        jhx({ route: '/test', handler: () => 'should-not-run' });
+        jhx({ route, handler: () => 'should-not-run' });
 
         const res = await fetch(testUrl(port));
         await expectResponse(res, '<div>middleware-ok</div>', 'text/html');
@@ -40,12 +41,12 @@ describe('middleware handling', () => {
 
     it('returns JSX (config.render=static)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             middleware: () => <div>middleware-ok</div>,
             render: 'static',
         });
 
-        jhx({ route: '/test', handler: () => 'should-not-run' });
+        jhx({ route, handler: () => 'should-not-run' });
 
         const res = await fetch(testUrl(port));
         await expectResponse(res, '<div>middleware-ok</div>', 'text/html');
@@ -53,12 +54,12 @@ describe('middleware handling', () => {
 
     it('returns JSX (config.render=string)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             middleware: () => <div>middleware-ok</div>,
             render: 'string',
         });
 
-        jhx({ route: '/test', handler: () => 'should-not-run' });
+        jhx({ route, handler: () => 'should-not-run' });
 
         const res = await fetch(testUrl(port));
         await expectResponse(res, '<div>middleware-ok</div>', 'text/html');
@@ -66,12 +67,12 @@ describe('middleware handling', () => {
 
     it('returns JSX (config.renderMiddleware=false)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             renderMiddleware: false,
             middleware: () => <div>middleware-ok</div>,
         });
 
-        jhx({ route: '/test', handler: () => 'should-not-run' });
+        jhx({ route, handler: () => 'should-not-run' });
 
         const res = await fetch(testUrl(port));
         await expectResponse(res, '{"type":"div","key":null,"props":{"children":"middleware-ok"},"_owner":null,"_store":{}}', 'text/html');
@@ -79,12 +80,12 @@ describe('middleware handling', () => {
 
     it('returns buffer (config.contentType=null)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             contentType: null,
             middleware: () => Buffer.from('middleware-ok', 'utf-8'),
         });
 
-        jhx({ route: '/test', handler: () => 'should-not-run' });
+        jhx({ route, handler: () => 'should-not-run' });
 
         const res = await fetch(testUrl(port));
         await expectResponse(res, 'middleware-ok', 'application/octet-stream');
@@ -92,14 +93,14 @@ describe('middleware handling', () => {
 
     it('returns buffer (response header set)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             middleware: (_req, res) => {
                 res.header('Content-Type', 'application/octet-stream');
                 return Buffer.from('middleware-ok', 'utf-8');
             },
         });
 
-        jhx({ route: '/test', handler: () => 'should-not-run' });
+        jhx({ route, handler: () => 'should-not-run' });
 
         const res = await fetch(testUrl(port));
         await expectResponse(res, 'middleware-ok', 'application/octet-stream');
@@ -107,7 +108,7 @@ describe('middleware handling', () => {
 
     it('returns buffer (fs.readFile; config.contentType=null)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             contentType: null,
             middleware: (_req, res) => {
                 const filepath = path.join(__dirname, 'data.txt');
@@ -116,7 +117,7 @@ describe('middleware handling', () => {
             },
         });
 
-        jhx({ route: '/test', handler: () => 'should-not-run' });
+        jhx({ route, handler: () => 'should-not-run' });
 
         const res = await fetch(testUrl(port));
         await expectResponse(res, 'file-data', 'application/octet-stream');
@@ -124,7 +125,7 @@ describe('middleware handling', () => {
 
     it('returns stream (res.writeHead)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             middleware: async (_req, res) => {
                 res.writeHead(200, { 'Content-Type': 'text/plain' });
                 const chunks = ['stream', '-', 'ok'];
@@ -138,7 +139,7 @@ describe('middleware handling', () => {
             },
         });
 
-        jhx({ route: '/test', handler: () => 'should-not-run' });
+        jhx({ route, handler: () => 'should-not-run' });
 
         const res = await fetch(testUrl(port));
         await expectResponse(res, 'stream-ok', 'text/plain');
@@ -146,11 +147,11 @@ describe('middleware handling', () => {
 
     it('returns string', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             middleware: () => 'middleware-ok',
         });
 
-        jhx({ route: '/test', handler: () => 'should-not-run' });
+        jhx({ route, handler: () => 'should-not-run' });
 
         const res = await fetch(testUrl(port));
         await expectResponse(res, 'middleware-ok', 'text/html');
@@ -158,12 +159,12 @@ describe('middleware handling', () => {
 
     it('returns object (config.contentType=null)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             contentType: null,
             middleware: () => ({ message: 'middleware-ok' }),
         });
 
-        jhx({ route: '/test', handler: () => 'should-not-run' });
+        jhx({ route, handler: () => 'should-not-run' });
 
         const res = await fetch(testUrl(port));
         await expectResponse(res, { message: 'middleware-ok' }, 'application/json');
@@ -171,14 +172,14 @@ describe('middleware handling', () => {
 
     it('returns object (response header set)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             middleware: (_req, res) => {
                 res.header('Content-Type', 'application/json; charset=utf-8');
                 return { message: 'middleware-ok' }
             },
         });
 
-        jhx({ route: '/test', handler: () => 'should-not-run' });
+        jhx({ route, handler: () => 'should-not-run' });
 
         const res = await fetch(testUrl(port));
         await expectResponse(res, { message: 'middleware-ok' }, 'application/json');
@@ -186,12 +187,12 @@ describe('middleware handling', () => {
 
     it('returns void', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             middleware: () => {},
         });
 
         jhx({
-            route: '/test',
+            route,
             handler: () => 'ok',
         });
 
@@ -201,13 +202,13 @@ describe('middleware handling', () => {
 
     it('throws error', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             middleware: () => {
                 throw new Error('mw-error');
             },
         });
 
-        jhx({ route: '/test', handler: () => 'should-not-run' });
+        jhx({ route, handler: () => 'should-not-run' });
 
         const res = await fetch(testUrl(port));
         await expectResponse(

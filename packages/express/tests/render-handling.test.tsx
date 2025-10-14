@@ -2,9 +2,10 @@ import { describe, it, afterAll } from 'bun:test';
 import fs from 'fs';
 import path from 'path';
 
-import { buildServer, closeServers, expectResponse, PortGenerator } from './helpers';
+import { buildServer, closeServers, expectResponse, PortGenerator, ENDPOINT } from './helpers';
 
-const testUrl = (port: number) => `http://localhost:${port}/_jhx/test`;
+const route = ENDPOINT;
+const testUrl = (port: number) => `http://localhost:${port}/_jhx${route}`;
 const testServers: any[] = [];
 
 describe('render handling', () => {
@@ -12,15 +13,15 @@ describe('render handling', () => {
         await closeServers(testServers);
     });
 
-    const ports = new PortGenerator(20000);
+    const ports = new PortGenerator(20400);
 
     it('returns sent response', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
-            render: (data, _req, res) => res.send(data + '-rendered'),
+        const { jhx } = buildServer(testServers, port, {
+            render: (payload, _req, res) => res.send(payload + '-rendered'),
         });
 
-        jhx({ route: '/test', handler: () => 'response' });
+        jhx({ route, handler: () => 'response' });
 
         const res = await fetch(testUrl(port));
         await expectResponse(res, 'response-rendered', 'text/html');
@@ -28,12 +29,12 @@ describe('render handling', () => {
 
     it('returns buffer (config.contentType=null)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             contentType: null,
             render: (payload) => Buffer.from(payload + '-rendered', 'utf-8'),
         });
 
-        jhx({ route: '/test', handler: () => 'response' });
+        jhx({ route, handler: () => 'response' });
 
         const res = await fetch(testUrl(port));
         await expectResponse(res, 'response-rendered', 'application/octet-stream');
@@ -41,14 +42,14 @@ describe('render handling', () => {
 
     it('returns buffer (response header set)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             render: (payload, _req, res) => {
                 res.header('content-type', 'application/octet-stream');
                 return Buffer.from(payload + '-rendered', 'utf-8');
             },
         });
 
-        jhx({ route: '/test', handler: () => 'response' });
+        jhx({ route, handler: () => 'response' });
 
         const res = await fetch(testUrl(port));
         await expectResponse(res, 'response-rendered', 'application/octet-stream');
@@ -56,7 +57,7 @@ describe('render handling', () => {
 
     it('returns buffer (fs.readFile; config.contentType=null)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             contentType: null,
             render: (_payload, _req, res) => {
                 const filepath = path.join(__dirname, 'data.txt');
@@ -65,7 +66,7 @@ describe('render handling', () => {
             },
         });
 
-        jhx({ route: '/test', handler: () => 'response' });
+        jhx({ route, handler: () => 'response' });
 
         const res = await fetch(testUrl(port));
         await expectResponse(res, 'file-data', 'application/octet-stream');
@@ -73,7 +74,7 @@ describe('render handling', () => {
 
     it('returns stream (res.writeHead)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             render: async (payload, _req, res) => {
                 res.writeHead(200, { 'Content-Type': 'text/plain' });
                 const chunks = [payload, '-', 'rendered'];
@@ -87,7 +88,7 @@ describe('render handling', () => {
             },
         });
 
-        jhx({ route: '/test', handler: () => 'response' });
+        jhx({ route, handler: () => 'response' });
 
         const res = await fetch(testUrl(port));
         await expectResponse(res, 'response-rendered', 'text/plain');
@@ -95,11 +96,11 @@ describe('render handling', () => {
 
     it('returns string', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
-            render: (data) => data + '-rendered',
+        const { jhx } = buildServer(testServers, port, {
+            render: (payload) => payload + '-rendered',
         });
 
-        jhx({ route: '/test', handler: () => 'response' });
+        jhx({ route, handler: () => 'response' });
 
         const res = await fetch(testUrl(port));
         await expectResponse(res, 'response-rendered', 'text/html');
@@ -107,12 +108,12 @@ describe('render handling', () => {
 
     it('returns object (config.contentType=null)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             contentType: null,
             render: (payload) => ({ message: payload + '-rendered' }),
         });
 
-        jhx({ route: '/test', handler: () => 'response' });
+        jhx({ route, handler: () => 'response' });
 
         const res = await fetch(testUrl(port));
         await expectResponse(res, { message: 'response-rendered' }, 'application/json');
@@ -120,14 +121,14 @@ describe('render handling', () => {
 
     it('returns object (response header set)', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             render: (payload, _req, res) => {
                 res.header('Content-Type', 'application/json; charset=utf-8');
                 return { message: payload + '-rendered' }
             },
         });
 
-        jhx({ route: '/test', handler: () => 'response' });
+        jhx({ route, handler: () => 'response' });
 
         const res = await fetch(testUrl(port));
         await expectResponse(res, { message: 'response-rendered' }, 'application/json');
@@ -135,11 +136,11 @@ describe('render handling', () => {
 
     it('returns void', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             render: () => {},
         });
 
-        jhx({ route: '/test', handler: () => 'response' });
+        jhx({ route, handler: () => 'response' });
 
         const res = await fetch(testUrl(port));
         await expectResponse(res, '', 'text/html');
@@ -147,13 +148,13 @@ describe('render handling', () => {
 
     it('throws error', async () => {
         const port = ports.getPort();
-        const { jhx } = await buildServer(testServers, port, {
+        const { jhx } = buildServer(testServers, port, {
             render: () => {
                 throw new Error('render-error');
             },
         });
 
-        jhx({ route: '/test', handler: () => 'response' });
+        jhx({ route, handler: () => 'response' });
 
         const res = await fetch(testUrl(port));
         await expectResponse(
