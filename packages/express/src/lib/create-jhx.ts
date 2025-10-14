@@ -59,15 +59,16 @@ export const createJhx = <
         JhxRoute<TReturn, TRequest, TResponse>,
         JhxPartialRoute<TReturn, TRequest, TResponse>
     >(config, defaultConfig.notFoundHandler, (baseConfig, routes) => {
-        express.all(`${baseConfig.prefix}/*`, async (req, res) => {
+        express.all(`${baseConfig.prefix}{*splat}`, async (req, res, _next) => {
+            const method = req.method.toUpperCase();
             const route = decodeURIComponent(req.url.split('?')[0] as string);
-            const jhxRoute = routes.get(`${req.method}::${route}`);
+            const jhxHandler = routes.get(`${method}::${route}`);
 
             if (baseConfig.contentType !== null) {
                 res.header('content-type', baseConfig.contentType);
             }
 
-            if (jhxRoute) {
+            if (jhxHandler) {
                 // middleware
                 for (const middleware of baseConfig.middleware) {
                     try {
@@ -92,11 +93,11 @@ export const createJhx = <
 
                         if (baseConfig.debug) {
                             baseConfig.logger.error(
-                                `[jhx] Middleware error from '${req.method} ${route}': ${(e as Error).message}`,
+                                `[jhx] Middleware error from '${method} ${route}': ${(e as Error).message}`,
                             );
                         }
                         if (baseConfig.errorHandler) {
-                            res.status(500);
+                            res.status(400);
                             const errorResult = await baseConfig.errorHandler(
                                 error,
                                 req as TRequest,
@@ -113,9 +114,10 @@ export const createJhx = <
                             return sendPayload(res, renderResult);
                         }
 
-                        throw new JhxServerException('[jhx] Unhandled middleware error', {
+                        throw new JhxServerException('Unexpected jhx middleware error', {
                             type: 'middleware:error',
-                            method: req.method,
+                            info: 'Unhandled error while handling middleware or rendering middleware payload',
+                            method,
                             route,
                             cause: error,
                         });
@@ -124,7 +126,7 @@ export const createJhx = <
 
                 // route
                 try {
-                    const routeResult = await jhxRoute(req as TRequest, res as TResponse);
+                    const routeResult = await jhxHandler(req as TRequest, res as TResponse);
                     if (isResponseHandled(res, routeResult)) {
                         return;
                     }
@@ -138,11 +140,11 @@ export const createJhx = <
 
                     if (baseConfig.debug) {
                         baseConfig.logger.error(
-                            `[jhx] Route error from '${req.method} ${route}': ${(e as Error).message}`,
+                            `[jhx] Route error from '${method} ${route}': ${(e as Error).message}`,
                         );
                     }
                     if (baseConfig.errorHandler) {
-                        res.status(500);
+                        res.status(400);
                         const errorResult = await baseConfig.errorHandler(
                             error,
                             req as TRequest,
@@ -159,9 +161,10 @@ export const createJhx = <
                         return sendPayload(res, renderResult);
                     }
 
-                    throw new JhxServerException('[jhx] Unhandled endpoint or rendering error', {
+                    throw new JhxServerException('Unexpected jhx route error', {
                         type: 'handler:error',
-                        method: req.method,
+                        info: 'Unhandled error while handling route or rendering route payload',
+                        method,
                         route,
                         cause: error,
                     });
@@ -170,7 +173,7 @@ export const createJhx = <
 
             if (baseConfig.debug) {
                 baseConfig.logger.info(
-                    `[jhx] Request to unknown route '${req.method} ${route}' from IP address '${req.ip}'`,
+                    `[jhx] Request to unknown route '${method} ${route}' from IP address '${req.ip}'`,
                 );
             }
 

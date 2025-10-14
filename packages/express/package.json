@@ -49,8 +49,12 @@
     "test:watch": "bun test --watch ./tests"
   },
   "dependencies": {
-    "express": "^5",
     "jhx": "workspace:*"
+  },
+  "peerDependencies": {
+    "express": "^5",
+    "react": "^18 || ^19",
+    "react-dom": "^18 || ^19"
   },
   "devDependencies": {
     "@repo/esbuild-config": "workspace:*",

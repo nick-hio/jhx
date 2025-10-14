@@ -6,5 +6,5 @@ export const sendPayload = (res: ExpressResponse, payload: any) => {
     if (isResponseHandled(res, payload)) {
         return;
     }
-    res.send(payload);
+    res.status(res.statusCode).send(payload);
 };
