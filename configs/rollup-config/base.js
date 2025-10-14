@@ -4,6 +4,8 @@ import { dts } from 'rollup-plugin-dts';
 export const config = {
     external: [
         'node:*',
+        'http',
+        'stream',
     ],
     input: './src/index.ts',
     output: {
