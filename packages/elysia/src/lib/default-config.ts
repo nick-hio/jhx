@@ -9,5 +9,5 @@ export type JhxDefaultConfig = Omit<typeof serverDefaultConfig, 'render'> & {
 
 export const defaultConfig: JhxDefaultConfig = {
     ...serverDefaultConfig,
-    notFoundHandler: (_context) => new Response(null, { status: 404 }),
+    notFoundHandler: () => new Response(null, { status: 404 }),
 } as const;

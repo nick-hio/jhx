@@ -52,6 +52,10 @@
     "elysia": "^1.4.7",
     "jhx": "workspace:*"
   },
+  "peerDependencies": {
+    "react": "^18 || ^19",
+    "react-dom": "^18 || ^19"
+  },
   "devDependencies": {
     "@repo/esbuild-config": "workspace:*",
     "@repo/eslint-config": "workspace:*",

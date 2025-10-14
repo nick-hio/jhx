@@ -43,18 +43,16 @@ export type JhxErrorType = Error | JhxError | JhxServerError;
 
 export type ServerResolved<T> = Awaited<T>;
 
-export type ServerJhxHandler<TReturn, TReq, TRes> = TRes extends never | undefined
-    ? (context: TReq) => TReturn
+export type ServerJhxHandler<TReturn, TReq, TRes> = TRes extends undefined
+    ? (context: TReq, _?: TRes) => TReturn
     : (req: TReq, res: TRes) => TReturn;
 
-export type ServerJhxErrorHandler<TError extends JhxErrorType, TReturn, TReq, TRes> = TRes extends
-    | never
-    | undefined
-    ? (error: TError, context: TReq) => TReturn
+export type ServerJhxErrorHandler<TError extends JhxErrorType, TReturn, TReq, TRes> = TRes extends undefined
+    ? (error: TError, context: TReq, _?: TRes) => TReturn
     : (error: TError, req: TReq, res: TRes) => TReturn;
 
-export type ServerJhxRenderHandler<TResolved, TRendered, TReq, TRes> = TRes extends never | undefined
-    ? (payload: TResolved, context: TReq) => TRendered
+export type ServerJhxRenderHandler<TResolved, TRendered, TReq, TRes> = TRes extends undefined
+    ? (payload: TResolved, context: TReq, _?: TRes) => TRendered
     : (payload: TResolved, request: TReq, response: TRes) => TRendered;
 
 export type ServerJhxRoute<TReturn, TReq, TRes, THandler extends ServerJhxHandler<TReturn, TReq, TRes>> = {
@@ -295,7 +293,7 @@ export type ServerJhxComponentProps<
     TRes,
     THandler extends ServerJhxHandler<TReturn, TReq, TRes>,
     TBaseProps extends ServerJhxProps<TDom, TReturn, TReq, TRes, THandler>,
-> = TRes extends never | undefined
+> = TRes extends undefined
     ? TBaseProps & {
           jhxConfig?: Omit<JhxConfig, 'stringify'>;
           as?: keyof JSX.IntrinsicElements;

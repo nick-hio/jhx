@@ -5,9 +5,10 @@ import { createJhx } from './create-jhx';
 
 export const elysiaJhx = (config: CreateJhxConfig = {}) => {
     const app = new Elysia(config.instanceOptions ?? {});
+    const { jhx, JhxComponent } = createJhx(app, config);
 
-    const { jhx } = createJhx(app, config);
     app.decorate('jhx', jhx);
+    app.decorate('JhxComponent', JhxComponent);
 
     return app;
 };

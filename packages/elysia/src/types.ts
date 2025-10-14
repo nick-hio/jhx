@@ -32,11 +32,10 @@ export type ElysiaError = ValidationError | ParseError | NotFoundError | Interna
 export type ElysiaFormData = ReturnType<typeof elysiaForm>;
 
 type RenderReturn =
-    | ReactNode
-    | Response
     | ElysiaFile
     | ElysiaFormData
     | Record<string, any>
+    | Response
     | string
     | number
     | boolean
@@ -95,7 +94,7 @@ export type CreateJhxConfig<
     JhxErrorHandler<TError, TReturn, TContext>,
     JhxRenderHandler<Resolved<TReturn>, TRendered, TContext>,
     JhxPartialRoute<TReturn, TContext>,
-    ElysiaConfig<string>
+    ElysiaConfig<any>
 > & {};
 
 export type JhxProps<
