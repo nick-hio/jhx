@@ -54,22 +54,22 @@ export const createJhx = <
         JhxRoute<TReturn, TContext>,
         JhxPartialRoute<TReturn, TContext>
     >(config, defaultConfig.notFoundHandler, (baseConfig, routes) => {
-        hono.all(`${baseConfig.prefix}/*`, async (context: HonoContext) => {
+        hono.all(`${baseConfig.prefix}/*`, async (context) => {
             const method = context.req.method;
             const route = decodeURIComponent(context.req.path);
-            const jhxRoute = routes.get(`${method}::${route}`);
+            const jhxHandler = routes.get(`${method}::${route}`);
 
             if (baseConfig.contentType) {
-                context.header('Content-Type', baseConfig.contentType);
+                context.header('content-type', baseConfig.contentType);
             }
 
-            if (jhxRoute) {
+            if (jhxHandler) {
                 // middleware
                 for (const middleware of baseConfig.middleware) {
                     try {
                         const mwResult = await middleware(context as TContext);
                         if (isResponseHandled(context, mwResult)) {
-                            return mwResult instanceof Response ? mwResult : context.res;
+                            return sendPayload(context, mwResult);
                         }
                         if (mwResult !== undefined) {
                             const renderResult =
@@ -90,17 +90,17 @@ export const createJhx = <
                             context.status(500);
                             const errorResult = await baseConfig.errorHandler(error, context as TContext);
                             if (isResponseHandled(context, errorResult)) {
-                                return errorResult instanceof Response ? errorResult : context.res;
+                                return sendPayload(context, errorResult, 500);
                             }
 
                             const renderResult =
                                 baseConfig.render && baseConfig.renderError
                                     ? await baseConfig.render(errorResult, context as TContext)
                                     : errorResult;
-                            return sendPayload(context, renderResult);
+                            return sendPayload(context, renderResult, 500);
                         }
 
-                        throw new JhxServerException('[jhx] Unhandled middleware error', {
+                        throw new JhxServerException('Unhandled middleware error', {
                             type: 'middleware:error',
                             method,
                             route,
@@ -111,9 +111,9 @@ export const createJhx = <
 
                 // route
                 try {
-                    const routeResult = await jhxRoute(context as TContext);
+                    const routeResult = await jhxHandler(context as TContext);
                     if (isResponseHandled(context, routeResult)) {
-                        return routeResult instanceof Response ? routeResult : context.res;
+                        return sendPayload(context, routeResult);
                     }
 
                     const renderResult = baseConfig.render
@@ -132,14 +132,14 @@ export const createJhx = <
                         context.status(500);
                         const errorResult = await baseConfig.errorHandler(error, context as TContext);
                         if (isResponseHandled(context, errorResult)) {
-                            return errorResult instanceof Response ? errorResult : context.res;
+                            return sendPayload(context, errorResult, 500);
                         }
 
                         const renderResult =
                             baseConfig.render && baseConfig.renderError
                                 ? await baseConfig.render(errorResult, context as TContext)
                                 : errorResult;
-                        return sendPayload(context, renderResult);
+                        return sendPayload(context, renderResult, 500);
                     }
 
                     throw new JhxServerException('[jhx] Unhandled endpoint or rendering error', {
@@ -158,14 +158,14 @@ export const createJhx = <
             context.status(404);
             const notFoundResult = await baseConfig.notFoundHandler(context as TContext);
             if (isResponseHandled(context, notFoundResult)) {
-                return notFoundResult instanceof Response ? notFoundResult : context.res;
+                return sendPayload(context, notFoundResult, 404);
             }
 
             const renderResult =
                 baseConfig.render && baseConfig.renderNotFound
                     ? await baseConfig.render(notFoundResult, context as TContext)
                     : notFoundResult;
-            return sendPayload(context, renderResult);
+            return sendPayload(context, renderResult, 404);
         });
     }) as {
         jhx: Jhx<TDomBase, TReturn, TContext, TBaseStringify>;

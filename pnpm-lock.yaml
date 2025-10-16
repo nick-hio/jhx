@@ -358,6 +358,12 @@ importers:
       jhx:
         specifier: workspace:*
         version: link:../jhx
+      react:
+        specifier: ^18 || ^19
+        version: 19.2.0
+      react-dom:
+        specifier: ^18 || ^19
+        version: 19.2.0(react@19.2.0)
     devDependencies:
       '@repo/esbuild-config':
         specifier: workspace:*

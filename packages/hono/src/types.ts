@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import type { Context as HonoContext, ErrorHandler as HonoErrorHandler, TypedResponse } from 'hono';
+import type { Stream } from 'node:stream';
 
 import type {
     JhxServerError,
@@ -22,11 +23,13 @@ import type { JhxConfig as BaseJhxConfig, JhxError } from 'jhx';
 export type HonoError = Parameters<HonoErrorHandler>[0];
 
 type RenderReturn =
-    | ArrayBufferView
     | ArrayBuffer
+    | ArrayBufferView
     | Buffer
     | Blob
-    | FormData
+    | Stream
+    | Record<string, unknown>
+    | ReadableStream
     | Response
     | (Response & TypedResponse<any, any, any>)
     | string

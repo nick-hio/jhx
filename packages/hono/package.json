@@ -49,8 +49,12 @@
     "test:watch": "bun test --watch ./tests"
   },
   "dependencies": {
-    "hono": "^4",
     "jhx": "workspace:*"
+  },
+  "peerDependencies": {
+    "hono": "^4",
+    "react": "^18 || ^19",
+    "react-dom": "^18 || ^19"
   },
   "devDependencies": {
     "@repo/esbuild-config": "workspace:*",
