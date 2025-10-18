@@ -1,6 +1,6 @@
 import { expect, describe, it } from 'bun:test';
 
-import { buildServer, expectResponse, req, ENDPOINT } from './helpers';
+import { buildServer, expectResponse, testReq, ENDPOINT } from './helpers';
 
 const route = ENDPOINT;
 
@@ -24,7 +24,7 @@ describe('routing tests', async () => {
 
         expect(jhx.getRoutes()).toHaveLength(2); // ['/test', '/test/']
 
-        const res = await app.fetch(req());
+        const res = await app.fetch(testReq());
         await expectResponse(res, 'handler-one', 'text/html');
     });
 });

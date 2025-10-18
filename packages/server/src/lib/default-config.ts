@@ -7,7 +7,7 @@ import type { JhxOnRegistered } from '../types';
 
 export const serverDefaultConfig = {
     ...baseDefaultConfig,
-    contentType: 'text/html; charset=utf-8',
+    contentType: 'text/html',
     debug: false,
     middleware: [],
     onRegistered: ((_m: string, _r: string) => {}) as JhxOnRegistered,

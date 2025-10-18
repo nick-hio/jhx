@@ -1,6 +1,6 @@
 import { expect, describe, it } from 'bun:test';
 
-import { buildServer, expectResponse, req, ENDPOINT } from './helpers';
+import { buildServer, expectResponse, testReq, ENDPOINT } from './helpers';
 import { createJhx } from '../src';
 
 const expectRecord = (v: Record<string, string>) => v; // compile-time check
@@ -73,7 +73,7 @@ describe('config.routes Tests', async () => {
             routes: { route, handler: () => 'ok' },
         });
 
-        const res = await app.fetch(req());
+        const res = await app.fetch(testReq());
         await expectResponse(res, 'ok', 'text/html');
     });
 
@@ -82,7 +82,7 @@ describe('config.routes Tests', async () => {
             routes: { route, handler: () => 'ok', method: 'POST' },
         });
 
-        const res = await app.fetch(req({ method: 'POST' }));
+        const res = await app.fetch(testReq({ method: 'POST' }));
         await expectResponse(res, 'ok', 'text/html');
     });
 
@@ -94,10 +94,10 @@ describe('config.routes Tests', async () => {
             ],
         });
 
-        const getRes = await app.fetch(req());
+        const getRes = await app.fetch(testReq());
         await expectResponse(getRes, 'ok', 'text/html');
 
-        const postRes = await app.fetch(req({ method: 'POST' }));
+        const postRes = await app.fetch(testReq({ method: 'POST' }));
         await expectResponse(postRes, 'ok', 'text/html');
     });
 

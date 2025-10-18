@@ -21,7 +21,7 @@ describe('route error handling', async () => {
         });
 
         const res = await app.request(testReq());
-        await expectResponse(res, '', 'text/html', 500);
+        await expectResponse(res, { finalized: false }, 'application/json', 500);
     });
 
     it('returns Response', async () => {

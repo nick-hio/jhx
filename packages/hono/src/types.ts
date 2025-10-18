@@ -27,9 +27,9 @@ type RenderReturn =
     | ArrayBufferView
     | Buffer
     | Blob
-    | Stream
     | Record<string, unknown>
     | ReadableStream
+    | Stream
     | Response
     | (Response & TypedResponse<any, any, any>)
     | string

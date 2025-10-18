@@ -1,20 +1,68 @@
 import fs from 'fs';
 import path from 'path';
-import { describe, it } from 'bun:test';
+import { describe, expect, it } from 'bun:test';
 
-import { buildServer, expectResponse, req } from './helpers';
+import { buildServer, ENDPOINT, expectResponse, testReq } from './helpers';
+import { file, form } from 'elysia';
+import { Readable } from 'stream';
 
 describe('not found handling', async () => {
-    it('returns Response', async () => {
+    it('returns Elysia context', async () => {
         const { app } = buildServer({
-            notFoundHandler: () => new Response('dne', {
+            notFoundHandler: (ctx) => ctx as any,
+        });
+
+        const res = await app.fetch(testReq());
+        const expected = {
+            request: {},
+            store: {},
+            qi: -1,
+            path: `/_jhx${ENDPOINT}`,
+            url: `http://localhost/_jhx${ENDPOINT}`,
+            set: {
+                headers: {
+                    'content-type': 'application/json',
+                },
                 status: 404,
-                headers: { 'content-type': 'text/plain; charset=utf-8' },
+            },
+            params: {
+                '*': 'test',
+            },
+        };
+        await expectResponse(res, expected, 'application/json', 404)
+    });
+
+    it('returns Elysia FormData', async () => {
+        const { app } = buildServer({
+            notFoundHandler: () => form({
+                name: 'dne',
+                file: file(path.join(__dirname, 'data.txt')),
             }),
         });
 
-        const res = await app.fetch(req());
-        await expectResponse(res, 'dne', 'text/plain', 404);
+        const res = await app.fetch(testReq());
+        const expected = /multipart\/form-data; boundary=-WebkitFormBoundary\S+\r?/;
+        expect(expected.test(res.headers.get('content-type') ?? '')).toBe(true);
+        expect(res.status).toBe(404);
+    });
+
+    it('returns Elysia File (config.contentType=null)', async () => {
+        const { app } = buildServer({
+            contentType: null,
+            notFoundHandler: () => file(path.join(__dirname, 'data.txt')),
+        });
+
+        const res = await app.fetch(testReq());
+        await expectResponse(res, 'file-data', 'text/plain', 404);
+    });
+
+    it('returns Response', async () => {
+        const { app } = buildServer({
+            notFoundHandler: () => new Response('dne'),
+        });
+
+        const res = await app.fetch(testReq());
+        await expectResponse(res, 'dne', 'text/html', 404); // Elysia sets status for `Response` objects
     });
 
     it('returns JSX (default)', async () => {
@@ -22,7 +70,7 @@ describe('not found handling', async () => {
             notFoundHandler: () => <div>dne</div>,
         });
 
-        const res = await app.fetch(req());
+        const res = await app.fetch(testReq());
         await expectResponse(res, '<div>dne</div>', 'text/html', 404);
     });
 
@@ -32,7 +80,7 @@ describe('not found handling', async () => {
             notFoundHandler: () => <div>dne</div>,
         });
 
-        const res = await app.fetch(req());
+        const res = await app.fetch(testReq());
         await expectResponse(res, '<div>dne</div>', 'text/html', 404);
     });
 
@@ -42,7 +90,7 @@ describe('not found handling', async () => {
             notFoundHandler: () => <div>dne</div>,
         });
 
-        const res = await app.fetch(req());
+        const res = await app.fetch(testReq());
         await expectResponse(res, '<div>dne</div>', 'text/html', 404);
     });
 
@@ -52,8 +100,8 @@ describe('not found handling', async () => {
             notFoundHandler: () => <div>dne</div>,
         });
 
-        const res = await app.fetch(req());
-        await expectResponse(res, '{"type":"div","key":null,"props":{"children":"dne"},"_owner":null,"_store":{}}', 'text/html', 404);
+        const res = await app.fetch(testReq());
+        await expectResponse(res, '{"type":"div","key":null,"props":{"children":"dne"},"_owner":null,"_store":{}}', 'application/json', 404);
     });
 
     it('returns buffer (config.contentType=null)', async () => {
@@ -62,7 +110,7 @@ describe('not found handling', async () => {
             notFoundHandler: () => Buffer.from('dne', 'utf-8'),
         });
 
-        const res = await app.fetch(req());
+        const res = await app.fetch(testReq());
         await expectResponse(res, 'dne', 'application/octet-stream', 404);
     });
 
@@ -74,7 +122,7 @@ describe('not found handling', async () => {
             },
         });
 
-        const res = await app.fetch(req());
+        const res = await app.fetch(testReq());
         await expectResponse(res, 'dne', 'application/octet-stream', 404);
     });
 
@@ -87,8 +135,18 @@ describe('not found handling', async () => {
             },
         });
 
-        const res = await app.fetch(req());
+        const res = await app.fetch(testReq());
         await expectResponse(res, 'file-data', 'application/octet-stream', 404);
+    });
+
+    it('returns blob (config.contentType=null)', async () => {
+        const { app } = buildServer({
+            contentType: null,
+            notFoundHandler: () => Bun.file(path.join(__dirname, 'data.txt')),
+        });
+
+        const res = await app.fetch(testReq());
+        await expectResponse(res, 'file-data', 'text/plain;charset=utf-8', 404);
     });
 
     it('returns stream (ReadableStream)', async () => {
@@ -97,7 +155,7 @@ describe('not found handling', async () => {
                 const encoder = new TextEncoder();
                 const chunks = ['stream', '-', 'ok'];
                 let index = 0;
-                const stream = new ReadableStream<Uint8Array>({
+                return new ReadableStream<Uint8Array>({
                     pull(controller) {
                         if (index < chunks.length) {
                             const chunk = chunks[index++];
@@ -107,15 +165,27 @@ describe('not found handling', async () => {
                         }
                     },
                 });
-                return new Response(stream, {
-                    status: 404,
-                    headers: { 'content-type': 'text/plain; charset=utf-8' },
-                });
             },
         });
 
-        const res = await app.fetch(req());
-        await expectResponse(res, 'stream-ok', 'text/plain', 404);
+        const res = await app.fetch(testReq());
+        await expectResponse(res, 'stream-ok', 'text/html', 404);
+    });
+
+    it('returns stream (NodeJS.Readable)', async () => {
+        const { app } = buildServer({
+            notFoundHandler: () => {
+                const stream = new Readable();
+                stream.push('stream');
+                stream.push('-');
+                stream.push('ok');
+                stream.push(null);
+                return stream;
+            },
+        });
+
+        const res = await app.fetch(testReq());
+        await expectResponse(res, 'stream-ok', 'text/html', 404);
     });
 
     it('returns string', async () => {
@@ -124,7 +194,7 @@ describe('not found handling', async () => {
             notFoundHandler: () => 'dne',
         });
 
-        const res = await app.fetch(req());
+        const res = await app.fetch(testReq());
         await expectResponse(res, 'dne', 'text/html', 404);
     });
 
@@ -134,7 +204,7 @@ describe('not found handling', async () => {
             notFoundHandler: () => ({ message: 'dne' }),
         });
 
-        const res = await app.fetch(req());
+        const res = await app.fetch(testReq());
         await expectResponse(res, { message: 'dne' }, 'application/json', 404);
     });
 
@@ -142,12 +212,12 @@ describe('not found handling', async () => {
         const { app } = buildServer({
             contentType: null,
             notFoundHandler: (context) => {
-                context.set.headers['content-type'] = 'application/json; charset=utf-8';
+                context.set.headers['content-type'] = 'application/json';
                 return { message: 'dne' }
             },
         });
 
-        const res = await app.fetch(req());
+        const res = await app.fetch(testReq());
         await expectResponse(res, { message: 'dne' }, 'application/json', 404);
     });
 
@@ -156,7 +226,7 @@ describe('not found handling', async () => {
             notFoundHandler: () => {},
         });
 
-        const res = await app.fetch(req());
+        const res = await app.fetch(testReq());
         await expectResponse(res, '', 'text/html', 404);
     });
 });

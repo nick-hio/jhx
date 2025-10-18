@@ -13,7 +13,7 @@ export const buildServer = (jhxConfig: CreateJhxConfig = {}) => {
 export const expectResponse = async (
     res: Response,
     expectedBody: string | object,
-    contentType?: string,
+    contentType?: string | null,
     status = 200
 ) => {
     if (typeof expectedBody === 'object') {
@@ -21,11 +21,11 @@ export const expectResponse = async (
     } else {
         expect(await res.text()).toBe(expectedBody);
     }
-    if (contentType) {
-        expect(res.headers.get('content-type')).toContain(contentType);
+    if (contentType || contentType === null) {
+        expect(res.headers.get('content-type')).toBe(contentType);
     }
     expect(res.status).toBe(status);
 }
 
 export const ENDPOINT = '/test';
-export const req = (init: RequestInit = {}) => new Request(`http://localhost/_jhx${ENDPOINT}`, { method: 'GET', ...init });
+export const testReq = (init: RequestInit = {}) => new Request(`http://localhost/_jhx${ENDPOINT}`, { method: 'GET', ...init });

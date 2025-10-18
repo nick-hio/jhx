@@ -12,19 +12,16 @@ describe('not found handling', async () => {
         });
 
         const res = await app.request(testReq());
-        await expectResponse(res, '', 'text/html', 500);
+        await expectResponse(res, { finalized: false }, 'application/json', 404);
     });
 
     it('returns Response', async () => {
         const { app } = buildServer({
-            notFoundHandler: () => new Response('dne', {
-                status: 404,
-                headers: { 'content-type': 'text/plain' },
-            }),
+            notFoundHandler: () => new Response('dne'),
         });
 
         const res = await app.request(testReq());
-        await expectResponse(res, 'dne', 'text/plain', 404);
+        await expectResponse(res, 'dne', null);
     });
 
     it('returns JSX (default)', async () => {

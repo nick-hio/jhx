@@ -29,5 +29,6 @@ export const isResponseHandled = (context: ElysiaContext, handlerResult: any): b
         || context === handlerResult
         || isElysiaContext(handlerResult)
         || handlerResult instanceof Response
+        || handlerResult instanceof ReadableStream
     );
 };

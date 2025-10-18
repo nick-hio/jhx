@@ -15,7 +15,7 @@ describe('middleware handling', async () => {
         jhx({ route, handler: () => 'should-not-run' });
 
         const res = await app.request(testReq());
-        await expectResponse(res, '', 'text/html', 500);
+        await expectResponse(res, { finalized: false }, 'application/json', 200);
     });
 
     it('returns Response', async () => {

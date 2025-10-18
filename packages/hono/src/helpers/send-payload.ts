@@ -11,50 +11,39 @@ const isArrayBuffer = (value: unknown): value is ArrayBuffer => {
     || (typeof Buffer !== 'undefined' && value instanceof Buffer)
 }
 
-const isHonoContext = (value: unknown): value is HonoContext => {
-    return !!value
-        && typeof value === 'object'
-        && 'finalized' in value
-        && 'render' in value
-        && 'body' in value
-        && 'text' in value
-        && 'json' in value
-        && 'html' in value;
-};
+const ensureHeader = (context: HonoContext, key: string, value: string) => {
+    const capitalizedKey = key
+        .split('-')
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join('-');
+    if (!context.res.headers.get(capitalizedKey) && !context.res.headers.get(key.toLowerCase())) {
+        context.res.headers.set(key.toLowerCase(), value);
+    }
+}
 
-export const sendPayload = (context: HonoContext, payload: unknown, status: number = 200) => {
+export const sendPayload = (context: HonoContext, payload: unknown) => {
     if (payload instanceof Response) {
         return payload as Response;
     }
 
     if (payload instanceof Blob) {
-        if (!context.res.headers.get('Content-Type') && !context.res.headers.get('content-type')) {
-            context.res.headers.set('content-type', payload.type);
-        }
-        if (!context.res.headers.get('Content-Length') && !context.res.headers.get('content-length')) {
-            context.res.headers.set('content-length', String(payload.size));
-        }
+        ensureHeader(context, 'content-type', payload.type);
+        ensureHeader(context, 'content-length', String(payload.size));
         return context.body(payload as any);
+    }
+
+    if (payload instanceof FormData) {
+        ensureHeader(context, 'content-type', 'multipart/form-data');
+        return new Response(payload as any);
     }
 
     if (payload instanceof ReadableStream || payload instanceof Stream || isArrayBuffer(payload)) {
-        if (!context.res.headers.get('Content-Type') && !context.res.headers.get('content-type')) {
-            context.res.headers.set('content-type', 'application/octet-stream');
-        }
+        ensureHeader(context, 'content-type', 'application/octet-stream');
         return context.body(payload as any);
     }
 
-    if (isHonoContext(payload)) {
-        return new Response(context.res.body, {
-            ...context.res,
-            status: 500,
-            headers: {
-                ...Object.fromEntries(context.res.headers.entries()),
-            },
-        });
-    }
-
     if (typeof payload === 'object') {
+        ensureHeader(context, 'content-type', 'application/json');
         return context.json(payload);
     }
 

@@ -1,12 +1,84 @@
 import fs from 'fs';
 import path from 'path';
-import { describe, it } from 'bun:test';
+import { describe, expect, it } from 'bun:test';
 
-import { buildServer, expectResponse, req, ENDPOINT } from './helpers';
+import { buildServer, expectResponse, testReq, ENDPOINT } from './helpers';
+import { file, form } from 'elysia';
+import { Readable } from 'stream';
 
 const route = ENDPOINT;
 
-describe('middleware error handling', async () => {
+describe('route error handling', async () => {
+    it('returns Elysia context', async () => {
+        const { app, jhx } = buildServer({
+            errorHandler: (_err, ctx) => ctx as any,
+        });
+
+        jhx({
+            route,
+            handler: () => {
+                throw new Error('route-error');
+            },
+        });
+
+        const res = await app.fetch(testReq());
+        const expected = {
+            request: {},
+            store: {},
+            qi: -1,
+            path: `/_jhx${ENDPOINT}`,
+            url: `http://localhost/_jhx${ENDPOINT}`,
+            set: {
+                headers: {
+                    'content-type': 'application/json',
+                },
+                status: 500,
+            },
+            params: {
+                '*': 'test',
+            },
+        };
+        await expectResponse(res, expected, 'application/json', 500)
+    });
+
+    it('returns Elysia FormData', async () => {
+        const { app, jhx } = buildServer({
+            errorHandler: (err) => form({
+                name: err.message,
+                file: file(path.join(__dirname, 'data.txt')),
+            }),
+        });
+
+        jhx({
+            route,
+            handler: () => {
+                throw new Error('route-error');
+            },
+        });
+
+        const res = await app.fetch(testReq());
+        const expected = /multipart\/form-data; boundary=-WebkitFormBoundary\S+\r?/;
+        expect(expected.test(res.headers.get('content-type') ?? '')).toBe(true);
+        expect(res.status).toBe(500);
+    });
+
+    it('returns Elysia File (config.contentType=null)', async () => {
+        const { app, jhx } = buildServer({
+            contentType: null,
+            errorHandler: () => file(path.join(__dirname, 'data.txt')),
+        });
+
+        jhx({
+            route,
+            handler: () => {
+                throw new Error('route-error');
+            },
+        });
+
+        const res = await app.fetch(testReq());
+        await expectResponse(res, 'file-data', 'text/plain', 500);
+    });
+
     it('returns Response', async () => {
         const { app, jhx } = buildServer({
             errorHandler: (err) => new Response(err.message),
@@ -19,8 +91,8 @@ describe('middleware error handling', async () => {
             },
         });
 
-        const res = await app.fetch(req());
-        await expectResponse(res, 'route-error', 'text/html');
+        const res = await app.fetch(testReq());
+        await expectResponse(res, 'route-error', 'text/html', 500); // Elysia sets status for `Response` objects
     });
 
     it('returns JSX (default)', async () => {
@@ -35,7 +107,7 @@ describe('middleware error handling', async () => {
             },
         });
 
-        const res = await app.fetch(req());
+        const res = await app.fetch(testReq());
         await expectResponse(res, '<div>route-error</div>', 'text/html', 500);
     });
 
@@ -52,7 +124,7 @@ describe('middleware error handling', async () => {
             },
         });
 
-        const res = await app.fetch(req());
+        const res = await app.fetch(testReq());
         await expectResponse(res, '<div>route-error</div>', 'text/html', 500);
     });
 
@@ -69,7 +141,7 @@ describe('middleware error handling', async () => {
             },
         });
 
-        const res = await app.fetch(req());
+        const res = await app.fetch(testReq());
         await expectResponse(res, '<div>route-error</div>', 'text/html', 500);
     });
 
@@ -86,8 +158,8 @@ describe('middleware error handling', async () => {
             },
         });
 
-        const res = await app.fetch(req());
-        await expectResponse(res, '{"type":"div","key":null,"props":{"children":"route-error"},"_owner":null,"_store":{}}', 'text/html', 500);
+        const res = await app.fetch(testReq());
+        await expectResponse(res, '{"type":"div","key":null,"props":{"children":"route-error"},"_owner":null,"_store":{}}', 'application/json', 500);
     });
 
     it('returns buffer (config.contentType=null)', async () => {
@@ -103,7 +175,7 @@ describe('middleware error handling', async () => {
             },
         });
 
-        const res = await app.fetch(req());
+        const res = await app.fetch(testReq());
         await expectResponse(res, 'route-error', 'application/octet-stream', 500);
     });
 
@@ -122,7 +194,7 @@ describe('middleware error handling', async () => {
             },
         });
 
-        const res = await app.fetch(req());
+        const res = await app.fetch(testReq());
         await expectResponse(res, 'route-error', 'application/octet-stream', 500);
     });
 
@@ -142,8 +214,25 @@ describe('middleware error handling', async () => {
             },
         });
 
-        const res = await app.fetch(req());
+        const res = await app.fetch(testReq());
         await expectResponse(res, 'file-data', 'application/octet-stream', 500);
+    });
+
+    it('returns blob (config.contentType=null)', async () => {
+        const { app, jhx } = buildServer({
+            contentType: null,
+            errorHandler: () => Bun.file(path.join(__dirname, 'data.txt')),
+        });
+
+        jhx({
+            route,
+            handler: () => {
+                throw new Error('route-error');
+            },
+        });
+
+        const res = await app.fetch(testReq());
+        await expectResponse(res, 'file-data', 'text/plain;charset=utf-8', 500);
     });
 
     it('returns stream (ReadableStream)', async () => {
@@ -152,7 +241,7 @@ describe('middleware error handling', async () => {
                 const encoder = new TextEncoder();
                 const chunks = ['stream', '-', 'ok'];
                 let index = 0;
-                const stream = new ReadableStream<Uint8Array>({
+                return new ReadableStream<Uint8Array>({
                     pull(controller) {
                         if (index < chunks.length) {
                             const chunk = chunks[index++];
@@ -161,10 +250,6 @@ describe('middleware error handling', async () => {
                             controller.close();
                         }
                     },
-                });
-                return new Response(stream, {
-                    status: 500,
-                    headers: { 'content-type': 'text/plain; charset=utf-8' },
                 });
             },
         });
@@ -176,8 +261,31 @@ describe('middleware error handling', async () => {
             },
         });
 
-        const res = await app.fetch(req());
-        await expectResponse(res, 'stream-ok', 'text/plain', 500);
+        const res = await app.fetch(testReq());
+        await expectResponse(res, 'stream-ok', 'text/html', 500);
+    });
+
+    it('returns stream (NodeJS.Readable)', async () => {
+        const { app, jhx } = buildServer({
+            errorHandler: () => {
+                const stream = new Readable();
+                stream.push('stream');
+                stream.push('-');
+                stream.push('ok');
+                stream.push(null);
+                return stream;
+            },
+        });
+
+        jhx({
+            route,
+            handler: () => {
+                throw new Error('route-error');
+            },
+        });
+
+        const res = await app.fetch(testReq());
+        await expectResponse(res, 'stream-ok', 'text/html', 500);
     });
 
     it('returns string', async () => {
@@ -192,7 +300,7 @@ describe('middleware error handling', async () => {
             },
         });
 
-        const res = await app.fetch(req());
+        const res = await app.fetch(testReq());
         await expectResponse(res, 'route-error', 'text/html', 500);
     });
 
@@ -209,14 +317,14 @@ describe('middleware error handling', async () => {
             },
         });
 
-        const res = await app.fetch(req());
+        const res = await app.fetch(testReq());
         await expectResponse(res, { message: 'route-error' }, 'application/json', 500);
     });
 
     it('returns object (response header set)', async () => {
         const { app, jhx } = buildServer({
             errorHandler: (err, ctx) => {
-                ctx.set.headers['content-type'] = 'application/json; charset=utf-8';
+                ctx.set.headers['content-type'] = 'application/json';
                 return ({ message: err.message })
             },
         });
@@ -228,7 +336,7 @@ describe('middleware error handling', async () => {
             },
         });
 
-        const res = await app.fetch(req());
+        const res = await app.fetch(testReq());
         await expectResponse(res, { message: 'route-error' }, 'application/json', 500);
     });
 
@@ -244,7 +352,7 @@ describe('middleware error handling', async () => {
             },
         });
 
-        const res = await app.fetch(req());
+        const res = await app.fetch(testReq());
         await expectResponse(res, '', 'text/html', 500);
     });
 });

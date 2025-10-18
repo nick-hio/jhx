@@ -1,12 +1,69 @@
 import fs from 'fs';
 import path from 'path';
-import { describe, it } from 'bun:test';
+import { describe, expect, it } from 'bun:test';
 
-import { buildServer, expectResponse, req, ENDPOINT } from './helpers';
+import { buildServer, expectResponse, testReq, ENDPOINT } from './helpers';
+import { file, form } from 'elysia';
+import { Readable } from 'stream';
 
 const route = ENDPOINT;
 
 describe('render handling', async () => {
+    it('returns Elysia context', async () => {
+        const { app, jhx } = buildServer({
+            render: (_payload, ctx) => ctx as any,
+        });
+
+        jhx({ route, handler: () => 'response' });
+
+        const res = await app.fetch(testReq());
+        const expected = {
+            request: {},
+            store: {},
+            qi: -1,
+            path: `/_jhx${ENDPOINT}`,
+            url: `http://localhost/_jhx${ENDPOINT}`,
+            set: {
+                headers: {
+                    'content-type': 'application/json',
+                },
+                status: 200,
+            },
+            params: {
+                '*': 'test',
+            },
+        };
+        await expectResponse(res, expected, 'application/json', 200)
+    });
+
+    it('returns Elysia FormData', async () => {
+        const { app, jhx } = buildServer({
+            render: () => form({
+                name: 'response',
+                file: file(path.join(__dirname, 'data.txt')),
+            }),
+        });
+
+        jhx({ route, handler: () => 'response' });
+
+        const res = await app.fetch(testReq());
+        const expected = /multipart\/form-data; boundary=-WebkitFormBoundary\S+\r?/;
+        expect(expected.test(res.headers.get('content-type') ?? '')).toBe(true);
+        expect(res.status).toBe(200);
+    });
+
+    it('returns Elysia File (config.contentType=null)', async () => {
+        const { app, jhx } = buildServer({
+            contentType: null,
+            render: () => file(path.join(__dirname, 'data.txt')),
+        });
+
+        jhx({ route, handler: () => 'response' });
+
+        const res = await app.fetch(testReq());
+        await expectResponse(res, 'file-data', 'text/plain');
+    });
+
     it('returns Response', async () => {
         const { app, jhx } = buildServer({
             render: (payload) => new Response(payload + '-rendered'),
@@ -14,7 +71,7 @@ describe('render handling', async () => {
 
         jhx({ route, handler: () => 'response' });
 
-        const res = await app.fetch(req());
+        const res = await app.fetch(testReq());
         await expectResponse(res, 'response-rendered', 'text/html');
     });
 
@@ -26,7 +83,7 @@ describe('render handling', async () => {
 
         jhx({ route, handler: () => 'response' });
 
-        const res = await app.fetch(req());
+        const res = await app.fetch(testReq());
         await expectResponse(res, 'response-rendered', 'application/octet-stream');
     });
 
@@ -40,7 +97,7 @@ describe('render handling', async () => {
 
         jhx({ route, handler: () => 'response' });
 
-        const res = await app.fetch(req());
+        const res = await app.fetch(testReq());
         await expectResponse(res, 'response-rendered', 'application/octet-stream');
     });
 
@@ -55,8 +112,20 @@ describe('render handling', async () => {
 
         jhx({ route, handler: () => 'response' });
 
-        const res = await app.fetch(req());
+        const res = await app.fetch(testReq());
         await expectResponse(res, 'file-data', 'application/octet-stream');
+    });
+
+    it('returns blob (config.contentType=null)', async () => {
+        const { app, jhx } = buildServer({
+            contentType: null,
+            render: () => Bun.file(path.join(__dirname, 'data.txt')),
+        });
+
+        jhx({ route, handler: () => 'response' });
+
+        const res = await app.fetch(testReq());
+        await expectResponse(res, 'file-data', 'text/plain;charset=utf-8');
     });
 
     it('returns stream (ReadableStream)', async () => {
@@ -65,7 +134,7 @@ describe('render handling', async () => {
                 const encoder = new TextEncoder();
                 const chunks = ['stream', '-', 'ok'];
                 let index = 0;
-                const stream = new ReadableStream<Uint8Array>({
+                return new ReadableStream<Uint8Array>({
                     pull(controller) {
                         if (index < chunks.length) {
                             const chunk = chunks[index++];
@@ -75,17 +144,31 @@ describe('render handling', async () => {
                         }
                     },
                 });
-                return new Response(stream, {
-                    status: 200,
-                    headers: { 'content-type': 'text/plain; charset=utf-8' },
-                });
             }
         });
 
         jhx({ route, handler: () => 'response' });
 
-        const res = await app.fetch(req());
-        await expectResponse(res, 'stream-ok', 'text/plain');
+        const res = await app.fetch(testReq());
+        await expectResponse(res, 'stream-ok', 'text/html');
+    });
+
+    it('returns stream (NodeJS.Readable)', async () => {
+        const { app, jhx } = buildServer({
+            render: () => {
+                const stream = new Readable();
+                stream.push('stream');
+                stream.push('-');
+                stream.push('ok');
+                stream.push(null);
+                return stream;
+            },
+        });
+
+        jhx({ route, handler: () => 'response' });
+
+        const res = await app.fetch(testReq());
+        await expectResponse(res, 'stream-ok', 'text/html');
     });
 
     it('returns string', async () => {
@@ -95,7 +178,7 @@ describe('render handling', async () => {
 
         jhx({ route, handler: () => 'response' });
 
-        const res = await app.fetch(req());
+        const res = await app.fetch(testReq());
         await expectResponse(res, 'response-rendered', 'text/html');
     });
 
@@ -107,7 +190,7 @@ describe('render handling', async () => {
 
         jhx({ route, handler: () => 'response' });
 
-        const res = await app.fetch(req());
+        const res = await app.fetch(testReq());
         await expectResponse(res, { message: 'response-rendered' }, 'application/json');
     });
 
@@ -121,7 +204,7 @@ describe('render handling', async () => {
 
         jhx({ route, handler: () => 'response' });
 
-        const res = await app.fetch(req());
+        const res = await app.fetch(testReq());
         await expectResponse(res, { message: 'response-rendered' }, 'application/json');
     });
 
@@ -132,7 +215,7 @@ describe('render handling', async () => {
 
         jhx({ route, handler: () => 'response' });
 
-        const res = await app.fetch(req());
+        const res = await app.fetch(testReq());
         await expectResponse(res, '', 'text/html');
     });
 
@@ -145,7 +228,7 @@ describe('render handling', async () => {
 
         jhx({ route, handler: () => 'response' });
 
-        const res = await app.fetch(req());
+        const res = await app.fetch(testReq());
         await expectResponse(res, 'Unexpected jhx route error', 'text/html', 500);
     });
 });
