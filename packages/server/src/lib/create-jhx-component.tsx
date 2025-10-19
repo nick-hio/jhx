@@ -30,12 +30,7 @@ export const createJhxComponent = <
         TBaseProps,
         TCompProps
     > = (props) => {
-        const {
-            jhxConfig,
-            as: Tag = 'div',
-            children,
-            ...remainingProps
-        } = props;
+        const { jhxConfig, as: Tag = 'div', children, ...remainingProps } = props;
 
         const attrs = jhx(
             { ...remainingProps },
@@ -45,13 +40,7 @@ export const createJhxComponent = <
             },
         );
 
-        return (
-            <Tag
-                {...attrs}
-            >
-                {children}
-            </Tag>
-        );
+        return <Tag {...attrs}>{children}</Tag>;
     };
 
     JhxComponent.displayName = 'JhxComponentFactory';

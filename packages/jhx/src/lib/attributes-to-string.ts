@@ -6,7 +6,8 @@ const escapeMap: Record<string, string> = {
     '>': '&gt;',
 };
 
-const escapeValue = (input: unknown): string => String(input).replace(/[&"'<>]/g, ch => escapeMap[ch] ?? ch);
+const escapeValue = (input: unknown): string =>
+    String(input).replace(/[&"'<>]/g, (ch) => escapeMap[ch] ?? ch);
 
 /**
  * Convert an object of attributes to a string suitable for HTML tags.

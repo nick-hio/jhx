@@ -1,110 +1,101 @@
 import fs from 'fs';
 import path from 'path';
-import { describe, expect, it } from 'bun:test';
+import { describe, it } from 'bun:test';
 
-import { buildServer } from './build-server';
+import { buildServer, expectResponse, ENDPOINT } from './helpers';
 
-describe('[jhx-fastify] route handling', async () => {
-    it('route returns sent response', async () => {
+const route = ENDPOINT;
+const url = `/_jhx${route}`;
+
+describe('route handling', async () => {
+    it('returns sent response', async () => {
         const fastify = await buildServer();
 
         fastify.jhx({
-            route: '/test',
+            route,
             handler: (_req, res) => res.status(201).send('ok'),
         });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.body).toBe('ok');
-        expect(res.headers['content-type']).toContain('text/html');
-        expect(res.statusCode).toBe(201);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, 'ok', 'text/html', 201);
     });
 
-    it('route returns JSX (default)', async () => {
+    it('returns JSX (default)', async () => {
         const fastify = await buildServer();
 
         fastify.jhx({
-            route: '/test',
+            route,
             handler: () => <div>ok</div>,
         });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.body).toBe(`<div>ok</div>`);
-        expect(res.headers['content-type']).toContain('text/html');
-        expect(res.statusCode).toBe(200);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, '<div>ok</div>', 'text/html');
     });
 
-    it('route returns JSX static', async () => {
+    it('returns JSX (config.render=static)', async () => {
         const fastify = await buildServer({
             render: 'static',
         });
 
         fastify.jhx({
-            route: '/test',
+            route,
             handler: () => <div>ok</div>,
         });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.body).toBe(`<div>ok</div>`);
-        expect(res.headers['content-type']).toContain('text/html');
-        expect(res.statusCode).toBe(200);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, '<div>ok</div>', 'text/html');
     });
 
-    it('route returns JSX string', async () => {
+    it('returns JSX (config.render=string)', async () => {
         const fastify = await buildServer({
             render: 'string',
         });
 
         fastify.jhx({
-            route: '/test',
+            route,
             handler: () => <div>ok</div>,
         });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.body).toBe(`<div>ok</div>`);
-        expect(res.headers['content-type']).toContain('text/html');
-        expect(res.statusCode).toBe(200);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, '<div>ok</div>', 'text/html');
     });
 
-    it('route returns buffer (config.contentType)', async () => {
+    it('returns buffer (config.contentType=null)', async () => {
         const fastify = await buildServer({
             contentType: null,
         });
 
         fastify.jhx({
-            route: '/test',
-            handler: () => Buffer.from('buffer-ok', 'utf-8'),
+            route,
+            handler: () => Buffer.from('ok', 'utf-8'),
         });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.body).toBe('buffer-ok');
-        expect(res.headers['content-type']).toContain('application/octet-stream');
-        expect(res.statusCode).toBe(200);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, 'ok', 'application/octet-stream');
     });
 
-    it('route returns buffer (res.header)', async () => {
+    it('returns buffer (response header set)', async () => {
         const fastify = await buildServer();
 
         fastify.jhx({
-            route: '/test',
+            route,
             handler: (_req, res) => {
                 res.header('content-type', 'application/octet-stream');
-                return Buffer.from('buffer-ok', 'utf-8');
+                return Buffer.from('ok', 'utf-8');
             },
         });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.body).toBe('buffer-ok');
-        expect(res.headers['content-type']).toContain('application/octet-stream');
-        expect(res.statusCode).toBe(200);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, 'ok', 'application/octet-stream');
     });
 
-    it('route returns buffer (readFile)', async () => {
+    it('returns buffer (fs.readFile; config.contentType=null)', async () => {
         const fastify = await buildServer({
             contentType: null,
         });
 
         fastify.jhx({
-            route: '/test',
+            route,
             handler: (_req, res) => {
                 const filepath = path.join(__dirname, 'data.txt');
                 fs.readFile(filepath, (err, buff) => res.send(err || buff));
@@ -112,17 +103,27 @@ describe('[jhx-fastify] route handling', async () => {
             },
         });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.body).toBe('file-data');
-        expect(res.headers['content-type']).toContain('application/octet-stream');
-        expect(res.statusCode).toBe(200);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, 'file-data', 'application/octet-stream');
     });
 
-    it('route returns stream (res.raw)', async () => {
+    it('returns blob (config.contentType=null)', async () => {
         const fastify = await buildServer();
 
         fastify.jhx({
-            route: '/test',
+            route,
+            handler: () => 'ok',
+        });
+
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, 'ok', 'text/html');
+    });
+
+    it('returns stream (res.raw)', async () => {
+        const fastify = await buildServer();
+
+        fastify.jhx({
+            route,
             handler: async (_req, res) => {
                 res.raw.writeHead(200, { 'Content-Type': 'text/plain' });
                 const chunks = ['stream', '-', 'ok'];
@@ -137,75 +138,65 @@ describe('[jhx-fastify] route handling', async () => {
         });
 
         const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.body).toBe('stream-ok');
-        expect(res.headers['content-type']).toContain('text/plain');
-        expect(res.statusCode).toBe(200);
+        expectResponse(res, 'stream-ok', 'text/plain');
     });
 
-    it('route returns string', async () => {
+    it('returns string', async () => {
         const fastify = await buildServer();
 
         fastify.jhx({
-            route: '/test',
+            route,
             handler: () => 'ok',
         });
 
         const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.body).toBe('ok');
-        expect(res.headers['content-type']).toContain('text/html');
-        expect(res.statusCode).toBe(200);
+        expectResponse(res, 'ok', 'text/html');
     });
 
-    it('route returns object (config.contentType)', async () => {
+    it('returns object (config.contentType=null)', async () => {
         const fastify = await buildServer({
             contentType: null,
         });
 
         fastify.jhx({
-            route: '/test',
+            route,
             handler: (_req, _res) => {
                 return { message: 'ok' };
             },
         });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.json() as object).toEqual({ message: 'ok' });
-        expect(res.headers['content-type']).toContain('application/json');
-        expect(res.statusCode).toBe(200);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, { message: 'ok' }, 'application/json; charset=utf-8');
     });
 
-    it('route returns object (res.header)', async () => {
+    it('returns object (response header set)', async () => {
         const fastify = await buildServer();
 
         fastify.jhx({
-            route: '/test',
+            route,
             handler: (_req, res) => {
                 res.header('content-type', 'application/json; charset=utf-8');
                 return { message: 'ok' };
             },
         });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.json() as object).toEqual({ message: 'ok' });
-        expect(res.headers['content-type']).toContain('application/json');
-        expect(res.statusCode).toBe(200);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, { message: 'ok' }, 'application/json; charset=utf-8');
     });
 
-    it('route returns void', async () => {
+    it('returns void', async () => {
         const fastify = await buildServer();
 
         fastify.jhx({
-            route: '/test',
+            route,
             handler: () => {},
         });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.body).toBe('');
-        expect(res.headers['content-type']).toContain('text/html');
-        expect(res.statusCode).toBe(200);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, '', 'text/html');
     });
 
-    it('route error', async () => {
+    it('throws error', async () => {
         const fastify = await buildServer();
 
         fastify.jhx({
@@ -216,10 +207,6 @@ describe('[jhx-fastify] route handling', async () => {
         });
 
         const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.body).toBe(
-            '{"statusCode":500,"error":"Internal Server Error","message":"Unexpected jhx route error"}',
-        );
-        expect(res.headers['content-type']).toContain('application/json');
-        expect(res.statusCode).toBe(500);
+        expectResponse(res, { statusCode: 500, error: "Internal Server Error", message: "Unexpected jhx route error" }, 'application/json; charset=utf-8', 500);
     });
 });

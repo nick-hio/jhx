@@ -5,5 +5,9 @@ const isResponseSent = (context: any) => {
 };
 
 export const isResponseHandled = (context: HonoContext, handlerResult: any) => {
-    return isResponseSent(context) || handlerResult instanceof Response;
+    return (
+        isResponseSent(context)
+        || handlerResult instanceof Response
+        || handlerResult instanceof ReadableStream
+    );
 };

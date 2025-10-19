@@ -6,6 +6,7 @@ export { htmx, attributesToString, JhxComponent as BaseJhxComponent } from 'jhx'
 export type {
     JhxDefaultConfig as BaseJhxDefaultConfig,
     JhxProps as BaseJhxProps,
+    JhxComponentType as BaseJhxComponentType,
     JhxComponentProps as BaseJhxComponentProps,
 } from 'jhx';
 

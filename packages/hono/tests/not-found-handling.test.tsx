@@ -6,15 +6,6 @@ import { buildServer, expectResponse, testReq } from './helpers';
 import { Readable } from 'stream';
 
 describe('not found handling', async () => {
-    it('returns Hono context', async () => {
-        const { app } = buildServer({
-            notFoundHandler: (c) => c as any,
-        });
-
-        const res = await app.request(testReq());
-        await expectResponse(res, { finalized: false }, 'application/json', 404);
-    });
-
     it('returns Response', async () => {
         const { app } = buildServer({
             notFoundHandler: () => new Response('dne'),

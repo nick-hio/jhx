@@ -1,82 +1,71 @@
 import fs from 'fs';
 import path from 'path';
-import { describe, expect, it } from 'bun:test';
+import { describe, it } from 'bun:test';
 
-import { buildServer } from './build-server';
+import { buildServer, expectResponse } from './helpers';
 
-describe('[jhx-fastify] not found handling', async () => {
-    it('notFoundHandler returns sent response', async () => {
+const url = `/_jhx/dne`;
+
+describe('not found handling', async () => {
+    it('returns sent response', async () => {
         const fastify = await buildServer({
             notFoundHandler: (_req, res) => res.send('dne'),
         });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/dne' });
-        expect(res.body).toEqual('dne');
-        expect(res.headers['content-type']).toContain('text/html');
-        expect(res.statusCode).toBe(404);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, 'dne', 'text/html', 404);
     });
 
-    it('notFoundHandler returns JSX (default)', async () => {
+    it('returns JSX (default)', async () => {
         const fastify = await buildServer({
             notFoundHandler: () => <div>dne</div>,
         });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/dne' });
-        expect(res.body).toBe('<div>dne</div>');
-        expect(res.headers['content-type']).toContain('text/html');
-        expect(res.statusCode).toBe(404);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, '<div>dne</div>', 'text/html', 404);
     });
 
-    it('notFoundHandler returns JSX static', async () => {
+    it('returns JSX (config.render=static)', async () => {
         const fastify = await buildServer({
             render: 'static',
             notFoundHandler: () => <div>dne</div>,
         });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/dne' });
-        expect(res.body).toBe('<div>dne</div>');
-        expect(res.headers['content-type']).toContain('text/html');
-        expect(res.statusCode).toBe(404);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, '<div>dne</div>', 'text/html', 404);
     });
 
-    it('notFoundHandler returns JSX string', async () => {
+    it('returns JSX (config.render=string)', async () => {
         const fastify = await buildServer({
             render: 'string',
             notFoundHandler: () => <div>dne</div>,
         });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/dne' });
-        expect(res.body).toBe('<div>dne</div>');
-        expect(res.headers['content-type']).toContain('text/html');
-        expect(res.statusCode).toBe(404);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, '<div>dne</div>', 'text/html', 404);
     });
 
-    it('notFoundHandler returns JSX (render=false)', async () => {
+    it('returns JSX (config.renderNotFound=false)', async () => {
         const fastify = await buildServer({
             notFoundHandler: () => <div>dne</div>,
-            render: false,
+            renderNotFound: false,
         });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/dne' });
-        expect(res.body).toBe(
-            '{"statusCode":500,"code":"FST_ERR_REP_INVALID_PAYLOAD_TYPE","error":"Internal Server Error","message":"Attempted to send payload of invalid type \'object\'. Expected a string or Buffer."}',
-        );
-        expect(res.statusCode).toBe(500);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, { statusCode: 500, code: "FST_ERR_REP_INVALID_PAYLOAD_TYPE", error: "Internal Server Error", message: "Attempted to send payload of invalid type 'object'. Expected a string or Buffer." }, 'application/json; charset=utf-8', 500);
     });
 
-    it('notFoundHandler returns buffer (config.contentType)', async () => {
+    it('returns buffer (config.contentType=null)', async () => {
         const fastify = await buildServer({
             contentType: null,
             notFoundHandler: () => Buffer.from('dne', 'utf-8'),
         });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/dne' });
-        expect(res.body).toBe('dne');
-        expect(res.headers['content-type']).toContain('application/octet-stream');
-        expect(res.statusCode).toBe(404);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, 'dne', 'application/octet-stream', 404);
     });
 
-    it('notFoundHandler returns buffer (res.header)', async () => {
+    it('returns buffer (response header set)', async () => {
         const fastify = await buildServer({
             notFoundHandler: (_req, res) => {
                 res.header('content-type', 'application/octet-stream');
@@ -84,13 +73,11 @@ describe('[jhx-fastify] not found handling', async () => {
             },
         });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/dne' });
-        expect(res.body).toBe('dne');
-        expect(res.headers['content-type']).toContain('application/octet-stream');
-        expect(res.statusCode).toBe(404);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, 'dne', 'application/octet-stream', 404);
     });
 
-    it('notFoundHandler returns buffer (readFile)', async () => {
+    it('returns buffer (fs.readFile; config.contentType=null)', async () => {
         const fastify = await buildServer({
             contentType: null,
             notFoundHandler: (_req, res) => {
@@ -100,13 +87,21 @@ describe('[jhx-fastify] not found handling', async () => {
             },
         });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/dne' });
-        expect(res.body).toBe('file-data');
-        expect(res.headers['content-type']).toContain('application/octet-stream');
-        expect(res.statusCode).toBe(404);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, 'file-data', 'application/octet-stream', 404);
     });
 
-    it('notFoundHandler returns stream (res.raw)', async () => {
+    it('returns blob (config.contentType=null)', async () => {
+        const fastify = await buildServer({
+            contentType: null,
+            notFoundHandler: () => Bun.file(path.join(__dirname, 'data.txt')),
+        });
+
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, 'file-data', 'text/plain;charset=utf-8', 404);
+    });
+
+    it('returns stream (res.raw)', async () => {
         const fastify = await buildServer({
             notFoundHandler: async (_req, res) => {
                 res.raw.writeHead(404, { 'Content-Type': 'text/plain' });
@@ -121,36 +116,30 @@ describe('[jhx-fastify] not found handling', async () => {
             },
         });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/dne' });
-        expect(res.body).toBe('not-found');
-        expect(res.headers['content-type']).toContain('text/plain');
-        expect(res.statusCode).toBe(404);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, 'not-found', 'text/plain', 404);
     });
 
-    it('notFoundHandler returns string', async () => {
+    it('returns string', async () => {
         const fastify = await buildServer({
             notFoundHandler: () => 'dne',
         });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/dne' });
-        expect(res.body).toEqual('dne');
-        expect(res.headers['content-type']).toContain('text/html');
-        expect(res.statusCode).toBe(404);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, 'dne', 'text/html', 404);
     });
 
-    it('notFoundHandler returns object (config.contentType)', async () => {
+    it('returns object (config.contentType=null)', async () => {
         const fastify = await buildServer({
             contentType: null,
             notFoundHandler: () => ({ message: 'dne' }),
         });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/dne' });
-        expect(res.json() as object).toEqual({ message: 'dne' });
-        expect(res.headers['content-type']).toContain('application/json');
-        expect(res.statusCode).toBe(404);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, { message: 'dne' }, 'application/json; charset=utf-8', 404);
     });
 
-    it('notFoundHandler returns object (res.header)', async () => {
+    it('returns object (response header set)', async () => {
         const fastify = await buildServer({
             notFoundHandler: (_req, res) => {
                 res.header('content-type', 'application/json; charset=utf-8');
@@ -158,20 +147,16 @@ describe('[jhx-fastify] not found handling', async () => {
             },
         });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/dne' });
-        expect(res.json() as object).toEqual({ message: 'dne' });
-        expect(res.headers['content-type']).toContain('application/json');
-        expect(res.statusCode).toBe(404);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, { message: 'dne' }, 'application/json; charset=utf-8', 404);
     });
 
-    it('notFoundHandler returns void', async () => {
+    it('returns void', async () => {
         const fastify = await buildServer({
             notFoundHandler: () => {},
         });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/dne' });
-        expect(res.statusCode).toBe(404);
-        expect(res.headers['content-type']).toContain('text/html');
-        expect(res.body).toEqual('');
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, '', 'text/html', 404);
     });
 });

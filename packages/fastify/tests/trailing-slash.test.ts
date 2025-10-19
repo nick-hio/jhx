@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'bun:test';
 
-import { buildServer } from './build-server';
+import { buildServer } from './helpers';
 
-describe('[jhx-fastify] utilities & config.trailingSlash="slash"', async () => {
+describe('config.trailingSlash="slash"', async () => {
     it('jhx.addRoute', async () => {
         const fastify = await buildServer({
             trailingSlash: 'slash',
@@ -96,7 +96,7 @@ describe('[jhx-fastify] utilities & config.trailingSlash="slash"', async () => {
     });
 });
 
-describe('[jhx-fastify] utilities & config.trailingSlash="no-slashes"', async () => {
+describe('config.trailingSlash="no-slashes"', async () => {
     it('jhx.addRoute', async () => {
         const fastify = await buildServer({
             trailingSlash: 'no-slash',

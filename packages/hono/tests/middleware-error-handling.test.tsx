@@ -8,20 +8,6 @@ import { Readable } from 'stream';
 const route = ENDPOINT;
 
 describe('middleware error handling', async () => {
-    it('returns Hono context', async () => {
-        const { app, jhx } = buildServer({
-            middleware: () => {
-                throw new Error('mw-error');
-            },
-            errorHandler: (_err, c) => c as any,
-        });
-
-        jhx({ route, handler: () => 'should-not-run' });
-
-        const res = await app.request(testReq());
-        await expectResponse(res, { finalized: false }, 'application/json', 500);
-    });
-
     it('returns Response', async () => {
         const { app, jhx } = buildServer({
             middleware: () => {

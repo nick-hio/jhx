@@ -1,35 +1,27 @@
 import { describe, expect, it } from 'bun:test';
 
-import { buildServer } from './build-server';
+import { buildServer, expectResponse, ENDPOINT } from './helpers';
 
-describe('[jhx-fastify] routing', async () => {
+const route = ENDPOINT;
+const url = `/_jhx${route}`;
+
+describe('routing', async () => {
     it('duplicate route handlers use the same route', async () => {
         const fastify = await buildServer();
 
         fastify.jhx({ handler: () => 'ok' });
         fastify.jhx({ handler: () => 'ok' });
-
-        const allRoutes = fastify.jhx.getRoutes();
-        expect(allRoutes).toHaveLength(2);
+        expect(fastify.jhx.getRoutes()).toHaveLength(2);
     });
 
     it('duplicate route endpoints use the same route', async () => {
         const fastify = await buildServer();
 
-        fastify.jhx({
-            route: '/test',
-            handler: () => 'handler-one',
-        });
-        fastify.jhx({
-            route: '/test',
-            handler: () => 'handler-two',
-        });
+        fastify.jhx({ route, handler: () => 'handler-one' });
+        fastify.jhx({ route, handler: () => 'handler-two' });
+        expect(fastify.jhx.getRoutes()).toHaveLength(2);
 
-        const allRoutes = fastify.jhx.getRoutes();
-        expect(allRoutes).toHaveLength(2);
-
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.body).toBe('handler-one');
-        expect(res.statusCode).toBe(200);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, 'handler-one', 'text/html');
     });
 });

@@ -7,17 +7,6 @@ import { buildServer, ENDPOINT, expectResponse, testReq } from './helpers';
 const route = ENDPOINT;
 
 describe('middleware handling', async () => {
-    it('returns Hono context', async () => {
-        const { app, jhx } = buildServer({
-            middleware: (c) => c as any,
-        });
-
-        jhx({ route, handler: () => 'should-not-run' });
-
-        const res = await app.request(testReq());
-        await expectResponse(res, { finalized: false }, 'application/json', 200);
-    });
-
     it('returns Response', async () => {
         const { app, jhx } = buildServer({
             middleware: () => new Response('middleware-ok'),

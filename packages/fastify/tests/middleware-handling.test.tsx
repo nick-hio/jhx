@@ -1,138 +1,86 @@
 import fs from 'fs';
 import path from 'path';
-import { describe, expect, it } from 'bun:test';
+import { describe, it } from 'bun:test';
 
-import { buildServer } from './build-server';
+import { buildServer, expectResponse, ENDPOINT } from './helpers';
 
-describe('[jhx-fastify] middleware handling', () => {
-    it('middleware returns sent response', async () => {
+const route = ENDPOINT;
+const url = `/_jhx${route}`;
+
+describe('middleware handling', () => {
+    it('returns sent response', async () => {
         const fastify = await buildServer({
-            middleware: (_req, reply) => {
-                return reply.send('middleware-ok');
-            },
+            middleware: (_req, reply) => reply.send('middleware-ok'),
         });
 
-        fastify.jhx({
-            route: '/test',
-            handler: () => 'should-not-run',
-        });
+        fastify.jhx({ route, handler: () => 'should-not-run' });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.statusCode).toBe(200);
-        expect(res.body).toBe('middleware-ok');
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, 'middleware-ok', 'text/html');
     });
 
-    it('middleware returns JSX (default)', async () => {
+    it('returns JSX (default)', async () => {
         const fastify = await buildServer({
-            middleware: () => {
-                return <div>middleware-ok</div>;
-            },
+            middleware: () => <div>middleware-ok</div>,
         });
 
-        fastify.jhx({
-            route: '/test',
-            handler: () => 'should-not-run',
-        });
+        fastify.jhx({ route, handler: () => 'should-not-run' });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.body).toBe(`<div>middleware-ok</div>`);
-        expect(res.statusCode).toBe(200);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, `<div>middleware-ok</div>`, 'text/html');
     });
 
-    it('middleware returns JSX static', async () => {
+    it('returns JSX (config.render=static)', async () => {
         const fastify = await buildServer({
-            middleware: () => {
-                return <div>middleware-ok</div>;
-            },
+            middleware: () => <div>middleware-ok</div>,
             render: 'static',
         });
 
-        fastify.jhx({
-            route: '/test',
-            handler: () => 'should-not-run',
-        });
+        fastify.jhx({ route, handler: () => 'should-not-run' });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.body).toBe(`<div>middleware-ok</div>`);
-        expect(res.statusCode).toBe(200);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, `<div>middleware-ok</div>`, 'text/html');
     });
 
-    it('middleware returns JSX string', async () => {
-        const fastify = await buildServer({
-            middleware: () => {
-                return <div>middleware-ok</div>;
-            },
-            render: 'string',
-        });
-
-        fastify.jhx({
-            route: '/test',
-            handler: () => 'should-not-run',
-        });
-
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.body).toBe(`<div>middleware-ok</div>`);
-        expect(res.statusCode).toBe(200);
-    });
-
-    it('middleware returns JSX (renderMiddleware=false)', async () => {
+    it('returns JSX (config.renderMiddleware=false)', async () => {
         const fastify = await buildServer({
             renderMiddleware: false,
-            middleware: () => {
-                return <div>middleware-ok</div>;
-            },
+            middleware: () => <div>middleware-ok</div>,
         });
 
-        fastify.jhx({
-            route: '/test',
-            handler: () => 'should-not-run',
-        });
+        fastify.jhx({ route, handler: () => 'should-not-run' });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.body).toBe(
-            '{"statusCode":500,"error":"Internal Server Error","message":"Unexpected jhx middleware error"}',
-        );
-        expect(res.statusCode).toBe(500);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, { statusCode: 500, error: "Internal Server Error", message: "Unexpected jhx middleware error" }, 'application/json; charset=utf-8', 500);
     });
 
-    it('middleware returns buffer (config.contentType)', async () => {
+    it('returns buffer (config.contentType=null)', async () => {
         const fastify = await buildServer({
             contentType: null,
             middleware: () => Buffer.from('middleware-ok', 'utf-8'),
         });
 
-        fastify.jhx({
-            route: '/test',
-            handler: () => 'should-not-run',
-        });
+        fastify.jhx({ route, handler: () => 'should-not-run' });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.body).toBe('middleware-ok');
-        expect(res.headers['content-type']).toContain('application/octet-stream');
-        expect(res.statusCode).toBe(200);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, 'middleware-ok', 'application/octet-stream');
     });
 
-    it('middleware returns buffer (res.header)', async () => {
+    it('returns buffer (response header set)', async () => {
         const fastify = await buildServer({
-            contentType: null,
             middleware: (_req, res) => {
                 res.header('content-type', 'application/octet-stream');
                 return Buffer.from('middleware-ok', 'utf-8');
             },
         });
 
-        fastify.jhx({
-            route: '/test',
-            handler: () => 'should-not-run',
-        });
+        fastify.jhx({ route, handler: () => 'should-not-run' });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.body).toBe('middleware-ok');
-        expect(res.headers['content-type']).toContain('application/octet-stream');
-        expect(res.statusCode).toBe(200);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, 'middleware-ok', 'application/octet-stream');
     });
 
-    it('middleware returns buffer (readFile)', async () => {
+    it('returns buffer (fs.readFile; config.contentType=null)', async () => {
         const fastify = await buildServer({
             contentType: null,
             middleware: (_req, res) => {
@@ -142,18 +90,25 @@ describe('[jhx-fastify] middleware handling', () => {
             },
         });
 
-        fastify.jhx({
-            route: '/test',
-            handler: () => 'should-not-run',
-        });
+        fastify.jhx({ route, handler: () => 'should-not-run' });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.body).toBe('file-data');
-        expect(res.headers['content-type']).toContain('application/octet-stream');
-        expect(res.statusCode).toBe(200);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, 'file-data', 'application/octet-stream');
     });
 
-    it('middleware returns stream (res.raw)', async () => {
+    it('returns blob (config.contentType=null)', async () => {
+        const fastify = await buildServer({
+            contentType: null,
+            middleware: () => Bun.file(path.join(__dirname, 'data.txt')),
+        });
+
+        fastify.jhx({ route, handler: () => 'should-not-run' });
+
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, 'file-data', 'text/plain;charset=utf-8');
+    });
+
+    it('returns stream (res.raw)', async () => {
         const fastify = await buildServer({
             middleware: async (_req, res) => {
                 res.raw.writeHead(200, { 'Content-Type': 'text/plain' });
@@ -168,54 +123,36 @@ describe('[jhx-fastify] middleware handling', () => {
             },
         });
 
-        fastify.jhx({
-            route: '/test',
-            handler: () => 'should-not-run',
-        });
+        fastify.jhx({ route, handler: () => 'should-not-run' });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.body).toBe('stream-ok');
-        expect(res.headers['content-type']).toContain('text/plain');
-        expect(res.statusCode).toBe(200);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, 'stream-ok', 'text/plain');
     });
 
-    it('middleware returns string', async () => {
+    it('returns string', async () => {
         const fastify = await buildServer({
-            middleware: () => {
-                return 'ok';
-            },
+            middleware: () => 'ok',
         });
 
-        fastify.jhx({
-            route: '/test',
-            handler: () => 'should-not-run',
-        });
+        fastify.jhx({ route, handler: () => 'should-not-run' });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.statusCode).toBe(200);
-        expect(res.body).toBe('ok');
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, 'ok', 'text/html');
     });
 
-    it('middleware returns object (config.contentType)', async () => {
+    it('returns object (config.contentType=null)', async () => {
         const fastify = await buildServer({
             contentType: null,
-            middleware: () => {
-                return { message: 'ok' };
-            },
+            middleware: () => ({ message: 'ok' }),
         });
 
-        fastify.jhx({
-            route: '/test',
-            handler: () => 'should-not-run',
-        });
+        fastify.jhx({ route, handler: () => 'should-not-run' });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.statusCode).toBe(200);
-        expect(res.headers['content-type']).toContain('application/json');
-        expect(res.json() as object).toEqual({ message: 'ok' });
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, { message: 'ok' }, 'application/json; charset=utf-8');
     });
 
-    it('middleware returns object (application/json)', async () => {
+    it('returns object (response header set)', async () => {
         const fastify = await buildServer({
             middleware: (_req, res) => {
                 res.header('content-type', 'application/json; charset=utf-8');
@@ -223,48 +160,33 @@ describe('[jhx-fastify] middleware handling', () => {
             },
         });
 
-        fastify.jhx({
-            route: '/test',
-            handler: () => 'should-not-run',
-        });
+        fastify.jhx({ route, handler: () => 'should-not-run' });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.statusCode).toBe(200);
-        expect(res.headers['content-type']).toContain('application/json');
-        expect(res.json() as object).toEqual({ message: 'ok' });
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, { message: 'ok' }, 'application/json; charset=utf-8');
     });
 
-    it('middleware returns void', async () => {
+    it('returns void', async () => {
         const fastify = await buildServer({
             middleware: () => {},
         });
 
-        fastify.jhx({
-            route: '/test',
-            handler: () => 'ok',
-        });
+        fastify.jhx({ route, handler: () => 'ok' });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.statusCode).toBe(200);
-        expect(res.body).toBe('ok');
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, 'ok', 'text/html');
     });
 
-    it('middleware error', async () => {
+    it('throws error', async () => {
         const fastify = await buildServer({
             middleware: () => {
                 throw new Error('mw-error');
             },
         });
 
-        fastify.jhx({
-            route: '/test',
-            handler: () => 'should-not-run',
-        });
+        fastify.jhx({ route, handler: () => 'should-not-run' });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.statusCode).toBe(500);
-        expect(res.body).toBe(
-            '{"statusCode":500,"error":"Internal Server Error","message":"Unexpected jhx middleware error"}',
-        );
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, { statusCode: 500, error: "Internal Server Error", message: "Unexpected jhx middleware error" }, 'application/json; charset=utf-8', 500);
     });
 });

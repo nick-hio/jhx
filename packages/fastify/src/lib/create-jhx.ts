@@ -72,7 +72,7 @@ export const createJhx = <
                     try {
                         const mwResult = await middleware(req as TRequest, res as TReply);
                         if (isResponseHandled(res, mwResult)) {
-                            return mwResult instanceof Response ? res.send(mwResult) : res;
+                            return await sendPayload(res, mwResult);
                         }
 
                         if (mwResult !== undefined) {
@@ -80,7 +80,7 @@ export const createJhx = <
                                 baseConfig.render && baseConfig.renderMiddleware
                                     ? await baseConfig.render(mwResult, req as TRequest, res as TReply)
                                     : mwResult;
-                            return sendPayload(res, renderResult);
+                            return await sendPayload(res, renderResult);
                         }
                     } catch (e) {
                         const error = e as TError;
@@ -98,20 +98,20 @@ export const createJhx = <
                                 res as TReply,
                             );
                             if (isResponseHandled(res, errorResult)) {
-                                return errorResult instanceof Response ? res.send(errorResult) : res;
+                                return await sendPayload(res, errorResult);
                             }
 
                             const renderResult =
                                 baseConfig.render && baseConfig.renderError
                                     ? await baseConfig.render(errorResult, req as TRequest, res as TReply)
                                     : errorResult;
-                            return sendPayload(res, renderResult);
+                            return await sendPayload(res, renderResult);
                         }
 
                         throw new JhxServerException('Unexpected jhx middleware error', {
                             type: 'middleware:error',
                             info: 'Unhandled error while handling middleware or rendering middleware payload',
-                            method: req.method,
+                            method,
                             route,
                             cause: error,
                         });
@@ -122,13 +122,13 @@ export const createJhx = <
                 try {
                     const routeResult = await jhxRoute(req as TRequest, res as TReply);
                     if (isResponseHandled(res, routeResult)) {
-                        return routeResult instanceof Response ? res.send(routeResult) : res;
+                        return await sendPayload(res, routeResult);
                     }
 
                     const renderResult = baseConfig.render
                         ? await baseConfig.render(routeResult, req as TRequest, res as TReply)
                         : routeResult;
-                    return sendPayload(res, renderResult);
+                    return await sendPayload(res, renderResult);
                 } catch (e) {
                     const error = e as TError;
 
@@ -145,14 +145,14 @@ export const createJhx = <
                             res as TReply,
                         );
                         if (isResponseHandled(res, errorResult)) {
-                            return errorResult instanceof Response ? res.send(errorResult) : res;
+                            return await sendPayload(res, errorResult);
                         }
 
                         const renderResult =
                             baseConfig.render && baseConfig.renderError
                                 ? await baseConfig.render(errorResult, req as TRequest, res as TReply)
                                 : errorResult;
-                        return sendPayload(res, renderResult);
+                        return await sendPayload(res, renderResult);
                     }
 
                     throw new JhxServerException('Unexpected jhx route error', {
@@ -174,14 +174,14 @@ export const createJhx = <
             res.status(404);
             const notFoundResult = await baseConfig.notFoundHandler(req as TRequest, res as TReply);
             if (isResponseHandled(res, notFoundResult)) {
-                return notFoundResult instanceof Response ? res.send(notFoundResult) : res;
+                return await sendPayload(res, notFoundResult);
             }
 
             const renderResult =
                 baseConfig.render && baseConfig.renderNotFound
                     ? await baseConfig.render(notFoundResult, req as TRequest, res as TReply)
                     : notFoundResult;
-            return sendPayload(res, renderResult);
+            return await sendPayload(res, renderResult);
         });
     }) as {
         jhx: Jhx<TDomBase, TReturn, TRequest, TReply, TBaseStringify>;

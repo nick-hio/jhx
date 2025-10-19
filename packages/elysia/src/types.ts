@@ -1,6 +1,15 @@
-import type { Stream } from "node:stream";
+import type { Stream } from 'node:stream';
 import type { ReactNode } from 'react';
-import type { Context as ElysiaContext, ElysiaFile, form as elysiaForm, InternalServerError, NotFoundError, ParseError, ValidationError } from 'elysia';
+import type {
+    Context as ElysiaContext,
+    ElysiaCustomStatusResponse,
+    ElysiaFile,
+    form as elysiaForm,
+    InternalServerError,
+    NotFoundError,
+    ParseError,
+    ValidationError,
+} from 'elysia';
 import type { ElysiaConfig } from 'elysia/types';
 
 import type {
@@ -29,6 +38,7 @@ type RenderReturn =
     | ArrayBufferView
     | Buffer
     | Blob
+    | ElysiaCustomStatusResponse<any, any, any>
     | ElysiaFile
     | ElysiaFormData
     | Record<string, unknown>

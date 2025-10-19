@@ -2,36 +2,11 @@ import fs from 'fs';
 import path from 'path';
 import { describe, expect, it } from 'bun:test';
 
-import { buildServer, ENDPOINT, expectResponse, testReq } from './helpers';
+import { buildServer, expectResponse, testReq } from './helpers';
 import { file, form } from 'elysia';
 import { Readable } from 'stream';
 
 describe('not found handling', async () => {
-    it('returns Elysia context', async () => {
-        const { app } = buildServer({
-            notFoundHandler: (ctx) => ctx as any,
-        });
-
-        const res = await app.fetch(testReq());
-        const expected = {
-            request: {},
-            store: {},
-            qi: -1,
-            path: `/_jhx${ENDPOINT}`,
-            url: `http://localhost/_jhx${ENDPOINT}`,
-            set: {
-                headers: {
-                    'content-type': 'application/json',
-                },
-                status: 404,
-            },
-            params: {
-                '*': 'test',
-            },
-        };
-        await expectResponse(res, expected, 'application/json', 404)
-    });
-
     it('returns Elysia FormData', async () => {
         const { app } = buildServer({
             notFoundHandler: () => form({

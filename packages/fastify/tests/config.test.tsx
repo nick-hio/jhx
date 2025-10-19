@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'bun:test';
-import { buildServer } from './build-server';
+import { buildServer } from './helpers';
 import { createJhx } from '../src';
 
 const expectRecord = (v: Record<string, string>) => v; // Compile-time check
 const expectString = (v: string) => v; // Compile-time check
 
-describe('[fastify] config.stringify Tests', async () => {
+describe('config.stringify Tests', async () => {
     const fastifyDefault = await buildServer();
     const { jhx: jhxDefault } = createJhx(fastifyDefault, {
         prefix: '/stringify-default-test',
@@ -66,7 +66,7 @@ describe('[fastify] config.stringify Tests', async () => {
     });
 });
 
-describe('[fastify] config.routes Tests', async () => {
+describe('config.routes Tests', async () => {
     it('pre-registered route (GET)', async () => {
         const fastify = await buildServer({
             routes: {
@@ -99,22 +99,22 @@ describe('[fastify] config.routes Tests', async () => {
             routes: [
                 {
                     method: 'get',
-                    route: '/pre-reg-get',
+                    route: '/pre-reg',
                     handler: (_req, res) => res.send('ok'),
                 },
                 {
                     method: 'POST',
-                    route: '/pre-reg-post',
+                    route: '/pre-reg',
                     handler: (_req, res) => res.send('ok'),
                 },
             ],
         });
 
-        const getRes = await fastify.inject({ method: 'GET', url: '/_jhx/pre-reg-get' });
+        const getRes = await fastify.inject({ method: 'GET', url: '/_jhx/pre-reg' });
         expect(getRes.body).toBe('ok');
         expect(getRes.statusCode).toBe(200);
 
-        const postRes = await fastify.inject({ method: 'POST', url: '/_jhx/pre-reg-post' });
+        const postRes = await fastify.inject({ method: 'POST', url: '/_jhx/pre-reg' });
         expect(postRes.body).toBe('ok');
         expect(postRes.statusCode).toBe(200);
     });

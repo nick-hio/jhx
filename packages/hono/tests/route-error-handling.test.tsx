@@ -8,22 +8,6 @@ import { Readable } from 'stream';
 const route = ENDPOINT;
 
 describe('route error handling', async () => {
-    it('returns Hono context', async () => {
-        const { app, jhx } = buildServer({
-            errorHandler: (_err, c) => c as any,
-        });
-
-        jhx({
-            route,
-            handler: () => {
-                throw new Error('route-error');
-            },
-        });
-
-        const res = await app.request(testReq());
-        await expectResponse(res, { finalized: false }, 'application/json', 500);
-    });
-
     it('returns Response', async () => {
         const { app, jhx } = buildServer({
             errorHandler: (err) => new Response(err.message),

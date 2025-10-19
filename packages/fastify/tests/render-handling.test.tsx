@@ -1,44 +1,37 @@
 import fs from 'fs';
 import path from 'path';
-import { describe, expect, it } from 'bun:test';
+import { describe, it } from 'bun:test';
 
-import { buildServer } from './build-server';
+import { buildServer, expectResponse, ENDPOINT } from './helpers';
 
-describe('[jhx-fastify] custom render handling', () => {
-    it('render returns sent response', async () => {
+const route = ENDPOINT;
+const url = `/_jhx${route}`;
+
+describe('render handling', () => {
+    it('returns sent response', async () => {
         const fastify = await buildServer({
             render: (data, _req, res) => res.send(data + '-rendered'),
         });
 
-        fastify.jhx({
-            route: '/test',
-            handler: () => 'response',
-        });
+        fastify.jhx({ route, handler: () => 'response' });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.body).toBe('response-rendered');
-        expect(res.headers['content-type']).toContain('text/html');
-        expect(res.statusCode).toBe(200);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, 'response-rendered', 'text/html');
     });
 
-    it('render returns buffer (config.contentType)', async () => {
+    it('returns buffer (config.contentType)', async () => {
         const fastify = await buildServer({
             contentType: null,
             render: (data) => Buffer.from(data + '-rendered', 'utf-8'),
         });
 
-        fastify.jhx({
-            route: '/test',
-            handler: () => 'response',
-        });
+        fastify.jhx({ route, handler: () => 'response' });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.body).toBe('response-rendered');
-        expect(res.headers['content-type']).toContain('application/octet-stream');
-        expect(res.statusCode).toBe(200);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, 'response-rendered', 'application/octet-stream');
     });
 
-    it('render returns buffer (res.header)', async () => {
+    it('returns buffer (res.header)', async () => {
         const fastify = await buildServer({
             render: (data, _req, res) => {
                 res.header('content-type', 'application/octet-stream');
@@ -46,18 +39,13 @@ describe('[jhx-fastify] custom render handling', () => {
             },
         });
 
-        fastify.jhx({
-            route: '/test',
-            handler: () => 'response',
-        });
+        fastify.jhx({ route, handler: () => 'response' });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.body).toBe('response-rendered');
-        expect(res.headers['content-type']).toContain('application/octet-stream');
-        expect(res.statusCode).toBe(200);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, 'response-rendered', 'application/octet-stream');
     });
 
-    it('render returns buffer (readFile)', async () => {
+    it('returns buffer (readFile)', async () => {
         const fastify = await buildServer({
             contentType: null,
             render: (_data, _req, res) => {
@@ -67,18 +55,25 @@ describe('[jhx-fastify] custom render handling', () => {
             },
         });
 
-        fastify.jhx({
-            route: '/test',
-            handler: () => 'response',
-        });
+        fastify.jhx({ route, handler: () => 'response' });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.body).toBe('file-data');
-        expect(res.statusCode).toBe(200);
-        expect(res.headers['content-type']).toContain('application/octet-stream');
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, 'file-data', 'application/octet-stream');
     });
 
-    it('render returns stream (res.raw)', async () => {
+    it('returns blob (config.contentType=null)', async () => {
+        const fastify = await buildServer({
+            contentType: null,
+            render: () => Bun.file(path.join(__dirname, 'data.txt')),
+        });
+
+        fastify.jhx({ route, handler: () => 'should-not-be-seen' });
+
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, 'file-data', 'text/plain;charset=utf-8');
+    });
+
+    it('returns stream (res.raw)', async () => {
         const fastify = await buildServer({
             render: async (data, _req, res) => {
                 res.raw.writeHead(200, { 'Content-Type': 'text/plain' });
@@ -93,53 +88,36 @@ describe('[jhx-fastify] custom render handling', () => {
             },
         });
 
-        fastify.jhx({
-            route: '/test',
-            handler: () => 'response',
-        });
+        fastify.jhx({ route, handler: () => 'response' });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.body).toBe('response-rendered');
-        expect(res.headers['content-type']).toContain('text/plain');
-        expect(res.statusCode).toBe(200);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, 'response-rendered', 'text/plain');
     });
 
-    it('render returns string', async () => {
+    it('returns string', async () => {
         const fastify = await buildServer({
             render: (data) => data + '-rendered',
         });
 
-        fastify.jhx({
-            route: '/test',
-            handler: () => 'response',
-        });
+        fastify.jhx({ route, handler: () => 'response' });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.body).toBe('response-rendered');
-        expect(res.headers['content-type']).toContain('text/html');
-        expect(res.statusCode).toBe(200);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, 'response-rendered', 'text/html');
     });
 
-    it('render returns object (config.contentType)', async () => {
+    it('returns object (config.contentType)', async () => {
         const fastify = await buildServer({
             contentType: null,
-            render: (data) => {
-                return { message: data + '-rendered' };
-            },
+            render: (data) => ({ message: data + '-rendered' }),
         });
 
-        fastify.jhx({
-            route: '/test',
-            handler: () => 'response',
-        });
+        fastify.jhx({ route, handler: () => 'response' });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.json() as object).toEqual({ message: 'response-rendered' });
-        expect(res.headers['content-type']).toContain('application/json');
-        expect(res.statusCode).toBe(200);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, { message: 'response-rendered' }, 'application/json; charset=utf-8');
     });
 
-    it('render returns object (res.header)', async () => {
+    it('returns object (res.header)', async () => {
         const fastify = await buildServer({
             render: (data, _req, res) => {
                 res.header('content-type', 'application/json; charset=utf-8');
@@ -147,50 +125,33 @@ describe('[jhx-fastify] custom render handling', () => {
             },
         });
 
-        fastify.jhx({
-            route: '/test',
-            handler: () => 'response',
-        });
+        fastify.jhx({ route, handler: () => 'response' });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.json() as object).toEqual({ message: 'response-rendered' });
-        expect(res.headers['content-type']).toContain('application/json');
-        expect(res.statusCode).toBe(200);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, { message: 'response-rendered' }, 'application/json; charset=utf-8');
     });
 
-    it('render returns void', async () => {
+    it('returns void', async () => {
         const fastify = await buildServer({
             render: () => {},
         });
 
-        fastify.jhx({
-            route: '/test',
-            handler: () => 'should-not-be-seen',
-        });
+        fastify.jhx({ route, handler: () => 'should-not-be-seen' });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.body).toBe('');
-        expect(res.headers['content-type']).toContain('text/html');
-        expect(res.statusCode).toBe(200);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, '', 'text/html');
     });
 
-    it('render error', async () => {
+    it('throws error', async () => {
         const fastify = await buildServer({
             render: () => {
                 throw new Error('render-error');
             },
         });
 
-        fastify.jhx({
-            route: '/test',
-            handler: () => 'should-not-be-seen',
-        });
+        fastify.jhx({ route, handler: () => 'should-not-be-seen' });
 
-        const res = await fastify.inject({ method: 'GET', url: '/_jhx/test' });
-        expect(res.body).toBe(
-            '{"statusCode":500,"error":"Internal Server Error","message":"Unexpected jhx route error"}',
-        );
-        expect(res.headers['content-type']).toContain('application/json');
-        expect(res.statusCode).toBe(500);
+        const res = await fastify.inject({ method: 'GET', url });
+        expectResponse(res, { statusCode: 500, error: "Internal Server Error", message:"Unexpected jhx route error" }, 'application/json; charset=utf-8', 500);
     });
 });

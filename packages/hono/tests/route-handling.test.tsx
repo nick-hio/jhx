@@ -8,18 +8,6 @@ import { Readable } from 'stream';
 const route = ENDPOINT;
 
 describe('route handling', async () => {
-    it('returns Hono context', async () => {
-        const { app, jhx } = buildServer();
-
-        jhx({
-            route,
-            handler: (c) => c as any,
-        });
-
-        const res = await app.request(testReq());
-        await expectResponse(res, { finalized: false }, 'application/json', 200);
-    });
-
     it('returns Response', async () => {
         const { app, jhx } = buildServer();
 

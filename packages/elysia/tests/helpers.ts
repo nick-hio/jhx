@@ -22,6 +22,7 @@ export const expectResponse = async (
         expect(await res.text()).toBe(expectedBody);
     }
     if (contentType || contentType === null) {
+        expect(res.headers.get('Content-Type')).toBe(contentType);
         expect(res.headers.get('content-type')).toBe(contentType);
     }
     expect(res.status).toBe(status);

@@ -1,11 +1,10 @@
 import { describe, expect, it } from 'bun:test';
 
-import { buildServer } from './build-server';
+import { buildServer } from './helpers';
 
-describe('[jhx-fastify] Utilities Tests', async () => {
+describe('Utilities Tests', async () => {
     it('jhx.addRoute Function', async () => {
         const fastify = await buildServer();
-
         expect(fastify.jhx.getRoutes()).toHaveLength(0);
 
         fastify.jhx.addRoute({
@@ -17,7 +16,6 @@ describe('[jhx-fastify] Utilities Tests', async () => {
 
     it('jhx.addRoutes Function', async () => {
         const fastify = await buildServer();
-
         expect(fastify.jhx.getRoutes()).toHaveLength(0);
 
         fastify.jhx.addRoutes([

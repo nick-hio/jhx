@@ -15,17 +15,14 @@ import { createJhx } from './create-jhx';
 export const fastifyJhx = fp<CreateJhxConfig>(
     (fastify, options, done) => {
         try {
-            const { jhx } = createJhx(fastify, options);
-
             if (fastify.hasDecorator('jhx')) {
-                done(
-                    new Error(
-                        'Multiple `jhx` functions cannot be instantiated with the same Fastify instance',
-                    ),
-                );
+                done(new Error('Multiple `jhx` functions cannot decorate the same Fastify instance'));
             }
 
+            const { jhx, JhxComponent } = createJhx(fastify, options);
             fastify.decorate('jhx', jhx);
+            fastify.decorate('JhxComponent', JhxComponent);
+
             done();
         } catch (e) {
             done(e as Error | JhxError | FastifyError);

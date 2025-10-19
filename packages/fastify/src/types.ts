@@ -26,6 +26,7 @@ declare module 'fastify' {
          * @template TDom Type for additional parameters from within the DOM.
          */
         jhx: Jhx;
+        JhxComponent: JhxComponentType;
     }
 }
 
@@ -35,10 +36,9 @@ type RenderReturn =
     | ArrayBufferView
     | ArrayBuffer
     | Buffer
+    | Blob
     | FastifyReply
-    | ReadableStream
     | Record<string, any>
-    | Response
     | string
     | number
     | boolean

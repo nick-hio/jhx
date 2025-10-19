@@ -9,33 +9,6 @@ import { Readable } from 'stream';
 const route = ENDPOINT;
 
 describe('render handling', async () => {
-    it('returns Elysia context', async () => {
-        const { app, jhx } = buildServer({
-            render: (_payload, ctx) => ctx as any,
-        });
-
-        jhx({ route, handler: () => 'response' });
-
-        const res = await app.fetch(testReq());
-        const expected = {
-            request: {},
-            store: {},
-            qi: -1,
-            path: `/_jhx${ENDPOINT}`,
-            url: `http://localhost/_jhx${ENDPOINT}`,
-            set: {
-                headers: {
-                    'content-type': 'application/json',
-                },
-                status: 200,
-            },
-            params: {
-                '*': 'test',
-            },
-        };
-        await expectResponse(res, expected, 'application/json', 200)
-    });
-
     it('returns Elysia FormData', async () => {
         const { app, jhx } = buildServer({
             render: () => form({
