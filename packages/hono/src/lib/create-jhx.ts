@@ -68,7 +68,7 @@ export const createJhx = <
                 for (const middleware of baseConfig.middleware) {
                     try {
                         const mwResult = await middleware(context as TContext);
-                        if (isResponseHandled(context, mwResult)) {
+                        if (isResponseHandled(context)) {
                             return sendPayload(context, mwResult);
                         }
                         if (mwResult !== undefined) {
@@ -89,7 +89,7 @@ export const createJhx = <
                         if (baseConfig.errorHandler) {
                             context.status(500);
                             const errorResult = await baseConfig.errorHandler(error, context as TContext);
-                            if (isResponseHandled(context, errorResult)) {
+                            if (isResponseHandled(context)) {
                                 return sendPayload(context, errorResult);
                             }
 
@@ -112,7 +112,7 @@ export const createJhx = <
                 // route
                 try {
                     const routeResult = await jhxHandler(context as TContext);
-                    if (isResponseHandled(context, routeResult)) {
+                    if (isResponseHandled(context)) {
                         return sendPayload(context, routeResult);
                     }
 
@@ -131,7 +131,7 @@ export const createJhx = <
                     if (baseConfig.errorHandler) {
                         context.status(500);
                         const errorResult = await baseConfig.errorHandler(error, context as TContext);
-                        if (isResponseHandled(context, errorResult)) {
+                        if (isResponseHandled(context)) {
                             return sendPayload(context, errorResult);
                         }
 
@@ -157,7 +157,7 @@ export const createJhx = <
 
             context.status(404);
             const notFoundResult = await baseConfig.notFoundHandler(context as TContext);
-            if (isResponseHandled(context, notFoundResult)) {
+            if (isResponseHandled(context)) {
                 return sendPayload(context, notFoundResult);
             }
 

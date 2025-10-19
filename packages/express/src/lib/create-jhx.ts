@@ -74,7 +74,7 @@ export const createJhx = <
                     try {
                         const middlewareResult = await middleware(req as TRequest, res as TResponse);
                         if (isResponseHandled(res, middlewareResult)) {
-                            return;
+                            return await sendPayload(res, middlewareResult);
                         }
 
                         if (middlewareResult !== undefined) {
@@ -86,7 +86,7 @@ export const createJhx = <
                                           res as TResponse,
                                       )
                                     : middlewareResult;
-                            return sendPayload(res, renderResult);
+                            return await sendPayload(res, renderResult);
                         }
                     } catch (e) {
                         const error = e as TError;
@@ -97,21 +97,21 @@ export const createJhx = <
                             );
                         }
                         if (baseConfig.errorHandler) {
-                            res.status(400);
+                            res.status(500);
                             const errorResult = await baseConfig.errorHandler(
                                 error,
                                 req as TRequest,
                                 res as TResponse,
                             );
                             if (isResponseHandled(res, errorResult)) {
-                                return;
+                                return await sendPayload(res, errorResult);
                             }
 
                             const renderResult =
                                 baseConfig.render && baseConfig.renderError
                                     ? await baseConfig.render(errorResult, req as TRequest, res as TResponse)
                                     : errorResult;
-                            return sendPayload(res, renderResult);
+                            return await sendPayload(res, renderResult);
                         }
 
                         throw new JhxServerException('Unexpected jhx middleware error', {
@@ -128,13 +128,13 @@ export const createJhx = <
                 try {
                     const routeResult = await jhxHandler(req as TRequest, res as TResponse);
                     if (isResponseHandled(res, routeResult)) {
-                        return;
+                        return await sendPayload(res, routeResult);
                     }
 
                     const renderResult = baseConfig.render
                         ? await baseConfig.render(routeResult, req as TRequest, res as TResponse)
                         : routeResult;
-                    return sendPayload(res, renderResult);
+                    return await sendPayload(res, renderResult);
                 } catch (e) {
                     const error = e as TError;
 
@@ -144,21 +144,21 @@ export const createJhx = <
                         );
                     }
                     if (baseConfig.errorHandler) {
-                        res.status(400);
+                        res.status(500);
                         const errorResult = await baseConfig.errorHandler(
                             error,
                             req as TRequest,
                             res as TResponse,
                         );
                         if (isResponseHandled(res, errorResult)) {
-                            return;
+                            return await sendPayload(res, errorResult);
                         }
 
                         const renderResult =
                             baseConfig.render && baseConfig.renderError
                                 ? await baseConfig.render(errorResult, req as TRequest, res as TResponse)
                                 : errorResult;
-                        return sendPayload(res, renderResult);
+                        return await sendPayload(res, renderResult);
                     }
 
                     throw new JhxServerException('Unexpected jhx route error', {
@@ -187,7 +187,7 @@ export const createJhx = <
                 baseConfig.render && baseConfig.renderNotFound
                     ? await baseConfig.render(notFoundResult, req as TRequest, res as TResponse)
                     : notFoundResult;
-            return sendPayload(res, renderResult);
+            return await sendPayload(res, renderResult);
         });
     }) as {
         jhx: Jhx<TDomBase, TReturn, TRequest, TResponse, TBaseStringify>;

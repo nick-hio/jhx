@@ -106,6 +106,17 @@ describe('not found handling', () => {
         await expectResponse(res, 'file-data', 'application/octet-stream', 404);
     });
 
+    it('returns blob (config.contentType=null)', async () => {
+        const port = ports.getPort();
+        buildServer(testServers, port, {
+            contentType: null,
+            notFoundHandler: () => Bun.file(path.join(__dirname, 'data.txt')),
+        });
+
+        const res = await fetch(testUrl(port));
+        await expectResponse(res, 'file-data', 'text/plain;charset=utf-8', 404);
+    });
+
     it('returns stream (res.writeHead)', async () => {
         const port = ports.getPort();
         buildServer(testServers, port, {

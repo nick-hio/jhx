@@ -72,6 +72,19 @@ describe('render handling', () => {
         await expectResponse(res, 'file-data', 'application/octet-stream');
     });
 
+    it('returns blob (config.contentType=null)', async () => {
+        const port = ports.getPort();
+        const { jhx } = buildServer(testServers, port, {
+            contentType: null,
+            render: () => Bun.file(path.join(__dirname, 'data.txt')),
+        });
+
+        jhx({ route, handler: () => 'response' });
+
+        const res = await fetch(testUrl(port));
+        await expectResponse(res, 'file-data', 'text/plain;charset=utf-8');
+    });
+
     it('returns stream (res.writeHead)', async () => {
         const port = ports.getPort();
         const { jhx } = buildServer(testServers, port, {

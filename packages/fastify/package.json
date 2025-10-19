@@ -47,7 +47,7 @@
     "lint": "eslint . --max-warnings 0",
     "test": "bun test ./tests",
     "test:watch": "bun test --watch ./tests",
-    "verify": "turbo run check-types lint test format --filter=@jhxdev/fastify..."
+    "validate": "turbo run check-types lint test format --filter=@jhxdev/fastify..."
   },
   "dependencies": {
     "fastify-plugin": "^5.1.0",

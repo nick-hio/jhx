@@ -136,6 +136,21 @@ describe('route handling', () => {
         await expectResponse(res, 'file-data', 'application/octet-stream');
     });
 
+    it('returns blob (config.contentType=null)', async () => {
+        const port = ports.getPort();
+        const { jhx } = buildServer(testServers, port, {
+            contentType: null,
+        });
+
+        jhx({
+            route,
+            handler: () => Bun.file(path.join(__dirname, 'data.txt')),
+        });
+
+        const res = await fetch(testUrl(port));
+        await expectResponse(res, 'file-data', 'text/plain;charset=utf-8');
+    });
+
     it('returns stream (res.writeHead)', async () => {
         const port = ports.getPort();
         const { jhx } = buildServer(testServers, port);

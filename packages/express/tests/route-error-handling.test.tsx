@@ -46,7 +46,7 @@ describe('route error handling', () => {
         });
 
         const res = await fetch(testUrl(port));
-        await expectResponse(res, '<div>route-error</div>', 'text/html', 400);
+        await expectResponse(res, '<div>route-error</div>', 'text/html', 500);
     });
 
     it('returns JSX (config.render=static)', async () => {
@@ -64,7 +64,7 @@ describe('route error handling', () => {
         });
 
         const res = await fetch(testUrl(port));
-        await expectResponse(res, '<div>route-error</div>', 'text/html', 400);
+        await expectResponse(res, '<div>route-error</div>', 'text/html', 500);
     });
 
     it('returns JSX (config.render=string)', async () => {
@@ -82,7 +82,7 @@ describe('route error handling', () => {
         });
 
         const res = await fetch(testUrl(port));
-        await expectResponse(res, '<div>route-error</div>', 'text/html', 400);
+        await expectResponse(res, '<div>route-error</div>', 'text/html', 500);
     });
 
     it('returns JSX (config.renderError=false)', async () => {
@@ -100,7 +100,7 @@ describe('route error handling', () => {
         });
 
         const res = await fetch(testUrl(port));
-        await expectResponse(res, '{"type":"div","key":null,"props":{"children":"route-error"},"_owner":null,"_store":{}}', 'text/html', 400);
+        await expectResponse(res, '{"type":"div","key":null,"props":{"children":"route-error"},"_owner":null,"_store":{}}', 'text/html', 500);
     });
 
     it('returns buffer (config.contentType=null)', async () => {
@@ -118,7 +118,7 @@ describe('route error handling', () => {
         });
 
         const res = await fetch(testUrl(port));
-        await expectResponse(res, 'route-error', 'application/octet-stream', 400);
+        await expectResponse(res, 'route-error', 'application/octet-stream', 500);
     });
 
     it('returns buffer (response header set)', async () => {
@@ -138,7 +138,7 @@ describe('route error handling', () => {
         });
 
         const res = await fetch(testUrl(port));
-        await expectResponse(res, 'route-error', 'application/octet-stream', 400);
+        await expectResponse(res, 'route-error', 'application/octet-stream', 500);
     });
 
     it('returns buffer (fs.readFile; config.contentType=null)', async () => {
@@ -160,14 +160,32 @@ describe('route error handling', () => {
         });
 
         const res = await fetch(testUrl(port));
-        await expectResponse(res, 'file-data', 'application/octet-stream', 400);
+        await expectResponse(res, 'file-data', 'application/octet-stream', 500);
+    });
+
+    it('returns blob (config.contentType=null)', async () => {
+        const port = ports.getPort();
+        const { jhx } = buildServer(testServers, port, {
+            contentType: null,
+            errorHandler: () => Bun.file(path.join(__dirname, 'data.txt')),
+        });
+
+        jhx({
+            route,
+            handler: () => {
+                throw new Error('route-error');
+            },
+        });
+
+        const res = await fetch(testUrl(port));
+        await expectResponse(res, 'file-data', 'text/plain;charset=utf-8', 500);
     });
 
     it('returns stream (res.writeHead)', async () => {
         const port = ports.getPort();
         const { jhx } = buildServer(testServers, port, {
             errorHandler: async (_err, _res, res) => {
-                res.writeHead(400, { 'Content-Type': 'text/plain' });
+                res.writeHead(500, { 'Content-Type': 'text/plain' });
                 const chunks = ['stream', '-', 'ok'];
 
                 for await (const chunk of chunks) {
@@ -187,7 +205,7 @@ describe('route error handling', () => {
         });
 
         const res = await fetch(testUrl(port));
-        await expectResponse(res, 'stream-ok', 'text/plain', 400);
+        await expectResponse(res, 'stream-ok', 'text/plain', 500);
     });
 
     it('returns string', async () => {
@@ -204,7 +222,7 @@ describe('route error handling', () => {
         });
 
         const res = await fetch(testUrl(port));
-        await expectResponse(res, 'route-error', 'text/html', 400);
+        await expectResponse(res, 'route-error', 'text/html', 500);
     });
 
     it('returns object (config.contentType=null)', async () => {
@@ -222,7 +240,7 @@ describe('route error handling', () => {
         });
 
         const res = await fetch(testUrl(port));
-        await expectResponse(res, { message: 'route-error' }, 'application/json', 400);
+        await expectResponse(res, { message: 'route-error' }, 'application/json', 500);
     });
 
     it('returns object (response header set)', async () => {
@@ -242,7 +260,7 @@ describe('route error handling', () => {
         });
 
         const res = await fetch(testUrl(port));
-        await expectResponse(res, { message: 'route-error' }, 'application/json', 400);
+        await expectResponse(res, { message: 'route-error' }, 'application/json', 500);
     });
 
     it('returns void', async () => {
@@ -259,6 +277,6 @@ describe('route error handling', () => {
         });
 
         const res = await fetch(testUrl(port));
-        await expectResponse(res, '', 'text/html', 400);
+        await expectResponse(res, '', 'text/html', 500);
     });
 });

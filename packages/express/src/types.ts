@@ -1,4 +1,3 @@
-import type { Readable } from 'stream';
 import type { ReactNode } from 'react';
 import type { Request as ExpressRequest, Response as ExpressResponse } from 'express';
 
@@ -24,8 +23,8 @@ type RenderReturn =
     | ArrayBufferView
     | ArrayBuffer
     | Buffer
+    | Blob
     | ExpressResponse
-    | Readable
     | Record<string, any>
     | string
     | number

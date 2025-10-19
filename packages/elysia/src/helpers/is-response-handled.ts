@@ -1,18 +1,5 @@
 import type { Context as ElysiaContext } from 'elysia';
 
-const isElysiaContext = (obj: any): obj is ElysiaContext => {
-    return (
-        obj
-        && typeof obj === 'object'
-        && 'body' in obj
-        && 'request' in obj
-        && 'path' in obj
-        && 'server' in obj
-        && 'set' in obj
-        && 'status' in obj
-    );
-};
-
 const isResponseSent = (context: any) => {
     return (
         !!(context.responseValue || context.response)
@@ -23,12 +10,6 @@ const isResponseSent = (context: any) => {
     );
 };
 
-export const isResponseHandled = (context: ElysiaContext, handlerResult: any): boolean => {
-    return (
-        isResponseSent(context)
-        || context === handlerResult
-        || isElysiaContext(handlerResult)
-        || handlerResult instanceof Response
-        || handlerResult instanceof ReadableStream
-    );
+export const isResponseHandled = (context: ElysiaContext): boolean => {
+    return isResponseSent(context);
 };

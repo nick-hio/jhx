@@ -21,13 +21,13 @@ describe('middleware error handling', () => {
             middleware: () => {
                 throw new Error('mw-error');
             },
-            errorHandler: (err, _req, res) => res.status(400).send(err.message),
+            errorHandler: (err, _req, res) => res.status(500).send(err.message),
         });
 
         jhx({ route, handler: () => 'should-not-run' });
 
         const res = await fetch(testUrl(port));
-        await expectResponse(res, 'mw-error', 'text/html', 400);
+        await expectResponse(res, 'mw-error', 'text/html', 500);
     });
 
     it('returns JSX (default)', async () => {
@@ -42,7 +42,7 @@ describe('middleware error handling', () => {
         jhx({ route, handler: () => 'should-not-run' });
 
         const res = await fetch(testUrl(port));
-        await expectResponse(res, '<div>mw-error</div>', 'text/html', 400);
+        await expectResponse(res, '<div>mw-error</div>', 'text/html', 500);
     });
 
     it('returns JSX (config.render=static)', async () => {
@@ -58,7 +58,7 @@ describe('middleware error handling', () => {
         jhx({ route, handler: () => 'should-not-run' });
 
         const res = await fetch(testUrl(port));
-        await expectResponse(res, '<div>mw-error</div>', 'text/html', 400);
+        await expectResponse(res, '<div>mw-error</div>', 'text/html', 500);
     });
 
     it('returns JSX (config.render=string)', async () => {
@@ -74,7 +74,7 @@ describe('middleware error handling', () => {
         jhx({ route, handler: () => 'should-not-run' });
 
         const res = await fetch(testUrl(port));
-        await expectResponse(res, '<div>mw-error</div>', 'text/html', 400);
+        await expectResponse(res, '<div>mw-error</div>', 'text/html', 500);
     });
 
     it('returns JSX (config.renderError=false)', async () => {
@@ -90,7 +90,7 @@ describe('middleware error handling', () => {
         jhx({ route, handler: () => 'should-not-run' });
 
         const res = await fetch(testUrl(port));
-        await expectResponse(res, '{"type":"div","key":null,"props":{"children":"mw-error"},"_owner":null,"_store":{}}', 'text/html', 400);
+        await expectResponse(res, '{"type":"div","key":null,"props":{"children":"mw-error"},"_owner":null,"_store":{}}', 'text/html', 500);
     });
 
     it('returns buffer (config.contentType=null)', async () => {
@@ -106,7 +106,7 @@ describe('middleware error handling', () => {
         jhx({ route, handler: () => 'should-not-run' });
 
         const res = await fetch(testUrl(port));
-        await expectResponse(res, 'mw-error', 'application/octet-stream', 400);
+        await expectResponse(res, 'mw-error', 'application/octet-stream', 500);
     });
 
     it('returns buffer (response header set)', async () => {
@@ -124,7 +124,7 @@ describe('middleware error handling', () => {
         jhx({ route, handler: () => 'should-not-run' });
 
         const res = await fetch(testUrl(port));
-        await expectResponse(res, 'mw-error', 'application/octet-stream', 400);
+        await expectResponse(res, 'mw-error', 'application/octet-stream', 500);
     });
 
     it('returns buffer (fs.readFile; config.contentType=null)', async () => {
@@ -144,7 +144,23 @@ describe('middleware error handling', () => {
         jhx({ route, handler: () => 'should-not-run' });
 
         const res = await fetch(testUrl(port));
-        await expectResponse(res, 'file-data', 'application/octet-stream', 400);
+        await expectResponse(res, 'file-data', 'application/octet-stream', 500);
+    });
+
+    it('returns blob (config.contentType=null)', async () => {
+        const port = ports.getPort();
+        const { jhx } = buildServer(testServers, port, {
+            contentType: null,
+            middleware: () => {
+                throw new Error('mw-error');
+            },
+            errorHandler: () => Bun.file(path.join(__dirname, 'data.txt')),
+        });
+
+        jhx({ route, handler: () => 'should-not-run' });
+
+        const res = await fetch(testUrl(port));
+        await expectResponse(res, 'file-data', 'text/plain;charset=utf-8', 500);
     });
 
     it('returns stream (res.writeHead)', async () => {
@@ -154,7 +170,7 @@ describe('middleware error handling', () => {
                 throw new Error('mw-error');
             },
             errorHandler: async (_err, _res, res) => {
-                res.writeHead(400, { 'Content-Type': 'text/plain' });
+                res.writeHead(500, { 'Content-Type': 'text/plain' });
                 const chunks = ['stream', '-', 'ok'];
 
                 for await (const chunk of chunks) {
@@ -169,7 +185,7 @@ describe('middleware error handling', () => {
         jhx({ route, handler: () => 'should-not-run' });
 
         const res = await fetch(testUrl(port));
-        await expectResponse(res, 'stream-ok', 'text/plain', 400);
+        await expectResponse(res, 'stream-ok', 'text/plain', 500);
     });
 
     it('returns string', async () => {
@@ -184,7 +200,7 @@ describe('middleware error handling', () => {
         jhx({ route, handler: () => 'should-not-run' });
 
         const res = await fetch(testUrl(port));
-        await expectResponse(res, 'mw-error', 'text/html', 400);
+        await expectResponse(res, 'mw-error', 'text/html', 500);
     });
 
     it('returns object (config.contentType=null)', async () => {
@@ -200,7 +216,7 @@ describe('middleware error handling', () => {
         jhx({ route, handler: () => 'should-not-run' });
 
         const res = await fetch(testUrl(port));
-        await expectResponse(res, { message: 'mw-error' }, 'application/json', 400);
+        await expectResponse(res, { message: 'mw-error' }, 'application/json', 500);
     });
 
     it('returns object (response header set)', async () => {
@@ -218,7 +234,7 @@ describe('middleware error handling', () => {
         jhx({ route, handler: () => 'should-not-run' });
 
         const res = await fetch(testUrl(port));
-        await expectResponse(res, { message: 'mw-error' }, 'application/json', 400);
+        await expectResponse(res, { message: 'mw-error' }, 'application/json', 500);
     });
 
     it('returns void', async () => {
@@ -233,6 +249,6 @@ describe('middleware error handling', () => {
         jhx({ route, handler: () => 'should-not-run' });
 
         const res = await fetch(testUrl(port));
-        await expectResponse(res, '', 'text/html', 400);
+        await expectResponse(res, '', 'text/html', 500);
     });
 });

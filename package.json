@@ -5,9 +5,10 @@
     "build": "turbo run build",
     "check-types": "turbo run check-types -- --jsx preserve",
     "dev": "turbo run dev",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "format": "turbo run format",
     "lint": "turbo run lint",
-    "publish-packages": "turbo run lint check-types format build test && changeset version && changeset publish"
+    "validate": "turbo run lint check-types test format",
+    "publish-packages": "turbo run lint check-types test format build && changeset version && changeset publish"
   },
   "devDependencies": {
     "prettier": "^3.6.2",

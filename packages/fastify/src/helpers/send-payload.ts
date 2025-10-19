@@ -72,6 +72,8 @@ export const sendPayload = async (res: FastifyReply, payload: unknown) => {
         || isArrayBuffer(payload)
     ) {
         ensureHeader(res, 'Content-Type', 'application/octet-stream');
+    } else if (typeof payload === 'object' && payload !== null) {
+        ensureHeader(res, 'Content-Type', 'application/json');
     }
 
     return res.send(payload);
