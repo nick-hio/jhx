@@ -1,67 +1,52 @@
 import { JhxErrorThrowable } from '../lib/jhx-error';
-import type { HtmxProps, JhxConfig, JhxRouteProps } from '../types';
+import type { HtmxAttribute, HtmxProps, JhxConfig, JhxRouteProps } from '../types';
 import { extractFunction } from './extract-function';
 import { toJhxSwapAttribute } from './to-jhx-swap-attribute';
 import { toJhxTargetAttribute } from './to-jhx-target-attribute';
 import { toJhxTriggerAttribute } from './to-jhx-trigger-attribute';
 
+const requestKeys = ['get', 'post', 'put', 'patch', 'delete', 'route'] as const;
+
 export const convertJhxAttributes = <TDom extends object = object>(
     options: HtmxProps<TDom> & JhxRouteProps,
     config: Required<JhxConfig>,
-): Record<string, unknown> => {
+): Record<HtmxAttribute, string> => {
     const attributes: Record<string, string> = {};
-    const remainingProps = { ...options } as Record<string, unknown>;
-
     if (!options || typeof options !== 'object') {
         return attributes;
     }
 
-    if (options.route) {
-        const method = options.method?.toLowerCase() || 'get';
-
-        if (method === 'get') attributes['hx-get'] = options.route;
-        else if (method === 'post') attributes['hx-post'] = options.route;
-        else if (method === 'put') attributes['hx-put'] = options.route;
-        else if (method === 'delete') attributes['hx-delete'] = options.route;
-        else if (method === 'patch') attributes['hx-patch'] = options.route;
-        else {
-            attributes[`hx-${method}`] = options.route;
+    const methodKey = requestKeys.find((k) => Boolean(options[k]));
+    if (methodKey) {
+        if (methodKey === 'route') {
+            const method = options.method?.toLowerCase() || 'get';
+            attributes[`hx-${method}`] = String(options.route);
+        } else {
+            attributes[`hx-${methodKey}`] = String(options[methodKey]);
         }
-
-        delete remainingProps.route;
-        delete remainingProps.method;
+    } else if (options.method) {
+        config.logger.warn(
+            "[jhx] The 'method' prop must be paired with a 'route' prop to generate a request attribute.",
+        );
     }
 
     if (options.boost === true) {
         attributes['hx-boost'] = 'true';
-        delete remainingProps.boost;
     }
 
     if (options.confirm) {
         attributes['hx-confirm'] = options.confirm;
-        delete remainingProps.confirm;
     }
 
     if (options.disable === true) {
         attributes['hx-disable'] = 'true';
-        delete remainingProps.disable;
     }
 
     if (options.disabledElt) {
-        if (typeof options.disabledElt === 'object') {
-            if (
-                typeof options.disabledElt?.selector === 'string'
-                && typeof options.disabledElt?.op === 'string'
-            ) {
-                attributes['hx-disabled-elt'] = `${options.disabledElt.op} ${options.disabledElt.selector}`;
-            } else if (!options.disabledElt.selector && options.disabledElt.op === 'this') {
-                attributes['hx-disabled-elt'] = 'this';
-            }
-        } else {
-            attributes['hx-disabled-elt'] = options.disabledElt;
+        const target = toJhxTargetAttribute(options.disabledElt);
+        if (target) {
+            attributes['hx-disabled-elt'] = target;
         }
-
-        delete remainingProps.disabledElt;
     }
 
     if (options.disinherit) {
@@ -70,34 +55,31 @@ export const convertJhxAttributes = <TDom extends object = object>(
         } else {
             attributes['hx-disinherit'] = options.disinherit;
         }
-
-        delete remainingProps.disinherit;
     }
 
     if (options.encoding) {
         attributes['hx-encoding'] = options.encoding;
-        delete remainingProps.encoding;
     }
 
     if (options.ext) {
-        if (Array.isArray(options.ext)) {
-            attributes['hx-ext'] = options.ext
-                .map((ext) => {
-                    if (typeof ext === 'string') {
-                        return ext;
-                    }
-                    if (typeof ext === 'object' && ext.name) {
-                        return `${ext.ignore === true ? 'ignore:' : ''}${ext.name}`;
-                    }
-                    return '';
-                })
-                .filter(Boolean)
-                .join(',');
-        } else {
+        if (typeof options.ext === 'string') {
             attributes['hx-ext'] = options.ext;
         }
 
-        delete remainingProps.ext;
+        const extArray = Array.isArray(options.ext) ? options.ext : [options.ext];
+        const extensions = extArray
+            .map((ext) => {
+                if (typeof ext === 'object') {
+                    return `${ext?.name && ext.ignore === true ? 'ignore:' : ''}${ext?.name}`;
+                }
+                return ext;
+            })
+            .filter(Boolean)
+            .join(',');
+
+        if (extensions) {
+            attributes['hx-ext'] = extensions;
+        }
     }
 
     if (options.headers) {
@@ -105,7 +87,12 @@ export const convertJhxAttributes = <TDom extends object = object>(
             try {
                 attributes['hx-headers'] = `${JSON.stringify(options.headers)}`;
             } catch (e) {
-                console.error('[ERROR] Could not parse `hx-headers` object.');
+                config.logger.error('[jhx] Error while parsing the `hx-headers` object.');
+                throw new JhxErrorThrowable("[jhx] Error while parsing 'hx-request' object", {
+                    attribute: 'hx-headers',
+                    cause: e as TypeError,
+                    stack: e instanceof Error && typeof e.stack === 'string' ? e.stack : undefined,
+                });
             }
         } else if (typeof options.headers === 'function') {
             const func = extractFunction(options.headers);
@@ -116,18 +103,14 @@ export const convertJhxAttributes = <TDom extends object = object>(
         } else {
             attributes['hx-headers'] = options.headers;
         }
-
-        delete remainingProps.headers;
     }
 
     if (options.history === false) {
         attributes['hx-history'] = 'false';
-        delete remainingProps.history;
     }
 
     if (options.historyElt === true) {
         attributes['hx-history-elt'] = 'true';
-        delete remainingProps.historyElt;
     }
 
     if (options.indicator) {
@@ -138,23 +121,13 @@ export const convertJhxAttributes = <TDom extends object = object>(
         } else {
             attributes['hx-indicator'] = options.indicator;
         }
-
-        delete remainingProps.indicator;
     }
 
     if (options.include) {
-        if (typeof options.include === 'object') {
-            if (options.include.op === 'this') {
-                attributes['hx-include'] = 'this';
-            } else if (options.include.selector) {
-                const op = options.include.op ? `${options.include.op} ` : '';
-                attributes['hx-include'] = `${op}${options.include.selector}`;
-            }
-        } else {
-            attributes['hx-include'] = options.include;
+        const target = toJhxTargetAttribute(options.include);
+        if (target) {
+            attributes['hx-include'] = target;
         }
-
-        delete remainingProps.include;
     }
 
     if (options.inherit) {
@@ -163,8 +136,6 @@ export const convertJhxAttributes = <TDom extends object = object>(
         } else {
             attributes['hx-inherit'] = options.inherit;
         }
-
-        delete remainingProps.inherit;
     }
 
     if (options.params) {
@@ -177,18 +148,14 @@ export const convertJhxAttributes = <TDom extends object = object>(
         } else {
             attributes['hx-params'] = options.params;
         }
-
-        delete remainingProps.params;
     }
 
     if (options.preserve === true) {
         attributes['hx-preserve'] = 'true';
-        delete remainingProps.preserve;
     }
 
     if (options.prompt) {
         attributes['hx-prompt'] = options.prompt;
-        delete remainingProps.prompt;
     }
 
     if (options.pushUrl) {
@@ -197,8 +164,6 @@ export const convertJhxAttributes = <TDom extends object = object>(
         } else {
             attributes['hx-push-url'] = options.pushUrl;
         }
-
-        delete remainingProps.pushUrl;
     }
 
     if (options.replaceUrl || options.replaceUrl === false) {
@@ -207,8 +172,6 @@ export const convertJhxAttributes = <TDom extends object = object>(
         } else {
             attributes['hx-replace-url'] = options.replaceUrl;
         }
-
-        delete remainingProps.replaceUrl;
     }
 
     if (options.request) {
@@ -218,8 +181,8 @@ export const convertJhxAttributes = <TDom extends object = object>(
             } catch (e) {
                 throw new JhxErrorThrowable("[jhx] Error while parsing 'hx-request' object", {
                     attribute: 'hx-request',
-                    cause: e instanceof Error ? e : undefined,
-                    stack: e instanceof Error ? e.stack : undefined,
+                    cause: e as TypeError,
+                    stack: e instanceof Error && typeof e.stack === 'string' ? e.stack : undefined,
                 });
             }
         } else if (typeof options.request === 'function') {
@@ -232,13 +195,10 @@ export const convertJhxAttributes = <TDom extends object = object>(
         } else {
             attributes['hx-request'] = options.request;
         }
-
-        delete remainingProps.request;
     }
 
     if (options.select) {
         attributes['hx-select'] = options.select;
-        delete remainingProps.select;
     }
 
     if (options.selectOob) {
@@ -256,11 +216,12 @@ export const convertJhxAttributes = <TDom extends object = object>(
                 })
                 .filter(Boolean)
                 .join(',');
+        } else if (typeof options.selectOob === 'object') {
+            const swap = toJhxSwapAttribute(options.selectOob.swap);
+            attributes['hx-select-oob'] = `${options.selectOob.selector}${swap ? ':' + swap : ''}`;
         } else {
             attributes['hx-select-oob'] = options.selectOob;
         }
-
-        delete remainingProps.selectOob;
     }
 
     if (options.swap) {
@@ -268,8 +229,6 @@ export const convertJhxAttributes = <TDom extends object = object>(
         if (swap) {
             attributes['hx-swap'] = swap;
         }
-
-        delete remainingProps.swap;
     }
 
     if (options.swapOob) {
@@ -284,8 +243,6 @@ export const convertJhxAttributes = <TDom extends object = object>(
         } else {
             attributes['hx-swap-oob'] = options.swapOob;
         }
-
-        delete remainingProps.swapOob;
     }
 
     if (options.sync) {
@@ -299,8 +256,6 @@ export const convertJhxAttributes = <TDom extends object = object>(
         } else {
             attributes['hx-sync'] = options.sync;
         }
-
-        delete remainingProps.sync;
     }
 
     if (options.target) {
@@ -308,27 +263,21 @@ export const convertJhxAttributes = <TDom extends object = object>(
         if (target) {
             attributes['hx-target'] = target;
         }
-
-        delete remainingProps.target;
     }
 
     if (options.trigger) {
         attributes['hx-trigger'] = toJhxTriggerAttribute(options.trigger);
-        delete remainingProps.trigger;
     }
 
     if (options.validate === true) {
         attributes['hx-validate'] = 'true';
-        delete remainingProps.validate;
     }
 
     if (options.vars) {
         config.logger.warn(
-            'The `hx-vars` attribute has been deprecated because of potential XSS vulnerabilities. Use the `hx-vals` attribute instead.',
+            '[jhx] The `hx-vars` attribute has been deprecated because of XSS vulnerabilities. Recommended to use the `hx-vals` attribute.',
         );
         attributes['hx-vars'] = options.vars;
-
-        delete remainingProps.vars;
     }
 
     if (options.vals) {
@@ -338,8 +287,8 @@ export const convertJhxAttributes = <TDom extends object = object>(
             } catch (e) {
                 throw new JhxErrorThrowable("[jhx] Error while parsing 'hx-vals' object", {
                     attribute: 'hx-vals',
-                    cause: e instanceof Error ? e : undefined,
-                    stack: e instanceof Error ? e.stack : undefined,
+                    cause: e as TypeError,
+                    stack: e instanceof Error && typeof e.stack === 'string' ? e.stack : undefined,
                 });
             }
         } else if (typeof options.vals === 'function') {
@@ -351,12 +300,7 @@ export const convertJhxAttributes = <TDom extends object = object>(
         } else {
             attributes['hx-vals'] = options.vals;
         }
-
-        delete remainingProps.vals;
     }
 
-    return {
-        ...remainingProps,
-        ...attributes,
-    };
+    return attributes;
 };

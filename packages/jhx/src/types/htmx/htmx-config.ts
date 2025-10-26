@@ -1,4 +1,4 @@
-import type { HtmxSwapStyle } from '../../lib/htmx';
+import type { HtmxSwapStyle } from './constants';
 import type { HtmxHttpVerb } from './htmx-http-verb.ts';
 import type { HtmxResponseHandlingConfig } from './htmx-response-handling-config.ts';
 

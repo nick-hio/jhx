@@ -1,4 +1,5 @@
 import type { DomObjects } from './dom-objects.ts';
+import type { HtmxEventProps } from './htmx-event-props';
 
 /**
  * Properties for handling standard DOM events.
@@ -6,7 +7,7 @@ import type { DomObjects } from './dom-objects.ts';
  * Note: The `stringify` config property must be set to `true` since in-line
  * DOM event handlers are stripped during rendering.
  */
-export interface DomEventProps<TDom extends object = object> {
+interface CommonDomEventProps<TDom extends object = object> {
     /* DOM Mouse event (only available when the config `stringify` property is set to `true`). */
     onClick?: (args: { event: MouseEvent } & DomObjects & TDom) => void;
     /* DOM Mouse event (only available when the config `stringify` property is set to `true`). */
@@ -148,3 +149,13 @@ export interface DomEventProps<TDom extends object = object> {
     /* DOM Toggle event (only available when the config `stringify` property is set to `true`). */
     onToggle?: (args: { event: Event } & DomObjects & TDom) => void;
 }
+
+interface CustomDomEventProps<TDom extends object = object> {
+    /* DOM event (only available when the config `stringify` property is set to `true`). */
+    [key: Exclude<`on${string}`, keyof CommonDomEventProps | keyof HtmxEventProps>]: <TEvent = Event>(
+        args: { event: TEvent } & DomObjects & TDom,
+    ) => void;
+}
+
+export type DomEventProps<TDom extends object = object> = CommonDomEventProps<TDom>
+    & CustomDomEventProps<TDom>;

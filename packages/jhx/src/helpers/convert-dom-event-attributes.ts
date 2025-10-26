@@ -1,37 +1,32 @@
-import { eventAttributes } from '../lib/htmx';
+import { eventAttribute } from '../lib/htmx/event-attribute';
 import type { DomEventProps } from '../types';
 import { extractFunction } from './extract-function';
 
-export const convertDomEventAttributes = <TDom extends object = object>(
-    props: DomEventProps<TDom>,
-): Record<string, unknown> => {
-    const domEvents: Record<string, string> = {};
-    const remainingProps = { ...props } as Record<string, unknown>;
-
+export const convertDomEventAttributes = (
+    props: Record<string, any>,
+): Record<keyof DomEventProps, string> => {
+    const events: Record<string, string> = {};
     if (!props || typeof props !== 'object') {
-        return domEvents;
+        return events;
     }
 
     for (const key in props) {
-        if (key in eventAttributes || !key.startsWith('on')) {
+        if (key in eventAttribute || !key.startsWith('on')) {
             continue;
         }
 
-        const handler = props[key as keyof DomEventProps];
-
-        if (handler) {
-            const func = extractFunction(handler);
-            if (!func) {
-                continue;
-            }
-
-            domEvents[key] = `((${func.params.join(',')}) => ${func.body})(${func.params.join(',')})`;
-            delete remainingProps[key];
+        const handler = props[key as keyof DomEventProps] as (...args: any[]) => any;
+        if (!handler) {
+            continue;
         }
+
+        const func = extractFunction(handler);
+        if (!func) {
+            continue;
+        }
+
+        events[key.toLowerCase()] = `((${func.params.join(',')}) => ${func.body})(${func.params.join(',')})`;
     }
 
-    return {
-        ...remainingProps,
-        ...domEvents,
-    };
+    return events;
 };

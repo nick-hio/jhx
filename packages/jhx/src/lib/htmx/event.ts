@@ -379,6 +379,3 @@ export const event = {
      */
     xhrProgress: 'htmx:xhr:progress',
 } as const;
-
-/** @see https://htmx.org/reference/#events */
-export type HtmxEventName = (typeof event)[keyof typeof event];

@@ -1,4 +1,4 @@
-import { eventAttributes } from './event-attributes';
+import { eventAttribute } from './event-attribute';
 
 /**
  * @see https://htmx.org/reference/#attributes
@@ -368,11 +368,5 @@ export const attribute = {
      */
     vars: 'hx-vars',
 
-    ...eventAttributes,
+    ...eventAttribute,
 } as const;
-
-/** @see https://htmx.org/reference/#attributes */
-export type HtmxAttribute = (typeof attribute)[keyof typeof attribute];
-
-/** @see https://htmx.org/reference/#attributes */
-export type HtmxAttributeKey = keyof typeof attribute;

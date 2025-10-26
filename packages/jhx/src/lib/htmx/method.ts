@@ -99,15 +99,3 @@ export const method = {
      */
     patch: 'hx-patch',
 } as const;
-
-/**
- * @see https://htmx.org/docs/#ajax
- * @see https://htmx.org/reference/#attributes
- */
-export type HtmxHttpMethod = keyof typeof method;
-
-/**
- * @see https://htmx.org/docs/#ajax
- * @see https://htmx.org/reference/#attributes
- */
-export type HtmxMethodAttribute = (typeof method)[keyof typeof method];

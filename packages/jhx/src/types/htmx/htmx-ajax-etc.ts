@@ -1,4 +1,4 @@
-import type { HtmxSwapStyle } from '../../lib/htmx';
+import type { HtmxSwapStyle } from './constants';
 import type { HtmxAjaxHandler } from './htmx-ajax-handler.ts';
 
 export interface HtmxAjaxEtc {

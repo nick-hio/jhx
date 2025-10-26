@@ -88,5 +88,3 @@ export const resHeader = {
      */
     triggerAfterSwap: 'HX-Trigger-After-Swap',
 } as const;
-
-export type HtmxResponseHeader = (typeof resHeader)[keyof typeof resHeader];

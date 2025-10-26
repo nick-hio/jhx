@@ -11,27 +11,30 @@ import type { JhxSyncAttribute } from './attributes/sync-attribute';
 import type { JhxTargetAttribute } from './attributes/target-attribute';
 import type { JhxTriggerAttribute } from './attributes/trigger-attribute';
 
-export interface HtmxProps<
-    /** Type for additional parameters received from the DOM. */
-    TDom extends object = object,
-> {
+/** @template TDom Additional variables that are available in the DOM. */
+export interface HtmxProps<TDom extends object = object> {
     boost?: boolean;
     confirm?: string;
+    delete?: string;
     disable?: boolean;
     disabledElt?: JhxTargetAttribute;
     disinherit?: JhxInheritAttribute;
     encoding?: string;
     ext?: JhxExtensionAttribute;
+    get?: string;
     headers?: JhxEvaluableAttribute<TDom>;
     history?: boolean;
     historyElt?: boolean;
     include?: JhxTargetAttribute;
     indicator?: JhxIndicatorAttribute;
     inherit?: JhxInheritAttribute;
+    patch?: string;
     params?: JhxParamsAttribute;
+    post?: string;
     preserve?: boolean;
     prompt?: string;
     pushUrl?: boolean | string;
+    put?: string;
     replaceUrl?: boolean | string;
     request?: JhxRequestAttribute<TDom>;
     select?: string;

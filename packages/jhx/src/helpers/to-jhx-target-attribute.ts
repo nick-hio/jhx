@@ -1,26 +1,42 @@
 import type { JhxTargetAttribute } from '../types';
 
-export const toJhxTargetAttribute = (target: JhxTargetAttribute | string): string | undefined => {
+export const toJhxTargetAttribute = (target: JhxTargetAttribute): string | undefined => {
     if (!target) {
         return undefined;
     }
 
-    const result: string[] = [];
+    const inputArray = Array.isArray(target) ? target : [target];
+    let usesInherit = false;
 
-    if (typeof target === 'object') {
-        if (target.op === 'this') {
-            return 'this';
+    const targets = inputArray.map((item) => {
+        if (typeof item !== 'object') {
+            return item;
         }
 
-        if (typeof target.op === 'string') {
-            result.push(target.op);
+        if (item.inherit !== undefined) {
+            if (!item.inherit) {
+                return undefined;
+            }
+            usesInherit = true;
+            return undefined;
         }
-        if (typeof target.selector === 'string') {
-            result.push(target.selector);
+        if (item.position === 'this' || item.position === 'next' || item.position === 'previous') {
+            return item.position;
         }
-    } else {
-        return String(target);
+
+        const target = [];
+        if (typeof item?.position === 'string') {
+            target.push(item.position);
+        }
+        if (typeof item.selector === 'string') {
+            target.push(item.selector);
+        }
+        return target.join(' ');
+    });
+
+    if (usesInherit) {
+        targets.unshift('inherit');
     }
 
-    return result.join(' ');
+    return targets.filter((item) => Boolean(item)).join(', ');
 };

@@ -1,4 +1,4 @@
-import type { HtmxHttpMethod } from '../lib/htmx';
+import type { HtmxHttpMethod } from './htmx';
 
 export type JhxRouteProps = {
     route?: string;

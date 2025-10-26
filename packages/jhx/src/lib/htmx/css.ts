@@ -40,6 +40,3 @@ export const css = {
      */
     swapping: 'htmx-swapping',
 } as const;
-
-/** @see https://htmx.org/reference/#classes */
-export type HtmxClass = (typeof css)[keyof typeof css];

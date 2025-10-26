@@ -1,10 +1,18 @@
-export type JhxTargetAttribute =
+type TargetAttribute =
     | {
+          inherit?: never;
+          position?: 'closest' | 'next' | 'previous' | 'find';
           selector: string;
-          op?: 'closest' | 'next' | 'previous' | 'find';
       }
     | {
+          inherit?: never;
+          position: 'this' | 'next' | 'previous';
           selector?: never;
-          op: 'this' | 'next' | 'previous';
       }
-    | string;
+    | {
+          inherit: boolean;
+          position?: never;
+          selector?: never;
+      };
+
+export type JhxTargetAttribute = Array<TargetAttribute | string> | TargetAttribute | string;

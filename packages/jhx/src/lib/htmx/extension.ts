@@ -1,14 +1,6 @@
-export interface HtmxExtensionObject {
-    name: string;
-    version: string;
-    npm?: string;
-    cdn?: {
-        src: string;
-        integrity?: string;
-    }[];
-}
-
 /**
+ * Metadata for official htmx extensions.
+ *
  * @see https://htmx.org/extensions/
  */
 export const extension = {
@@ -19,12 +11,18 @@ export const extension = {
      * @see https://htmx.org/extensions/
      */
     headSupport: {
+        /* Name of the extension for use in attributes. */
         name: 'head-support',
-        version: '2.0.2',
+        /* Current version of the extension. */
+        version: '2.0.5',
+        /* NPM registry name. */
         npm: 'htmx-ext-head-support',
+        /* CDN URL(s) and integrity hashes. */
         cdn: [
             {
-                src: 'https://cdn.jsdelivr.net/npm/htmx-ext-head-support@2.0.2',
+                /* CDN URL of the extension file. */
+                url: 'https://cdn.jsdelivr.net/npm/htmx-ext-head-support@2.0.5',
+                /* Integrity hash for the extension file. */
                 integrity: 'sha384-cvMqHzjCJsOHgGuyB3sWXaUSv/Krm0BdzjuI1rtkjCbL1l1oHJx+cHyVRJhyuEz0',
             },
         ],
@@ -38,11 +36,11 @@ export const extension = {
      */
     htmx1Compat: {
         name: 'htmx-1-compat',
-        version: '2.0.0',
+        version: '2.0.2',
         npm: 'htmx-ext-htmx-1-compat',
         cdn: [
             {
-                src: 'https://cdn.jsdelivr.net/npm/htmx-ext-htmx-1-compat@2.0.0',
+                url: 'https://cdn.jsdelivr.net/npm/htmx-ext-htmx-1-compat@2.0.2',
                 integrity: 'sha384-lcvVWaNjF5zPPUeeWmC0OkJ2MLqoWLlkAabuGm+EuMSTfGo5WRyHrNaAp0cJr9Pg',
             },
         ],
@@ -57,16 +55,12 @@ export const extension = {
      */
     idiomorph: {
         name: 'morph',
-        version: '0.7.3',
+        version: '0.7.4',
         npm: 'idiomorph',
         cdn: [
             {
-                src: 'https://unpkg.com/idiomorph@0.7.3',
-                integrity: 'sha384-JcorokHTL/m+D6ZHe2+yFVQopVwZ+91GxAPDyEZ6/A/OEPGEx1+MeNSe2OGvoRS9',
-            },
-            {
-                src: 'https://unpkg.com/idiomorph@0.7.3/dist/idiomorph-ext.min.js',
-                integrity: 'sha384-szktAZju9fwY15dZ6D2FKFN4eZoltuXiHStNDJWK9+FARrxJtquql828JzikODob',
+                url: 'https://unpkg.com/idiomorph@0.7.4/dist/idiomorph-ext.min.js',
+                integrity: 'sha384-SsScJKzATF/w6suEEdLbgYGsYFLzeKfOA6PY+/C5ZPxOSuA+ARquqtz/BZz9JWU8',
             },
         ],
     },
@@ -80,12 +74,12 @@ export const extension = {
      */
     preload: {
         name: 'preload',
-        version: '2.1.0',
+        version: '2.1.2',
         npm: 'htmx-ext-preload',
         cdn: [
             {
-                src: 'https://cdn.jsdelivr.net/npm/htmx-ext-preload@2.1.0',
-                integrity: 'sha384-fkzubQiTB69M7XTToqW6tplvxAOJkqPl5JmLAbumV2EacmuJb8xEP9KnJafk/rg8',
+                url: 'https://cdn.jsdelivr.net/npm/htmx-ext-preload@2.1.2',
+                integrity: 'sha384-PRIcY6hH1Y5784C76/Y8SqLyTanY9rnI3B8F3+hKZFNED55hsEqMJyqWhp95lgfk',
             },
         ],
     },
@@ -99,11 +93,11 @@ export const extension = {
      */
     responseTargets: {
         name: 'response-targets',
-        version: '2.0.2',
+        version: '2.0.4',
         npm: 'htmx-ext-response-targets',
         cdn: [
             {
-                src: 'https://cdn.jsdelivr.net/npm/htmx-ext-response-targets@2.0.2',
+                url: 'https://cdn.jsdelivr.net/npm/htmx-ext-response-targets@2.0.4',
                 integrity: 'sha384-T41oglUPvXLGBVyRdZsVRxNWnOOqCynaPubjUVjxhsjFTKrFJGEMm3/0KGmNQ+Pg',
             },
         ],
@@ -119,12 +113,12 @@ export const extension = {
      */
     sse: {
         name: 'sse',
-        version: '2.2.2',
+        version: '2.2.4',
         npm: 'htmx-ext-sse',
         cdn: [
             {
-                src: 'https://cdn.jsdelivr.net/npm/htmx-ext-sse@2.2.2',
-                integrity: 'sha384-Y4gc0CK6Kg+hmulDc6rZPJu0tqvk7EWlih0Oh+2OkAi1ZDlCbBDCQEE2uVk472Ky',
+                url: 'https://cdn.jsdelivr.net/npm/htmx-ext-sse@2.2.4',
+                integrity: 'sha384-A986SAtodyH8eg8x8irJnYUk7i9inVQqYigD6qZ9evobksGNIXfeFvDwLSHcp31N',
             },
         ],
     },
@@ -139,16 +133,13 @@ export const extension = {
      */
     ws: {
         name: 'ws',
-        version: '2.0.2',
+        version: '2.0.4',
         npm: 'htmx-ext-ws',
         cdn: [
             {
-                src: 'https://cdn.jsdelivr.net/npm/htmx-ext-ws@2.0.2',
-                integrity: 'sha384-vuKxTKv5TX/b3lLzDKP2U363sOAoRo5wSvzzc3LJsbaQRSBSS+3rKKHcOx5J8doU',
+                url: 'https://cdn.jsdelivr.net/npm/htmx-ext-ws@2.0.4',
+                integrity: 'sha384-1RwI/nvUSrMRuNj7hX1+27J8XDdCoSLf0EjEyF69nacuWyiJYoQ/j39RT1mSnd2G',
             },
         ],
     },
 } as const;
-
-/** @see https://htmx.org/extensions */
-export type DefaultHtmxExtension = keyof typeof extension;

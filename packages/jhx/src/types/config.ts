@@ -8,4 +8,6 @@ export interface JhxConfig {
      * otherwise, the return value will be an object map.
      */
     stringify?: boolean;
+
+    escape?: boolean;
 }

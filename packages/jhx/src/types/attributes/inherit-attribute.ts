@@ -1,8 +1,3 @@
-import type { HtmxAttribute, HtmxAttributeKey } from '../../lib/htmx';
+import type { HtmxAttribute } from '../htmx';
 
-export type JhxInheritAttribute =
-    | HtmxAttribute
-    | HtmxAttributeKey
-    | (HtmxAttribute | HtmxAttributeKey)[]
-    | '*'
-    | (string & {});
+export type JhxInheritAttribute = Array<HtmxAttribute | (string & {})> | HtmxAttribute | '*' | (string & {});

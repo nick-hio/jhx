@@ -41,14 +41,15 @@
     "build": "pnpm run build:lib && pnpm run build:types",
     "build:lib": "bun esbuild.config.js",
     "build:types": "rollup -c rollup.config.js",
-    "check-types": "tsc -p tsconfig.json --jsx preserve",
     "format": "prettier --write . --list-different",
     "lint": "eslint . --max-warnings 0",
     "test": "bun test ./tests",
     "test:watch": "bun test --watch ./tests",
-    "validate": "turbo run check-types lint test format --filter=jhx..."
+    "typecheck": "tsc -p tsconfig.json --jsx preserve",
+    "validate": "pnpm run typecheck && pnpm run lint && pnpm run test && pnpm run format"
   },
   "dependencies": {
+    "@types/alpinejs": "^3.13.11",
     "htmx.org": "^2.0.7",
     "react": "^18 || ^19",
     "react-dom": "^18 || ^19"

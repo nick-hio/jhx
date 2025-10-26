@@ -1,13 +1,13 @@
-import type { HtmxStrategy } from '../../lib/htmx';
+import type { HtmxSyncStrategy } from '../htmx';
 
 export type JhxSyncAttribute =
     | {
-          strategy: HtmxStrategy;
+          strategy: HtmxSyncStrategy;
           tag: string;
           closest?: boolean;
       }
     | {
-          strategy: HtmxStrategy;
+          strategy: HtmxSyncStrategy;
           tag?: never;
           closest?: never;
       }

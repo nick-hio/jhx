@@ -1,13 +1,17 @@
-export type HtmxErrorAttribute = 'hx-vals' | 'hx-request';
+export type JhxErrorAttribute = 'hx-headers' | 'hx-request' | 'hx-vals';
 
 export interface JhxError extends Error {
-    attribute: HtmxErrorAttribute;
-    message: JhxValsError['message'] | JhxRequestError['message'] | (string & {});
+    attribute: JhxErrorAttribute;
+    message:
+        | JhxHeadersError['message']
+        | JhxRequestError['message']
+        | JhxValsError['message']
+        | (string & {});
 }
 
-export interface JhxValsError extends JhxError {
-    attribute: 'hx-vals';
-    message: "[jhx] Error while parsing 'hx-vals' object";
+export interface JhxHeadersError extends JhxError {
+    attribute: 'hx-headers';
+    message: "[jhx] Error while parsing 'hx-headers' object";
 }
 
 export interface JhxRequestError extends JhxError {
@@ -15,13 +19,18 @@ export interface JhxRequestError extends JhxError {
     message: "[jhx] Error while parsing 'hx-request' object";
 }
 
+export interface JhxValsError extends JhxError {
+    attribute: 'hx-vals';
+    message: "[jhx] Error while parsing 'hx-vals' object";
+}
+
 export class JhxErrorThrowable extends Error implements JhxError {
-    attribute: HtmxErrorAttribute;
+    attribute: JhxErrorAttribute;
 
     constructor(
-        message: JhxValsError['message'] | JhxRequestError['message'] | (string & {}),
+        message: JhxError['message'],
         options: {
-            attribute: HtmxErrorAttribute;
+            attribute: JhxErrorAttribute;
             cause?: unknown;
             stack?: string;
         },

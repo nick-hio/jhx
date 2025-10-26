@@ -65,5 +65,3 @@ export const swap = {
      */
     none: 'none',
 } as const;
-
-export type HtmxSwapStyle = (typeof swap)[keyof typeof swap];

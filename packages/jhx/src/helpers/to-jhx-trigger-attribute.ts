@@ -46,5 +46,6 @@ export const toJhxTriggerAttribute = (trigger: JhxTriggerAttribute): string => {
 
             return '';
         })
+        .filter(Boolean)
         .join(', ');
 };

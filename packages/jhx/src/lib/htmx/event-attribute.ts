@@ -1,7 +1,7 @@
 /**
  * @see https://htmx.org/reference/#events
  */
-export const eventAttributes = {
+export const eventAttribute = {
     /**
      * Send this event to an element to abort a request.
      *
@@ -379,12 +379,3 @@ export const eventAttributes = {
      */
     onXhrProgress: 'hx-on--xhr-progress',
 } as const;
-
-/**
- * @see https://htmx.org/reference/#events
- * @see https://htmx.org/attributes/hx-on/
- */
-export type HtmxEventAttribute =
-    | (typeof eventAttributes)[keyof typeof eventAttributes]
-    | `hx-on--${string}`
-    | `hx-on-${string}`;

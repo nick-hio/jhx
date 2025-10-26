@@ -1,4 +1,4 @@
-import type { HtmxSwapStyle } from '../../lib/htmx';
+import type { HtmxSwapStyle } from './constants';
 import type { HtmxAjaxEtc } from './htmx-ajax-etc.ts';
 import type { HtmxCacheItem } from './htmx-cache-item.ts';
 import type { HtmxElementValidationError } from './htmx-element-validation-error.ts';

@@ -1,4 +1,4 @@
-import type { HtmxSwapStyle } from '../../lib/htmx';
+import type { HtmxSwapStyle } from './constants';
 import type { HtmxEvent } from './htmx-event.ts';
 import type { HtmxSettleInfo } from './htmx-settle-info.ts';
 

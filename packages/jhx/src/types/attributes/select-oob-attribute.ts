@@ -1,11 +1,6 @@
-import type { HtmxSwapStyle } from '../../lib/htmx';
+import type { HtmxSwapStyle } from '../htmx';
 
 export type JhxSelectOobAttribute =
-    | (
-          | string
-          | {
-                selector: string;
-                swap?: HtmxSwapStyle;
-            }
-      )[]
+    | Array<string | { selector: string; swap?: HtmxSwapStyle }>
+    | { selector: string; swap?: HtmxSwapStyle }
     | string;

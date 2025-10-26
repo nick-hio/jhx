@@ -4,6 +4,7 @@ export * from './config';
 export * from './dom-event-props';
 export * from './dom-objects';
 export * from './duration';
+export * from './element-attribute';
 export * from './htmx-event-props';
 export * from './htmx-props';
 export * from './logger';

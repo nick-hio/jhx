@@ -1,7 +1,7 @@
 /**
  * @see https://htmx.org/attributes/hx-sync/
  */
-export const syncStrategy = {
+export const sync = {
     /**
      * Drop (ignore) this request if an existing request is in flight (the default).
      *
@@ -52,5 +52,3 @@ export const syncStrategy = {
      */
     queueLast: 'queue last',
 } as const;
-
-export type HtmxStrategy = (typeof syncStrategy)[keyof typeof syncStrategy];

@@ -58,5 +58,3 @@ export const reqHeader = {
      */
     trigger: 'HX-Trigger',
 } as const;
-
-export type HtmxRequestHeader = (typeof reqHeader)[keyof typeof reqHeader];

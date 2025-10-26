@@ -1,18 +1,16 @@
-import type { HtmxSwapStyle } from '../../lib/htmx';
 import type { Duration } from '../duration.ts';
+import type { HtmxSwapStyle } from '../htmx';
 
 export type JhxSwapScroll =
     | 'top'
     | 'bottom'
-    | { selector: string; position: 'top' | 'bottom' }
+    | {
+          selector: string;
+          position: 'top' | 'bottom';
+      }
     | { window: true; position: 'top' | 'bottom' };
 
-export type JhxSwapShow =
-    | 'top'
-    | 'bottom'
-    | 'none'
-    | { selector: string; position: 'top' | 'bottom' }
-    | { window: true; position: 'top' | 'bottom' };
+export type JhxSwapShow = 'none' | JhxSwapScroll;
 
 export type JhxSwapAttribute =
     | (HtmxSwapStyle | (string & {}))
