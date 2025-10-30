@@ -1,5 +1,5 @@
 import type { Stream } from 'node:stream';
-import type { ReactNode } from 'react';
+import type { ElementType, ReactNode } from 'react';
 import type { Context as HonoContext, ErrorHandler as HonoErrorHandler, TypedResponse } from 'hono';
 
 import type {
@@ -145,25 +145,11 @@ export type JhxComponentProps<
     TDom extends object = object,
     TReturn extends JhxHandlerReturn = JhxHandlerReturn,
     TContext extends HonoContext = HonoContext,
-> = ServerJhxComponentProps<
-    TDom,
-    TReturn,
-    TContext,
-    undefined,
-    JhxHandler<TReturn, TContext>,
-    JhxProps<TDom, TReturn, TContext>
->;
+    TTag extends ElementType = 'div',
+> = ServerJhxComponentProps<TDom, TReturn, TContext, undefined, JhxHandler<TReturn, TContext>, TTag>;
 
 export type JhxComponentType<
     TDom extends object = object,
     TReturn extends JhxHandlerReturn = JhxHandlerReturn,
     TContext extends HonoContext = HonoContext,
-> = ServerJhxComponentType<
-    TDom,
-    TReturn,
-    TContext,
-    undefined,
-    JhxHandler<TReturn, TContext>,
-    JhxProps<TDom, TReturn, TContext>,
-    JhxComponentProps<TDom, TReturn, TContext>
->;
+> = ServerJhxComponentType<TDom, TReturn, TContext, undefined, JhxHandler<TReturn, TContext>>;

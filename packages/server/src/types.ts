@@ -1,9 +1,7 @@
-import type { FC, JSX, PropsWithChildren } from 'react';
-
 import type {
-    JhxConfig as BaseJhxConfig,
     JhxDomProps as BaseJhxDomProps,
     JhxProps as BaseJhxProps,
+    JhxAttribute,
     JhxConfig,
     JhxError,
 } from 'jhx';
@@ -84,7 +82,7 @@ export type ServerCreateJhxConfig<
     TRenderHandler extends ServerJhxRenderHandler<TResolved, TRendered, TReq, TRes>,
     TPartialRoute extends ServerJhxPartialRoute<TReturn, TReq, TRes, THandler>,
     TInstanceOptions = undefined,
-> = BaseJhxConfig & {
+> = JhxConfig & {
     /**
      * The default `Content-Type` header for the JHX handler responses.
      * Can be overridden in the handlers or `render` function.
@@ -255,27 +253,27 @@ export interface ServerJhx<
 > {
     <TDom extends object | TDomBase = TDomBase>(
         options: ServerJhxDomProps<TDom, TReturn, TReq, TRes, THandler>,
-        config: BaseJhxConfig & { stringify: true },
+        config: Omit<JhxConfig, 'stringify'> & { stringify: true },
     ): string;
 
     <TDom extends object | TDomBase = TDomBase>(
         options: ServerJhxProps<TDom, TReturn, TReq, TRes, THandler>,
-        config: BaseJhxConfig & { stringify: false },
-    ): Record<string, string>;
+        config: Omit<JhxConfig, 'stringify'> & { stringify: false },
+    ): Record<JhxAttribute, string>;
 
     <TDom extends object | TDomBase = TDomBase>(
         options: TBaseStringify extends true
             ? ServerJhxDomProps<TDom, TReturn, TReq, TRes, THandler>
             : ServerJhxProps<TDom, TReturn, TReq, TRes, THandler>,
-        config?: BaseJhxConfig,
-    ): TBaseStringify extends true ? string : Record<string, string>;
+        config?: JhxConfig,
+    ): TBaseStringify extends true ? string : Record<JhxAttribute, string>;
 
     <TDom extends object | TDomBase = TDomBase>(
         options:
             | ServerJhxProps<TDom, TReturn, TReq, TRes, THandler>
             | ServerJhxDomProps<TDom, TReturn, TReq, TRes, THandler>,
-        config?: BaseJhxConfig,
-    ): string | Record<string, string>;
+        config?: JhxConfig,
+    ): string | Record<JhxAttribute, string>;
 
     addRoute(newRoute: TPartialRoute): void;
     addRoutes(newRoutes: Array<TPartialRoute>): void;
@@ -285,30 +283,3 @@ export interface ServerJhx<
     hasRoute(method: string, path: string): boolean;
     removeRoute(method: string, path: string): boolean;
 }
-
-export type ServerJhxComponentProps<
-    TDom extends object,
-    TReturn,
-    TReq,
-    TRes,
-    THandler extends ServerJhxHandler<TReturn, TReq, TRes>,
-    TBaseProps extends ServerJhxProps<TDom, TReturn, TReq, TRes, THandler>,
-> = TRes extends undefined
-    ? TBaseProps & {
-          jhxConfig?: Omit<JhxConfig, 'stringify'>;
-          as?: keyof JSX.IntrinsicElements;
-      }
-    : TBaseProps & {
-          jhxConfig?: Omit<JhxConfig, 'stringify'>;
-          as?: keyof JSX.IntrinsicElements;
-      };
-
-export type ServerJhxComponentType<
-    TDom extends object,
-    TReturn,
-    TReq,
-    TRes,
-    THandler extends ServerJhxHandler<TReturn, TReq, TRes>,
-    TBaseProps extends ServerJhxProps<TDom, TReturn, TReq, TRes, THandler>,
-    TCompProps extends ServerJhxComponentProps<TDom, TReturn, TReq, TRes, THandler, TBaseProps>,
-> = FC<PropsWithChildren<TCompProps>>;

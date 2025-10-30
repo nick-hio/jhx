@@ -560,8 +560,8 @@ type Dom = {
 };
 
 function HomePage() {
-    // assuming Alpine.js is loaded in the page
     return (
+        // Alpine.js initialized in `<head>`
         <main>
             <h1>Home Page</h1>
             <JhxComponent<Dom> // specify the generic

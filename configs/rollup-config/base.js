@@ -3,9 +3,8 @@ import { dts } from 'rollup-plugin-dts';
 /** @type {import("rollup").RollupOptions} */
 export const config = {
     external: [
-        'node:*',
         'http',
-        'stream',
+        'node:stream',
     ],
     input: './src/index.ts',
     output: {

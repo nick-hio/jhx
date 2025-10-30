@@ -8,14 +8,12 @@ import { sendPayload } from '../helpers/send-payload';
 import type {
     CreateJhxConfig,
     Jhx,
-    JhxComponentProps,
     JhxComponentType,
     JhxErrorHandler,
     JhxErrorType,
     JhxHandler,
     JhxHandlerReturn,
     JhxPartialRoute,
-    JhxProps,
     JhxRenderHandler,
     JhxRenderReturn,
     JhxRoute,
@@ -51,8 +49,6 @@ export const createJhx = <
         JhxHandler<TReturn, TRequest, TReply>,
         JhxErrorHandler<TError, TReturn, TRequest, TReply>,
         JhxRenderHandler<Resolved<TReturn>, JhxRenderReturn, TRequest, TReply>,
-        JhxProps<TDomBase, TReturn, TRequest, TReply>,
-        JhxComponentProps<TDomBase, TReturn, TRequest, TReply>,
         JhxRoute<TReturn, TRequest, TReply>,
         JhxPartialRoute<TReturn, TRequest, TReply>,
         RouteShorthandOptions

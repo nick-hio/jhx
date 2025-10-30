@@ -20,7 +20,7 @@ describe('[jhx-shared] normalizeEndpoint', async () => {
         expect(withSlash).toBe('/test/');
     });
 
-    it('endpoint no leading or trailing slashes', async () => {
+    it('endpoint; no leading or trailing slashes', async () => {
         const route = 'test/endpoint';
 
         const { noSlash, withSlash } = normalizeEndpoint(route);
@@ -28,7 +28,7 @@ describe('[jhx-shared] normalizeEndpoint', async () => {
         expect(withSlash).toBe('/test/endpoint/');
     });
 
-    it('endpoint with leading slash', async () => {
+    it('endpoint; leading slash', async () => {
         const route = '/test/endpoint';
 
         const { noSlash, withSlash } = normalizeEndpoint(route);
@@ -36,7 +36,7 @@ describe('[jhx-shared] normalizeEndpoint', async () => {
         expect(withSlash).toBe('/test/endpoint/');
     });
 
-    it('endpoint with trailing slash', async () => {
+    it('endpoint; trailing slash', async () => {
         const route = 'test/endpoint/';
 
         const { noSlash, withSlash } = normalizeEndpoint(route);
@@ -44,7 +44,7 @@ describe('[jhx-shared] normalizeEndpoint', async () => {
         expect(withSlash).toBe('/test/endpoint/');
     });
 
-    it('endpoint with leading and trailing slashes', async () => {
+    it('endpoint; leading and trailing slashes', async () => {
         const route = '/test/endpoint/';
 
         const { noSlash, withSlash } = normalizeEndpoint(route);
@@ -52,7 +52,7 @@ describe('[jhx-shared] normalizeEndpoint', async () => {
         expect(withSlash).toBe('/test/endpoint/');
     });
 
-    it('endpoint with many slashes', async () => {
+    it('endpoint; many slashes', async () => {
         const route = '////test////endpoint////';
 
         const { noSlash, withSlash } = normalizeEndpoint(route);
@@ -60,7 +60,7 @@ describe('[jhx-shared] normalizeEndpoint', async () => {
         expect(withSlash).toBe('/test/endpoint/');
     });
 
-    it('prefix & endpoint with leading and trailing slashes', async () => {
+    it('prefix & endpoint; leading and trailing slashes', async () => {
         const route = '/test/endpoint/';
         const prefix = '/jhx/';
 
@@ -69,7 +69,7 @@ describe('[jhx-shared] normalizeEndpoint', async () => {
         expect(withSlash).toBe('/jhx/test/endpoint/');
     });
 
-    it('prefix & endpoint no leading or trailing slashes', async () => {
+    it('prefix & endpoint; no leading or trailing slashes', async () => {
         const route = 'test/endpoint';
         const prefix = 'jhx';
 
@@ -78,7 +78,7 @@ describe('[jhx-shared] normalizeEndpoint', async () => {
         expect(withSlash).toBe('/jhx/test/endpoint/');
     });
 
-    it('prefix & endpoint with leading slash', async () => {
+    it('prefix & endpoint; leading slash', async () => {
         const route = '/test/endpoint';
         const prefix = '/jhx';
 
@@ -87,7 +87,7 @@ describe('[jhx-shared] normalizeEndpoint', async () => {
         expect(withSlash).toBe('/jhx/test/endpoint/');
     });
 
-    it('prefix & endpoint with trailing slash', async () => {
+    it('prefix & endpoint; trailing slash', async () => {
         const route = 'test/endpoint/';
         const prefix = 'jhx/';
 
@@ -96,7 +96,7 @@ describe('[jhx-shared] normalizeEndpoint', async () => {
         expect(withSlash).toBe('/jhx/test/endpoint/');
     });
 
-    it('prefix & endpoint with many slashes', async () => {
+    it('prefix & endpoint; many slashes', async () => {
         const route = '////test////endpoint////';
         const prefix = '////jhx////';
 
@@ -105,7 +105,7 @@ describe('[jhx-shared] normalizeEndpoint', async () => {
         expect(withSlash).toBe('/jhx/test/endpoint/');
     });
 
-    it('duplicate prefix in route #1', async () => {
+    it('duplicate prefix; route #1', async () => {
         const route = '/test/endpoint/';
         const prefix = '/test';
 
@@ -114,7 +114,7 @@ describe('[jhx-shared] normalizeEndpoint', async () => {
         expect(withSlash).toBe('/test/endpoint/');
     });
 
-    it('duplicate prefix in route #2', async () => {
+    it('duplicate prefix; route #2', async () => {
         const route = '/test/endpoint/';
         const prefix = 'test';
 
@@ -123,7 +123,7 @@ describe('[jhx-shared] normalizeEndpoint', async () => {
         expect(withSlash).toBe('/test/endpoint/');
     });
 
-    it('duplicate prefix in route #3', async () => {
+    it('duplicate prefix; route #3', async () => {
         const route = 'test/endpoint/';
         const prefix = '/test';
 
@@ -132,7 +132,7 @@ describe('[jhx-shared] normalizeEndpoint', async () => {
         expect(withSlash).toBe('/test/endpoint/');
     });
 
-    it('duplicate prefix in route #4', async () => {
+    it('duplicate prefix; route #4', async () => {
         const route = 'test/endpoint/';
         const prefix = 'test';
 

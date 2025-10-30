@@ -11,14 +11,12 @@ import { sendPayload } from '../helpers/send-payload';
 import type {
     CreateJhxConfig,
     Jhx,
-    JhxComponentProps,
     JhxComponentType,
     JhxErrorHandler,
     JhxErrorType,
     JhxHandler,
     JhxHandlerReturn,
     JhxPartialRoute,
-    JhxProps,
     JhxRenderHandler,
     JhxRenderReturn,
     JhxRoute,
@@ -54,8 +52,6 @@ export const createJhx = <
         JhxHandler<TReturn, TRequest, TResponse>,
         JhxErrorHandler<TError, TReturn, TRequest, TResponse>,
         JhxRenderHandler<Resolved<TReturn>, JhxRenderReturn, TRequest, TResponse>,
-        JhxProps<TDomBase, TReturn, TRequest, TResponse>,
-        JhxComponentProps<TDomBase, TReturn, TRequest, TResponse>,
         JhxRoute<TReturn, TRequest, TResponse>,
         JhxPartialRoute<TReturn, TRequest, TResponse>
     >(config, defaultConfig.notFoundHandler, (baseConfig, routes) => {

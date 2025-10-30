@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { ElementType, ReactNode } from 'react';
 import type { Request as ExpressRequest, Response as ExpressResponse } from 'express';
 
 import type {
@@ -151,13 +151,14 @@ export type JhxComponentProps<
     TReturn extends JhxHandlerReturn = JhxHandlerReturn,
     TRequest extends ExpressRequest = ExpressRequest,
     TResponse extends ExpressResponse = ExpressResponse,
+    TTag extends ElementType = 'div',
 > = ServerJhxComponentProps<
     TDom,
     TReturn,
     TRequest,
     TResponse,
     JhxHandler<TReturn, TRequest, TResponse>,
-    JhxProps<TDom, TReturn, TRequest, TResponse>
+    TTag
 >;
 
 export type JhxComponentType<
@@ -165,12 +166,4 @@ export type JhxComponentType<
     TReturn extends JhxHandlerReturn = JhxHandlerReturn,
     TRequest extends ExpressRequest = ExpressRequest,
     TResponse extends ExpressResponse = ExpressResponse,
-> = ServerJhxComponentType<
-    TDom,
-    TReturn,
-    TRequest,
-    TResponse,
-    JhxHandler<TReturn, TRequest, TResponse>,
-    JhxProps<TDom, TReturn, TRequest, TResponse>,
-    JhxComponentProps<TDom, TReturn, TRequest, TResponse>
->;
+> = ServerJhxComponentType<TDom, TReturn, TRequest, TResponse, JhxHandler<TReturn, TRequest, TResponse>>;

@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { ElementType, ReactNode } from 'react';
 import type { FastifyError, FastifyReply, FastifyRequest } from 'fastify';
 import type { RouteShorthandOptions } from 'fastify/types/route';
 
@@ -190,26 +190,12 @@ export type JhxComponentProps<
     TReturn extends JhxHandlerReturn = JhxHandlerReturn,
     TRequest extends FastifyRequest = FastifyRequest,
     TReply extends FastifyReply = FastifyReply,
-> = ServerJhxComponentProps<
-    TDom,
-    TReturn,
-    TRequest,
-    TReply,
-    JhxHandler<TReturn, TRequest, TReply>,
-    JhxProps<TDom, TReturn, TRequest, TReply>
->;
+    TTag extends ElementType = 'div',
+> = ServerJhxComponentProps<TDom, TReturn, TRequest, TReply, JhxHandler<TReturn, TRequest, TReply>, TTag>;
 
 export type JhxComponentType<
     TDom extends object = object,
     TReturn extends JhxHandlerReturn = JhxHandlerReturn,
     TRequest extends FastifyRequest = FastifyRequest,
     TReply extends FastifyReply = FastifyReply,
-> = ServerJhxComponentType<
-    TDom,
-    TReturn,
-    TRequest,
-    TReply,
-    JhxHandler<TReturn, TRequest, TReply>,
-    JhxProps<TDom, TReturn, TRequest, TReply>,
-    JhxComponentProps<TDom, TReturn, TRequest, TReply>
->;
+> = ServerJhxComponentType<TDom, TReturn, TRequest, TReply, JhxHandler<TReturn, TRequest, TReply>>;

@@ -5,7 +5,13 @@ import { jhx } from '../lib/jhx';
 import type { JhxConfig, JhxProps } from '../types';
 
 const isJhxAttribute = (key: string): key is keyof JhxProps => {
-    return key.startsWith('hx-') || key in htmx.attr || key in htmx.eventAttr;
+    return (
+        key.startsWith('hx-')
+        || key in htmx.attr
+        || key in htmx.eventAttr
+        || key === 'route'
+        || key === 'method'
+    );
 };
 
 type NativeProps<TTag extends ElementType> = Omit<

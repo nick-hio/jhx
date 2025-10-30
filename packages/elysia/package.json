@@ -1,6 +1,6 @@
 {
   "name": "@jhxdev/elysia",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "author": "nick-hio",
   "homepage": "https://github.com/nick-hio/jhx#readme",
   "repository": {
@@ -42,12 +42,12 @@
     "build": "pnpm run build:lib && pnpm run build:types",
     "build:lib": "bun esbuild.config.js",
     "build:types": "rollup -c rollup.config.js",
-    "check-types": "tsc -p tsconfig.json --jsx preserve",
     "format": "prettier --write . --list-different",
     "lint": "eslint . --max-warnings 0",
     "test": "bun test ./tests",
     "test:watch": "bun test --watch ./tests",
-    "validate": "turbo run check-types lint test format --filter=@jhxdev/elysia..."
+    "typecheck": "tsc -p tsconfig.json --jsx preserve",
+    "validate": "pnpm run typecheck && pnpm run lint && pnpm run test && pnpm run format"
   },
   "dependencies": {
     "elysia": "^1.4.7",

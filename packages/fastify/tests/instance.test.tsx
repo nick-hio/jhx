@@ -6,7 +6,7 @@ import { buildServer, expectResponse, ENDPOINT } from './helpers';
 const route = ENDPOINT;
 const url = `/_jhx${route}`;
 
-describe('elysia context', async () => {
+describe('instance', async () => {
     it('component exists', async () => {
         const fastify = await buildServer();
 

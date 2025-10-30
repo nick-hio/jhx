@@ -1,5 +1,10 @@
-import { jhx as jhxBase } from 'jhx';
-import type { HtmxHttpMethod, JhxConfig as JhxConfigBase } from 'jhx';
+import { jhx as jhxBase, type JhxAttribute } from 'jhx';
+import type {
+    JhxDomProps as BaseJhxDomProps,
+    JhxProps as BaseJhxProps,
+    HtmxHttpMethod,
+    JhxConfig,
+} from 'jhx';
 
 import { addRoutesToMap } from '../helpers/add-routes-to-map';
 import { getRenderFunction } from '../helpers/get-render-function';
@@ -11,7 +16,6 @@ import type {
     JhxErrorType,
     NormalizedServerJhxConfig,
     ServerCreateJhxConfig,
-    ServerJhxComponentProps,
     ServerJhxDomProps,
     ServerJhxErrorHandler,
     ServerJhxHandler,
@@ -35,8 +39,6 @@ export const createServerJhx = <
     THandler extends ServerJhxHandler<TReturn, TReq, TRes>,
     TErrorHandler extends ServerJhxErrorHandler<TError, TReturn, TReq, TRes>,
     TRenderHandler extends ServerJhxRenderHandler<TResolved, TRendered, TReq, TRes>,
-    TBaseProps extends ServerJhxProps<TDomBase, TReturn, TReq, TRes, THandler>,
-    TCompProps extends ServerJhxComponentProps<TDomBase, TReturn, TReq, TRes, THandler, TBaseProps>,
     TRoute extends ServerJhxRoute<TReturn, TReq, TRes, THandler>,
     TPartialRoute extends ServerJhxPartialRoute<TReturn, TReq, TRes, THandler>,
     TInstanceOptions = undefined,
@@ -138,24 +140,24 @@ export const createServerJhx = <
 
     function jhx<TDom extends object | TDomBase = TDomBase>(
         props: ServerJhxDomProps<TDom, TReturn, TReq, TRes, THandler>,
-        cfg: JhxConfigBase & { stringify: true },
+        cfg: Omit<JhxConfig, 'stringify'> & { stringify: true },
     ): string;
     function jhx<TDom extends object | TDomBase = TDomBase>(
         props: ServerJhxProps<TDom, TReturn, TReq, TRes, THandler>,
-        cfg: JhxConfigBase & { stringify: false },
-    ): Record<string, string>;
+        cfg: Omit<JhxConfig, 'stringify'> & { stringify: false },
+    ): Record<JhxAttribute, unknown>;
     function jhx<TDom extends object | TDomBase = TDomBase>(
         props: TBaseStringify extends true
             ? ServerJhxDomProps<TDom, TReturn, TReq, TRes, THandler>
             : ServerJhxProps<TDom, TReturn, TReq, TRes, THandler>,
-        cfg?: JhxConfigBase,
-    ): TBaseStringify extends true ? string : Record<string, string>;
+        cfg?: JhxConfig,
+    ): TBaseStringify extends true ? string : Record<JhxAttribute, unknown>;
     function jhx<TDom extends object | TDomBase = TDomBase>(
         props:
             | ServerJhxProps<TDom, TReturn, TReq, TRes, THandler>
             | ServerJhxDomProps<TDom, TReturn, TReq, TRes, THandler>,
-        cfg?: JhxConfigBase,
-    ): string | Record<string, string> {
+        cfg?: JhxConfig,
+    ): string | Record<JhxAttribute, unknown> {
         if (typeof props === 'object' && typeof props.handler === 'function') {
             const method = props.method?.trim()?.toUpperCase() ?? 'GET';
             const { noSlash, withSlash } = normalizeEndpoint(
@@ -209,9 +211,21 @@ export const createServerJhx = <
             }
         }
 
-        return jhxBase<TDom>(props, {
+        const stringify = cfg?.stringify ?? baseConfig.stringify;
+        const newProps =
+            props && typeof props === 'object' && 'handler' in props
+                ? (({ handler, ...rest }) => rest)(props)
+                : props;
+
+        if (stringify) {
+            return jhxBase<TDom>(newProps as BaseJhxDomProps<TDom>, {
+                logger: cfg?.logger ?? baseConfig.logger,
+                stringify: true,
+            });
+        }
+        return jhxBase<TDom>(newProps as BaseJhxProps<TDom>, {
             logger: cfg?.logger ?? baseConfig.logger,
-            stringify: cfg?.stringify ?? baseConfig.stringify,
+            stringify: false,
         });
     }
 
@@ -351,16 +365,8 @@ export const createServerJhx = <
 
     return {
         jhx,
-        JhxComponent: createJhxComponent<
-            TDomBase,
-            TReturn,
-            TReq,
-            TRes,
-            THandler,
-            TBaseProps,
-            TCompProps,
-            TRoute,
-            TPartialRoute
-        >(jhx as any),
+        JhxComponent: createJhxComponent<TDomBase, TReturn, TReq, TRes, THandler, TRoute, TPartialRoute>(
+            jhx as any,
+        ),
     };
 };

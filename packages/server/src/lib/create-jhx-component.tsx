@@ -1,48 +1,90 @@
+import type { ComponentPropsWithoutRef, ElementType, JSX, PropsWithChildren } from 'react';
+
+import { htmx } from 'jhx';
+import type { JhxConfig, JhxProps } from 'jhx';
+
 import type {
     ServerJhx,
-    ServerJhxComponentProps,
-    ServerJhxComponentType,
     ServerJhxHandler,
     ServerJhxPartialRoute,
     ServerJhxProps,
     ServerJhxRoute,
 } from '../types';
 
-export const createJhxComponent = <
+const isJhxAttribute = (key: string): key is keyof JhxProps => {
+    return (
+        key.startsWith('hx-')
+        || key in htmx.attr
+        || key in htmx.eventAttr
+        || key === 'route'
+        || key === 'method'
+    );
+};
+
+type NativeProps<TTag extends ElementType> = Omit<
+    ComponentPropsWithoutRef<TTag>,
+    'children' | keyof ServerJhxProps<any, any, any, any, any>
+>;
+
+export type ServerJhxComponentProps<
     TDom extends object,
     TReturn,
     TReq,
     TRes,
     THandler extends ServerJhxHandler<TReturn, TReq, TRes>,
-    TBaseProps extends ServerJhxProps<TDom, TReturn, TReq, TRes, THandler>,
-    TCompProps extends ServerJhxComponentProps<TDom, TReturn, TReq, TRes, THandler, TBaseProps>,
+    TTag extends ElementType = 'div',
+> = ServerJhxProps<TDom, TReturn, TReq, TRes, THandler>
+    & NativeProps<TTag> & {
+        jhxConfig?: Omit<JhxConfig, 'stringify'>;
+        as?: TTag;
+    };
+
+export type ServerJhxComponentType<
+    TDom extends object,
+    TReturn,
+    TReq,
+    TRes,
+    THandler extends ServerJhxHandler<TReturn, TReq, TRes>,
+> = <TTag extends ElementType = 'div'>(
+    props: PropsWithChildren<ServerJhxComponentProps<TDom, TReturn, TReq, TRes, THandler, TTag>>,
+) => JSX.Element;
+
+export const createJhxComponent = <
+    TBaseDom extends object,
+    TReturn,
+    TReq,
+    TRes,
+    THandler extends ServerJhxHandler<TReturn, TReq, TRes>,
     TRoute extends ServerJhxRoute<TReturn, TReq, TRes, THandler>,
     TPartialRoute extends ServerJhxPartialRoute<TReturn, TReq, TRes, THandler>,
 >(
-    jhx: ServerJhx<TDom, TReturn, TReq, TRes, any, THandler, TRoute, TPartialRoute>,
+    jhx: ServerJhx<TBaseDom, TReturn, TReq, TRes, any, THandler, TRoute, TPartialRoute>,
 ) => {
-    const JhxComponent: ServerJhxComponentType<
-        TDom,
-        TReturn,
-        TReq,
-        TRes,
-        THandler,
-        TBaseProps,
-        TCompProps
-    > = (props) => {
-        const { jhxConfig, as: Tag = 'div', children, ...remainingProps } = props;
+    return function JhxComponent<
+        TDom extends TBaseDom | object = TBaseDom | object,
+        TTag extends ElementType = 'div',
+    >(
+        props: PropsWithChildren<ServerJhxComponentProps<TDom, TReturn, TReq, TRes, THandler, TTag>>,
+    ): JSX.Element {
+        const { jhxConfig, as, children, ...remainingProps } = props as PropsWithChildren<
+            ServerJhxComponentProps<TDom, TReturn, TReq, TRes, THandler, TTag>
+        > & { as?: TTag };
 
-        const attrs = jhx(
-            { ...remainingProps },
-            {
-                ...jhxConfig,
-                stringify: false,
-            },
-        );
+        const Tag = as ?? 'div';
+        const otherProps: Record<string, unknown> = {};
 
-        return <Tag {...attrs}>{children}</Tag>;
+        for (const [key, value] of Object.entries(remainingProps)) {
+            if (!isJhxAttribute(key)) {
+                otherProps[key] = value as unknown;
+            }
+        }
+
+        const attrs = jhx<TDom>(remainingProps, {
+            ...jhxConfig,
+            stringify: false,
+        });
+        const merged = { ...attrs, ...otherProps };
+
+        return <Tag {...merged}>{children}</Tag>;
     };
-
-    JhxComponent.displayName = 'JhxComponentFactory';
-    return JhxComponent;
 };
