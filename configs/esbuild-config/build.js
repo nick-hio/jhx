@@ -1,40 +1,64 @@
 import { build } from 'esbuild';
-import { config } from './config';
+import path from 'path';
 
-/**
- * @param {string} distDir
- * @param {import('esbuild').BuildOptions} esBuildConfig
- */
-export const createBuild = async (distDir, esBuildConfig = config) => {
+/** @type {import('esbuild').BuildOptions} */
+export const config = {
+    bundle: true,
+    entryPoints: [
+        'src/index.ts',
+    ],
+    external: [
+        'node:*',
+        'elysia',
+        'express',
+        'fastify',
+        'hono',
+    ],
+    jsx: 'preserve',
+    keepNames: true,
+    logLevel: 'info',
+    minify: true,
+    packages: 'bundle',
+    platform: 'node',
+    sourcemap: false,
+    splitting: false,
+    treeShaking: true,
+    tsconfig: 'tsconfig.json',
+    conditions: [
+        'source',
+        'default',
+    ],
+};
+
+(async () => {
     try {
+        const distDir = path.join(process.cwd(), 'dist')
         console.log('Building CJS module...');
+
         const cjsBuild = await build({
-            ...esBuildConfig,
+            ...config,
             format: 'cjs',
             outdir: distDir,
             outExtension: { '.js': '.cjs' },
         });
         if (cjsBuild.warnings.length) {
             console.warn('⚠️  CJS build completed with warnings:');
-            cjsBuild.warnings.forEach((warning) => {
-                console.warn(`  - ${warning.location.file} (line ${warning.location.line}): ${warning.text}`);
-            });
+            cjsBuild.warnings.forEach((warning) => console.warn(`  - ${warning.location.file} (line ${warning.location.line}): ${warning.text}`));
         }
 
         console.log('\nBuilding ESM module...');
+
         const esmBuild = await build({
-            ...esBuildConfig,
+            ...config,
             format: 'esm',
             outdir: distDir,
         });
         if (esmBuild.warnings.length) {
             console.warn('⚠️  ESM build completed with warnings:');
-            esmBuild.warnings.forEach((warning) => {
-                console.warn(`  - ${warning.location.file} (line ${warning.location.line}): ${warning.text}`);
-            });
+            esmBuild.warnings.forEach((warning) => console.warn(`  - ${warning.location.file} (line ${warning.location.line}): ${warning.text}`));
         }
     } catch (e) {
         console.error('❌  Build failed:');
-        console.error(JSON.stringify(e, null, 2));
+        console.error(e);
     }
-}
+})();

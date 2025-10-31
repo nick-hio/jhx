@@ -1,3 +1,3 @@
-# `@turbo/esbuild-config`
+# `@repo/esbuild-config`
 
 Internal esbuild configuration.

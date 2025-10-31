@@ -1,3 +1,3 @@
-# `@turbo/rollup-config`
+# `@repo/rollup-config`
 
 Internal Rollup configuration.

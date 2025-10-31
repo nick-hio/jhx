@@ -1,3 +1,3 @@
-# `@turbo/typescript-config`
+# `@repo/typescript-config`
 
 Internal TypeScript configuration.

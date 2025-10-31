@@ -3,6 +3,7 @@ node_modules/
 dist/
 tests/
 
+README.md
 package.json
 tsconfig.json
 

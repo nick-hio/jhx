@@ -1,8 +1,9 @@
 {
   "name": "jhx",
-  "version": "0.0.1",
+  "description": "",
+  "version": "0.0.0",
   "author": "nick-hio",
-  "homepage": "https://github.com/nick-hio/jhx#readme",
+  "homepage": "https://github.com/nick-hio/jhx/tree/main/packages/jhx#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nick-hio/jhx.git"
@@ -14,9 +15,6 @@
     "react"
   ],
   "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": {
@@ -33,41 +31,36 @@
       }
     }
   },
-  "files": [
-    "dist/**/*",
-    "README.md"
-  ],
   "scripts": {
     "build": "pnpm run build:lib && pnpm run build:types",
-    "build:lib": "bun esbuild.config.js",
+    "build:lib": "bun ../../configs/esbuild-config/build.js",
     "build:types": "rollup -c rollup.config.js",
     "format": "prettier --write . --list-different",
     "lint": "eslint . --max-warnings 0",
+    "prepack": "bun ../../configs/prepack-config/prepack.js",
     "test": "bun test ./tests",
     "test:watch": "bun test --watch ./tests",
     "typecheck": "tsc -p tsconfig.json --jsx preserve",
     "validate": "pnpm run typecheck && pnpm run lint && pnpm run test && pnpm run format"
   },
-  "dependencies": {
-    "@types/alpinejs": "^3.13.11",
+  "peerDependencies": {
     "htmx.org": "^2.0.7",
-    "react": "^18 || ^19",
-    "react-dom": "^18 || ^19"
+    "react": "^17.0.2 || ^18.0.0 || ^19.0.0",
+    "react-dom": "^17.0.2 || ^18.0.0 || ^19.0.0"
   },
   "devDependencies": {
-    "@repo/esbuild-config": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/prettier-config": "workspace:*",
     "@repo/rollup-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@types/bun": "^1.2.22",
-    "@types/node": "^24.5.2",
-    "@types/react": "^19.1.13",
-    "@types/react-dom": "^19.1.9",
-    "esbuild": "^0.25.10",
-    "eslint": "^9.36.0",
+    "@types/bun": "^1.3.1",
+    "@types/node": "^24.9.2",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "esbuild": "^0.25.11",
+    "eslint": "^9.38.0",
     "prettier": "^3.6.2",
-    "rollup": "^4.52.2",
-    "typescript": "^5.9.2"
+    "rollup": "^4.52.5",
+    "typescript": "^5.9.3"
   }
 }
