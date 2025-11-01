@@ -1,9 +1,17 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/nick-hio/jhx/main/assets/jhx-logo-light.svg">
+    <img src="https://raw.githubusercontent.com/nick-hio/jhx/main/assets/jhx-logo-dark.svg" height="90" alt="Logo for jhx">
+  </picture>
+</p>
+
 <div align="center">
   Type-Safe HTMX.
 </div>
+
 <div align="center">
   <a target="_blank" href="https://github.com/nick-hio/jhx">GitHub</a> •
-  <a target="_blank" href="https://github.com/nick-hio/jhx/tree/main/packages/jhx">Documentation</a> •
+  <a target="_blank" href="https://github.com/nick-hio/jhx">Documentation</a> •
   <a target="_blank" href="https://github.com/nick-hio/jhx/issues/new">Report an Issue</a>
 </div>
 
@@ -18,16 +26,16 @@
 
 > [!NOTE]
 > Check out the server adapters for framework integrations:
-> - [Elysia - `@jhxdev/elysia`](https://github.com/nick-hio/jhx/tree/main/packages/elysia)
-> - [Express - `@jhxdev/express`](https://github.com/nick-hio/jhx/tree/main/packages/express)
-> - [Fastify - `@jhxdev/fastify`](https://github.com/nick-hio/jhx/tree/main/packages/fastify)
-> - [Hono - `@jhxdev/hono`](https://github.com/nick-hio/jhx/tree/main/apps/hono)
+> - [**Elysia** - `@jhxdev/elysia`](https://github.com/nick-hio/jhx/tree/main/packages/elysia)
+> - [**Express** - `@jhxdev/express`](https://github.com/nick-hio/jhx/tree/main/packages/express)
+> - [**Fastify** - `@jhxdev/fastify`](https://github.com/nick-hio/jhx/tree/main/packages/fastify)
+> - [**Hono** - `@jhxdev/hono`](https://github.com/nick-hio/jhx/tree/main/apps/hono)
 
 ## Table of Contents
 
 - [Installation](#installation)
-- [Quickstart](#quickstart)
-- [Reference](#reference)
+- [Quick Start](#quick-start)
+- [API](#api)
   - [`jhx`](#jhx-1)
   - [`JhxComponent`](#jhxcomponent)
   - [`htmx`](#htmx)
@@ -61,7 +69,7 @@ import { jhx, JhxComponent, htmx } from 'jhx';
 const { jhx, JhxComponent, htmx } = require('jhx');
 ```
 
-## Quickstart
+## Quick Start
 
 Generate HTMX attributes for JSX props:
 
@@ -73,11 +81,7 @@ const attrs = jhx({
     swap: 'innerHTML',
 });
 
-const button = (
-    <button {...attrs}>
-        Load Data
-    </button>
-)
+const button = (<button {...attrs}>Load Data</button>);
 // <button hx-get="/api" hx-swap="innerHTML">Load Data</button>
 ```
 
@@ -103,17 +107,16 @@ import { JhxComponent } from 'jhx';
 const button = (
     <JhxComponent
         as='button' // set the element tag (defaults to 'div')
-        route='/api' // set the request route
-        method='post' // set the HTTP method ('get', 'post', 'put', 'patch', 'delete', etc.)
+        post='/api' // set the route and method
         swap='innerHTML'
     >
         Load Data
     </JhxComponent>
-)
+);
 // <button hx-post="/api" hx-swap="innerHTML">Load Data</button>
 ```
 
-## Reference
+## API
 
 > See the [Examples](#examples) section for usage.
 

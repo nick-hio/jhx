@@ -1,20 +1,27 @@
 <p align="center">
-  Type-Safe HTMX.
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/nick-hio/jhx/main/assets/jhx-logo-light.svg">
+    <img src="https://raw.githubusercontent.com/nick-hio/jhx/main/assets/jhx-logo-dark.svg" height="90" alt="Logo for jhx">
+  </picture>
 </p>
 
 <div align="center">
-  <a target="_blank" href="https://example.com">Home</a> •
-  <a target="_blank" href="https://example.com">Documentation</a> •
+  Type-Safe HTMX.
+</div>
+
+<div align="center">
+  <a target="_blank" href="https://github.com/nick-hio/jhx">GitHub</a> •
+  <a target="_blank" href="https://github.com/nick-hio/jhx">Documentation</a> •
   <a target="_blank" href="https://github.com/nick-hio/jhx/issues/new">Report an Issue</a>
 </div>
 
-## Table of Contents
+## Core Library
 
-This repository contains the packages:
+- [`jhx`](https://github.com/nick-hio/jhx/tree/main/packages/jhx)
 
-- [jhx](https://github.com/nick-hio/jhx/tree/main/packages/jhx) (*jhx*) - The core library for building type-safe HTMX applications in TypeScript.
-- [Elysia Adapter](https://github.com/nick-hio/jhx/tree/main/packages/elysia) (*@jhxdev/elysia*) - The Elysia framework adapter for jhx.
-- [Express Adapter](https://github.com/nick-hio/jhx/tree/main/packages/express) (*@jhxdev/express*) - The Express framework adapter for jhx.
-- [Fastify Adapter](https://github.com/nick-hio/jhx/tree/main/packages/fastify) (*@jhxdev/fastify*) - The Fastify framework adapter for jhx.
-- [Hono Adapter](https://github.com/nick-hio/jhx/tree/main/packages/hono) (*@jhxdev/hono*) - The Hono framework adapter for jhx.
-- [Documentation](https://github.com/nick-hio/jhx/tree/main/apps/docs) - Source for the `www.example.com` site.
+## Framework Adapters
+
+- [**Elysia** - `@jhxdev/elysia`](https://github.com/nick-hio/jhx/tree/main/packages/elysia)
+- [**Express** - `@jhxdev/express`](https://github.com/nick-hio/jhx/tree/main/packages/express)
+- [**Fastify** - `@jhxdev/fastify`](https://github.com/nick-hio/jhx/tree/main/packages/fastify)
+- [**Hono** - `@jhxdev/hono`](https://github.com/nick-hio/jhx/tree/main/packages/hono)
