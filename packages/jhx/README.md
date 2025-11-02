@@ -82,7 +82,7 @@ const attrs = jhx({
 });
 
 const button = (<button {...attrs}>Load Data</button>);
-// <button hx-get="/api" hx-swap="innerHTML">Load Data</button>
+// <button hx-get="/_jhx/api" hx-swap="innerHTML">Load Data</button>
 ```
 
 Generate HTMX attributes as a string for HTML templating:
@@ -96,7 +96,7 @@ const attrs = jhx({
 }, { stringify: true }); // set 'stringify' to 'true'
 
 const button = `<button ${attrs}>Load Data</button>`;
-// <button hx-get="/api" hx-swap="innerHTML">Load Data</button>
+// <button hx-get="/_jhx/api" hx-swap="innerHTML">Load Data</button>
 ```
 
 Generate HTMX attributes with the JSX component:
@@ -113,7 +113,7 @@ const button = (
         Load Data
     </JhxComponent>
 );
-// <button hx-post="/api" hx-swap="innerHTML">Load Data</button>
+// <button hx-post="/_jhx/api" hx-swap="innerHTML">Load Data</button>
 ```
 
 ## API
@@ -184,6 +184,7 @@ Event Props:
 |-----------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | HTMX handlers<br>(`onAfterSwap`, `onPrompt`, `onBeforeRequest`, `onAfterRequest`, etc.) | `hx-on:htmx:afterSwap`,<br>`hx-on::prompt`,<br>`hx-on-htmx-before-request`,<br>`hx-on--after-request`, etc. | `({ event } & DomObjects & TDom) => void`<br><br>(See the `HtmxEventProps` type for details)  | HTMX event and lifecycle handlers.<br><br>Serialized to an inline handler for the corresponding `hx-on--` attribute.                                                                                                                                                                                                                       |
 | DOM handlers<br>(`onClick`, `onChange`, `onSubmit`, `onKeyDown`, etc.)                  | `onclick`,<br>`onchange`,<br>`onsubmit`,<br>`onkeydown`, etc.                                               | `({ event }: DomEventProps & TDom) => void`<br><br>(See the `DomEventProps` type for details) | Standard DOM event handlers.<br><br>Serialized to inline handler attributes **only when `config.stringify: true`**, otherwise, they are excluded in JSX rendering.<br><br>When serializing, DOM handlers include:<br>- Props from `DomEventProps`.<br>- Function props starting with "on" (e.g., `onCustomEvent` becomes `oncustomevent`). |
+
 ##### `config` (optional)
 
 Configuration options for the function.
@@ -196,7 +197,7 @@ Configuration options for the function.
 
 #### Generics
 
-- `TDom` (extends `object`) - Type for the additional DOM variables passed to prop functions (see the [DOM Interactions & Type Safety](#dom-interactions--type-safety) section for usage). Defaults to `object`.
+- `TDom` (extends `object`) - Type for the additional DOM variables (see the [DOM Interactions & Type Safety](#dom-interactions--type-safety) section for usage).
 
 #### Returns
 
@@ -284,8 +285,7 @@ Declaring separately:
 ```tsx
 export function LoadDataButton() {
     const attrs = jhx({
-        route: '/api/items',
-        method: 'post',
+        post: '/api/items',
         target: {
             closest: true,
             selector: '.card',
@@ -314,8 +314,7 @@ Declaring inline:
 export function SubmitButton() {
     return (
         <button {...jhx({
-            route: '/api/items',
-            method: 'post',
+            post: '/api/items',
             target: {
                 closest: true,
                 selector: '.card',
@@ -339,14 +338,13 @@ export function SubmitButton() {
 
 ### `jhx` in HTML (String Output)
 
-DOM event handlers are **only serialized by the `jhx` function when `config.stringify: true`**.
+DOM event handlers are **only serialized by the `jhx` function when `config.stringify` is set to `true`**.
 
 Declaring separately:
 
 ```ts
 const attrs = jhx({
-    route: '/api/login',
-    method: 'put',
+    post: '/api/login',
     trigger: 'submit',
     boost: true,
 }, { stringify: true });
@@ -371,8 +369,7 @@ const html = `
         class="login-form"
         id="login-form"
         ${jhx({
-            route: '/api/login',
-            method: 'post',
+            post: '/api/login',
             trigger: 'submit',
             boost: true,
         }, { stringify: true })}
@@ -397,9 +394,8 @@ function HomePage() {
             <JhxComponent
                 className="search-form"
                 as="form"
+                post="/api"
                 boost={true}
-                route="/api"
-                method="post"
             >
                 <input type="text" name="input-name" />
                 <button type="submit">Search</button>
@@ -416,9 +412,8 @@ function Form({ children, endpoint }: { children: React.ReactNode, endpoint: str
     return (
         <JhxComponent
             as="form"
+            post={endpoint}
             boost={true}
-            route={endpoint}
-            method="post"
         >
             {children}
         </JhxComponent>
@@ -445,7 +440,7 @@ function HomePage() {
 Declaring HTMX event handlers:
 
 ```tsx
-// HTMX events only
+// HTMX events
 jhx({
     route: '/api/data',
     onBeforeRequest: ({ event }) => {
@@ -458,7 +453,7 @@ jhx({
 });
 ```
 
-Declaring DOM event handlers (**Only available for the `jhx` function when `config.stringify: true`**):
+Declaring DOM event handlers (**Only available for the `jhx` function when `config.stringify` is set to `true`**):
 
 ```ts
 // HTMX & DOM events
@@ -477,7 +472,7 @@ jhx({
         console.log("Clicked!", event);
     },
     /* ... */
-}, { stringify: true });
+}, { stringify: true }); // 'stringify' must be set to 'true' for DOM handlers
 ```
 
 ---
@@ -485,7 +480,7 @@ jhx({
 ### DOM Interactions & Type Safety
 
 In all event handlers (and some props), you have access to the `document`, `window`, and `htmx` objects in the DOM.
-The `TDom` generic allows you to define additional variables that are available in the DOM.
+The `TDom` generic allows you to **define additional variables** that are available in the DOM.
 
 Accessing the DOM from the event handlers:
 
@@ -799,8 +794,12 @@ function SearchButton() {
     return (
         <button {...jhx({
             post: '/api/search',
-            headers: ({ window }) => ({ 'X-Viewport': `${window.innerWidth}x${window.innerHeight}` }),
-            vals: ({ document }) => ({ q: document.getElementById('q')?.value ?? '', ts: Date.now() }),
+            headers: ({ window }) => ({
+                'X-Viewport': `${window.innerWidth}x${window.innerHeight}`,
+            }),
+            vals: ({ document }) => ({
+                q: document.getElementById('search-query')?.value ?? '',
+            }),
             target: '#results',
         })}>
             Search
