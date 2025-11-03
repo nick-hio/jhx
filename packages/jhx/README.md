@@ -17,12 +17,12 @@
 
 # jhx
 
-- **Type-safe HTMX helper for React/JSX, HTML, SSR/edge, and modern web frameworks.**  
-  Converts strongly typed props into HTMX `hx-*` attributes with flexible output options for JSX and HTML templating.
-- **Comprehensive HTMX attribute and event mapping.**  
-  Supports all HTMX features and events, including swap, target, trigger, headers, request, and event handlers.
-- **Easy integration and strong type inference.**  
-  Type inference for HTMX patterns and DOM access, works with HTMX libraries and extensions, and supports server and client use cases.
+- **HTMX helper for React/JSX, HTML, SSR/edge, and server frameworks.**  
+  Dedicated types with strong inference for HTMX patterns, features, and extensions.
+- **Type-safe HTMX attribute and event mapping.**  
+  Converts typed props into valid HTMX `hx-*` attributes for JSX and HTML templating.
+- **Streamlines developer experience for complex HTMX applications.**  
+  Simplifies the development of large HTMX applications with advanced interactions.
 
 > [!NOTE]
 > Check out the server adapters for framework integrations:
@@ -82,7 +82,7 @@ const attrs = jhx({
 });
 
 const button = (<button {...attrs}>Load Data</button>);
-// <button hx-get="/_jhx/api" hx-swap="innerHTML">Load Data</button>
+// <button hx-get="/api" hx-swap="innerHTML">Load Data</button>
 ```
 
 Generate HTMX attributes as a string for HTML templating:
@@ -96,7 +96,7 @@ const attrs = jhx({
 }, { stringify: true }); // set 'stringify' to 'true'
 
 const button = `<button ${attrs}>Load Data</button>`;
-// <button hx-get="/_jhx/api" hx-swap="innerHTML">Load Data</button>
+// <button hx-get="/api" hx-swap="innerHTML">Load Data</button>
 ```
 
 Generate HTMX attributes with the JSX component:
@@ -113,7 +113,7 @@ const button = (
         Load Data
     </JhxComponent>
 );
-// <button hx-post="/_jhx/api" hx-swap="innerHTML">Load Data</button>
+// <button hx-post="/api" hx-swap="innerHTML">Load Data</button>
 ```
 
 ## API
@@ -122,18 +122,18 @@ const button = (
 
 ### `jhx`
 
-The function that transforms parameters into an object of HTMX attributes.
+A function that transforms props into an object of HTMX attributes.
 
 ```ts
 function jhx<TDom>(props: JhxDomProps<TDom>, config?: JhxConfig & { stringify: true }): string;
-function jhx<TDom>(props: JhxProps<TDom>, config?: JhxConfig & { stringify?: false }): Record<string, string>;
+function jhx<TDom>(props: JhxProps<TDom>, config?: JhxConfig & { stringify?: false }): Record<JhxAttribute, string>;
 ```
 
 #### Parameters
 
 ##### `props`
 
-An object with the type of `JhxProps` or `JhxDomProps` containing the HTMX attributes.
+An object containing the HTMX attribute values.
 
 > HTMX Documentation: [Core Attributes](https://htmx.org/reference/#attributes), [Additional Attributes](https://htmx.org/reference/#attributes-additional)
 
@@ -154,7 +154,7 @@ An object with the type of `JhxProps` or `JhxDomProps` containing the HTMX attri
 | `include`     | [`hx-include`](https://htmx.org/attributes/hx-include/)           | `JhxTargetAttribute`          | Additional element values to include in the request.                                                                  |
 | `indicator`   | [`hx-indicator`](https://htmx.org/attributes/hx-indicator/)       | `JhxIndicatorAttribute`       | Loading indicator element; supports `closest` and `inherit`.                                                          |
 | `inherit`     | [`hx-inherit`](https://htmx.org/attributes/hx-inherit/)           | `JhxInheritAttribute`         | Inherit attributes from other elements.                                                                               |
-| `method`      | `hx-<method>`                                                     | `HtmxHttpMethod \| string`    | HTTP method for the request (must paired with the `route` prop).                                                      |
+| `method`      | `hx-<method>`                                                     | `HtmxHttpMethod \| string`    | HTTP method for the request. Must paired with the `route` prop (unless using an adapter package).                     |
 | `params`      | [`hx-params`](https://htmx.org/attributes/hx-params/)             | `JhxParamsAttribute`          | Include/exclude parameters with the request.                                                                          |
 | `patch`       | [`hx-patch`](https://htmx.org/attributes/hx-patch/)               | `string`                      | PATCH request path. Overrides the `route` and `method` props.                                                         |
 | `post`        | [`hx-post`](https://htmx.org/attributes/hx-post/)                 | `string`                      | POST request path. Overrides the `route` and `method` props.                                                          |
@@ -192,7 +192,7 @@ Configuration options for the function.
 | Property    | Type      | Description                                                                                                                                                                               |
 |-------------|-----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `escape`    | `boolean` | Whether to escape the HTML characters in the attribute values. Defaults to `true`.                                                                                                        |
-| `logger`    | `Logger`  | Functions for logging debug messages, warnings, and errors. Defaults to `console`.                                                                                                        |
+| `logger`    | `Logger`  | Logging functions for debug messages, warnings, and errors from jhx. Defaults to `console`.                                                                                               |
 | `stringify` | `boolean` | Converts the result into a string of HTML attributes. Defaults to `false`.<br>- When `true`, returns a string of HTML attributes.<br>- When `false`, returns an object for JSX spreading. |
 
 #### Generics
@@ -201,37 +201,35 @@ Configuration options for the function.
 
 #### Returns
 
-`jhx` will return a `string` when `config.stringify` set to `true`, otherwise, returns a `Record<string, string>`.
+`jhx` will return a `string` when `config.stringify` set to `true`, otherwise, returns a `Record<JhxAttribute, string>`.
 
 ---
 
 ### `JhxComponent`
 
-#### Parameters
-
-JSX element wrapper for the `jhx` function.
+JSX wrapper element for the `jhx` function.
 
 ```ts
 function JhxComponent<TDom>(props: PropsWithChildren<JhxComponentProps<TDom>>): JSX.Element
 ```
 
-##### `props`
+#### Props
 
-| Property        | Type                            | Description                                                                             |
-|-----------------|---------------------------------|-----------------------------------------------------------------------------------------|
-| `as`            | `keyof JSX.IntrinsicElements`   | Specifies the element tag for the component. Defaults to `div`.                         |
-| `jhxConfig`     | `Omit<JhxConfig, 'stringify'>`  | Configuration options passed to the `jhx` function, excluding the `stringify` property. |
-| All `jhx` props | See the [`jhx`](#jhx-1) section | Properties passed to the `jhx` function.                                                |
+| Prop                | Type                            | Description                                                                             |
+|---------------------|---------------------------------|-----------------------------------------------------------------------------------------|
+| `as`                | `keyof JSX.IntrinsicElements`   | Specifies the element tag for the component. Defaults to `div`.                         |
+| `jhxConfig`         | `Omit<JhxConfig, 'stringify'>`  | Configuration options passed to the `jhx` function, excluding the `stringify` property. |
+| All props for `jhx` | See the [`jhx`](#jhx-1) section | Props passed to the wrapped `jhx` function.                                             |
 
 #### Generics
 
-- `TDom` (extends `object`) - Type for the additional DOM variables passed to prop functions (see the [DOM Interactions & Type Safety](#dom-interactions--type-safety) example section for usage). Defaults to `object`.
+- `TDom` (extends `object`) - Type for the additional DOM variables (see the [DOM Interactions & Type Safety](#dom-interactions--type-safety) section for usage).
 
 ---
 
 ### `htmx`
 
-Object containing constant values for HTMX attributes, events, methods, headers, and other configurations.
+An object containing constant values for HTMX attributes, events, methods, headers, and other configurations.
 
 > HTMX Documentation: [Reference](https://htmx.org/reference/)
 
@@ -251,26 +249,27 @@ htmx.swap; // swap styles
 htmx.sync; // synchronization strategies
 ```
 
----
-
 ## Examples
 
 ### Setting the Request Method
 
-Using the different syntaxes to set the request route and HTTP method:
+You can set the request method and route by using one of the HTTP verb props or the `method` and `route` props.
 
 ```ts
-jhx({ route: '/api' }); // defaults to GET
-// hx-get="/api"
+// using HTTP verb props
+jhx({ get: '/api' }); // hx-put="/api"
+jhx({ post: '/api' }); // hx-post="/api"
+jhx({ put: '/api' }); // hx-put="/api"
+jhx({ patch: '/api' }); // hx-patch="/api"
+jhx({ delete: '/api' }); // hx-delete="/api"
 
-jhx({ route: '/api', method: 'post' }); // set method explicitly
-// hx-post="/api"
+// using 'method' and 'route' props
+jhx({ route: '/api' }); // hx-get="/api"
+jhx({ route: '/api', method: 'post' }); // hx-post="/api"
+jhx({ route: '/api', method: 'OPTIONS' }); // hx-options="/api"
 
-jhx({ put: '/api' }); // or use method names directly ('get', 'post', 'put', 'patch', or 'delete')
-// hx-put="/api"
-
-jhx({ route: '/api', method: 'HEAD' }); // or use custom method
-// hx-head="/api"
+// using 'method' with a generated endpoint (only with adapter packages)
+jhx({ method: '/post' }); // hx-post="/api/<GENERATED_ID>"
 ```
 
 ---
@@ -394,10 +393,10 @@ function HomePage() {
             <JhxComponent
                 className="search-form"
                 as="form"
-                post="/api"
+                post="/api/search"
                 boost={true}
             >
-                <input type="text" name="input-name" />
+                <input type="text" name="search-input" />
                 <button type="submit">Search</button>
             </JhxComponent>
         </body>
@@ -424,8 +423,8 @@ function HomePage() {
     return (
         <body>
             <h1>Home Page</h1>
-            <Form endpoint="/api">
-                <input type="text" name="input-name" />
+            <Form endpoint="/api/search">
+                <input type="text" name="search-input" />
                 <button type="submit">Search</button>
             </Form>
         </body>
@@ -453,7 +452,7 @@ jhx({
 });
 ```
 
-Declaring DOM event handlers (**Only available for the `jhx` function when `config.stringify` is set to `true`**):
+Declaring DOM event handlers (**only available for the `jhx` function when `config.stringify` is set to `true`**):
 
 ```ts
 // HTMX & DOM events
@@ -479,7 +478,7 @@ jhx({
 
 ### DOM Interactions & Type Safety
 
-In all event handlers (and some props), you have access to the `document`, `window`, and `htmx` objects in the DOM.
+In all event handlers and DOM-related props, you have access to the `document`, `window`, and `htmx` objects in the DOM.
 The `TDom` generic allows you to **define additional variables** that are available in the DOM.
 
 Accessing the DOM from the event handlers:
@@ -761,11 +760,11 @@ function MorphList() {
 #### `headers` and `vals`
 
 The `JhxEvaluableAttribute` type allows you to define static or dynamic values:
-- When using a **function**, it will be evaluated client-side in the browser at trigger time.
+- When using a **function**, it will be evaluated client-side at trigger time.
   - Function parameters can access the DOM and use `TDom` generic (see the [DOM Interactions & Type Safety](#dom-interactions--type-safety) section for usage).
 - When using a **string** or **object**, it will be evaluated at server-render time.
 
-Computing static headers and values at server-render time:
+Computing headers and values at server-render time:
 
 ```tsx
 function CreateItem() {
@@ -773,7 +772,7 @@ function CreateItem() {
         <button {...jhx({
             post: '/api/items',
             headers: {
-                'X-CSRF-TOKEN': 'abc123',
+                'X-CSRF-TOKEN': 'ABCD1234',
             },
             vals: {
                 source: 'ui',
@@ -787,7 +786,7 @@ function CreateItem() {
 }
 ```
 
-Computing dynamic headers and values at trigger time (runs client-side in the browser):
+Computing headers and values with client-side functions:
 
 ```tsx
 function SearchButton() {
@@ -832,7 +831,7 @@ function Toolbar() {
 }
 ```
 
-Using the closest spinner in a row item:
+Using a spinner element in the closest row:
 
 ```tsx
 function ItemRow() {
@@ -896,11 +895,11 @@ function SearchForm() {
 #### `request`
 
 The `JhxRequestAttribute` type allows you to define static or dynamic values:
-- When using a **function**, it will be evaluated client-side in the browser at trigger time.
+- When using a **function**, it will be evaluated client-side at trigger time.
   - Function parameters can access the DOM and use `TDom` generic (see the [DOM Interactions & Type Safety](#dom-interactions--type-safety) section for usage).
 - When using a **string** or **object**, it will be evaluated at server-render time.
 
-Computing static values at server-render time:
+Computing request values at server-render time:
 
 ```tsx
 function SlowAction() {
@@ -918,7 +917,7 @@ function SlowAction() {
 }
 ```
 
-Computing values at trigger time (runs client-side in the browser):
+Computing request values with a client-side function:
 
 ```tsx
 function FetchData() {
@@ -955,14 +954,14 @@ function NavLink() {
 }
 ```
 
-Apply out-of-band selection with a specific swap style:
+Apply out-of-band selection with a specific swap style and avoid main target swap:
 
 ```tsx
 function ShowToast() {
     return (
         <button {...jhx({
             get: '/alerts',
-            swap: 'none', // avoid main target swap; just apply OOB selection
+            swap: 'none',
             selectOob: {
                 selector: '#toast',
                 swap: htmx.swap.afterEnd,
@@ -1021,7 +1020,7 @@ function LoadButton() {
 
 #### `swapOob`
 
-Mark a fragment (in the server response) to swap out-of-band:
+Mark a fragment to swap out-of-band:
 
 ```tsx
 function CartItem({ children }: { children: React.ReactNode }) {
