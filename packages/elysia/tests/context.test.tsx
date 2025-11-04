@@ -8,7 +8,7 @@ import { elysiaJhx } from '../src';
 const route = ENDPOINT;
 
 describe('elysia context', async () => {
-    it('returns ctx.status', async () => {
+    it("returns 'ctx.status'", async () => {
         const { app, jhx } = buildServer();
 
         jhx({ route, handler: (ctx) => ctx.status(201, 'ok') });
@@ -17,7 +17,7 @@ describe('elysia context', async () => {
         await expectResponse(res, 'ok', 'text/html', 201);
     });
 
-    it('ctx.set.status changes response', async () => {
+    it("'ctx.set.status' changes response", async () => {
         const { app, jhx } = buildServer();
 
         jhx({ route, handler: (ctx) => {
@@ -30,7 +30,7 @@ describe('elysia context', async () => {
         await expectResponse(res, 'ok', 'text/plain', 201);
     });
 
-    it('ctx.status cannot change response', async () => {
+    it("'ctx.status' cannot change response", async () => {
         const { app, jhx } = buildServer();
 
         jhx({ route, handler: (ctx) => {
@@ -43,7 +43,7 @@ describe('elysia context', async () => {
         await expectResponse(res, 'ok', 'text/plain', 200); // `ctx.status` cannot change the response code.
     });
 
-    it('function exists', async () => {
+    it("'ctx.jhx' exists", async () => {
         const app = new Elysia()
             .use(elysiaJhx())
             // @ts-expect-error: 'jhx' decoration is not type-safe.
@@ -64,7 +64,7 @@ describe('elysia context', async () => {
         await expectResponse(routeTwoRes, 'handler-two-return', 'text/html');
     });
 
-    it('component exists', async () => {
+    it("'ctx.JhxComponent' exists", async () => {
         const app = new Elysia()
             .use(elysiaJhx())
             // @ts-expect-error 'JhxComponent' decoration is not type-safe.

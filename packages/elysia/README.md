@@ -15,7 +15,7 @@
   <a target="_blank" href="https://github.com/nick-hio/jhx/issues/new">Report an Issue</a>
 </div>
 
-# @jhxdev/fastify
+# @jhxdev/elysia
 
 - **Defines HTMX handlers inline within elements.**  
   Creates server endpoints for HTMX interactions without manually configuring routes.
@@ -28,7 +28,7 @@
 
 > [!NOTE]
 > Don't need server integration? **Check out the core package:**
-> 
+>
 > - [`jhx`](https://github.com/nick-hio/jhx/tree/main/packages/jhx)
 
 ## Table of Contents
@@ -36,53 +36,52 @@
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [API](#api)
-  - [`createJhx`](#createjhx)
-  - [`fastifyJhx`](#fastifyjhx)
-  - [`jhx`](#jhx)
-  - [`JhxComponent`](#jhxcomponent)
+    - [`createJhx`](#createjhx)
+    - [`elysiaJhx`](#elysiajhx)
+    - [`jhx`](#jhx)
+    - [`JhxComponent`](#jhxcomponent)
 - [Examples](#examples)
-  - [Default `stringify`](#default-stringify)
-  - [Reusing Handlers](#reusing-handlers)
-  - [Multiple Instances](#multiple-instances)
-  - [Custom `render` Handler](#custom-render-handler)
-  - [Custom `middleware` Handler(s)](#custom-middleware-handlers)
-  - [Predefined `routes`](#predefined-routes)
-  - [DOM Interactions & Type Safety](#dom-interactions--type-safety)
+    - [Default `stringify`](#default-stringify)
+    - [Reusing Handlers](#reusing-handlers)
+    - [Multiple Instances](#multiple-instances)
+    - [Custom `render` Handler](#custom-render-handler)
+    - [Custom `middleware` Handler(s)](#custom-middleware-handlers)
+    - [Predefined `routes`](#predefined-routes)
+    - [DOM Interactions & Type Safety](#dom-interactions--type-safety)
 
 ## Installation
 
 Install via your preferred package manager:
 
 ```
-pnpm install @jhxdev/fastify
-npm install @jhxdev/fastify
-bun add @jhxdev/fastify
-yarn add @jhxdev/fastify
+pnpm install @jhxdev/elysia
+npm install @jhxdev/elysia
+bun add @jhxdev/elysia
+yarn add @jhxdev/elysia
 ```
 
 Import the package:
 
 ```ts
 // ESM import
-import { fastifyJhx, createJhx } from '@jhxdev/fastify';
+import { createJhx, elysiaJhx } from '@jhxdev/elysia';
 
 // CJS import
-const { fastifyJhx, createJhx } = require('@jhxdev/fastify');
+const { createJhx, elysiaJhx } = require('@jhxdev/elysia');
 ```
 
 ## Quick Start
 
-Call the `createJhx` function with your Fastify instance or register the `fastifyJhx` plugin with Fastify:
+Call the `createJhx` function with your Elysia instance or register the `elysiaJhx` plugin with Elysia:
 
 ```jsx
-import Fastify from 'fastify';
-import { createJhx, fastifyJhx } from '@jhxdev/fastify';
+import { Elysia } from 'elysia';
+import { createJhx, elysiaJhx } from '@jhxdev/elysia';
 
-const fastify = Fastify();
-
-const { jhx, JhxComponent } = createJhx(fastify); // using the function
+const app = Elysia();
+const { jhx, JhxComponent } = createJhx(app); // using the function
 // or
-await fastify.register(fastifyJhx); // using the plugin
+const app = Elysia().use(elysiaJhx()); // using the plugin
 ```
 
 Create HTMX attributes for JSX props:
@@ -138,23 +137,23 @@ Documentation for the `jhx` and `JhxComponent` APIs can be found in the [`jhx` r
 
 ### `createJhx`
 
-Function which creates instances of `jhx` and `JhxComponent` bound to a Fastify instance.
+Function which creates instances of `jhx` and `JhxComponent` bound to an Elysia's context object.
 
 ```ts
-function createJhx<TDomBase, TError, TReturn, TRequest, TReply>(
-    fastify: FastifyInstance,
-    config?: CreateJhxConfig<TReturn, TError, JhxRenderReturn, TRequest, TReply>,
+function createJhx<TDomBase, TError, TReturn, TContext>(
+    elysia: Elysia,
+    config?: CreateJhxConfig<TReturn, TError, JhxRenderReturn, TContext>,
 ): {
-    jhx: Jhx<TDomBase, TReturn, TRequest, TReply>;
-    JhxComponent: JhxComponentType<TDomBase, TReturn, TRequest, TReply>;
+    jhx: Jhx<TDomBase, TReturn, TContext>;
+    JhxComponent: JhxComponentType<TDomBase, TReturn, TContext>;
 };
 ```
 
 #### Parameters
 
-##### `fastify`
+##### `elysia`
 
-A Fastify instance to bind the `jhx` function and `JhxComponent`.
+An Elysia instance to bind the `jhx` function and `JhxComponent`.
 
 ##### `config` (optional)
 
@@ -173,29 +172,28 @@ Configuration options for controlling the behavior of `jhx` and `JhxComponent`.
 | `renderMiddleware` | `boolean`                                           | Whether to execute the `render` function when a middleware handler returns a value. Defaults to `true`.                                                                                                                                                                                                                                                                                                                         |
 | `renderNotFound`   | `boolean`                                           | Whether to execute the `render` function with the not-found handler return value. Defaults to `true`.                                                                                                                                                                                                                                                                                                                           |
 | `render`           | `JhxRenderHandler \| 'static' \| 'string' \| false` | Determines how responses are rendered before being sent. Allows custom `JhxRenderHandler` function. Defaults to `'string'`.<br>- When `'string'`, **JSX payloads are rendered** using the `renderToString` function from React.<br>- When `'static'`, **JSX payloads are rendered** using the `renderToStaticMarkup` function from React.<br>- When `false`, no render function is executed and all payloads are sent directly. |
-| `routes`           | `JhxPartialRoute \| Array<JhxPartialRoute>`         | Predefined routes to register with the Fastify instance upon initialization.                                                                                                                                                                                                                                                                                                                                                    |
+| `routes`           | `JhxPartialRoute \| Array<JhxPartialRoute>`         | Predefined routes to register with the Elysia instance upon initialization.                                                                                                                                                                                                                                                                                                                                                     |
 | `trailingSlash`    | `'slash' \| 'no-slash' \| 'both'`                   | Controls how to handle trailing slashes in routes. Defaults to `'both'`.<br>- When `'slash'`, routes will **only accept** trailing slashes (e.g., `/api/`). <br>- When `'no-slash'`, routes will **not accept** trailing slashes (e.g., `/api`). <br>- When `'both'`, routes will **accept both** (e.g., `/api` or `/api/`).                                                                                                    |
-| `instanceOptions`  | `RouteShorthandOptions` (from Fastify)              | Additional route configuration options.                                                                                                                                                                                                                                                                                                                                                                                         |
+| `instanceOptions`  | `ElysiaConfig` (from Elysia)                        | Additional route configuration options.                                                                                                                                                                                                                                                                                                                                                                                         |
 
 #### Generics
 
 - `TDom` (extends `object`) - Type for the additional DOM variables (see the [DOM Interactions & Type Safety](#dom-interactions--type-safety) section for usage).
 - `TError` (extends `JhxErrorType`) - Type for the error value passed to the error handler.
 - `TReturn` (extends `JhxHandlerReturn`) - Type for the return value of the handler functions.
-- `TRequest` (extends `FastifyRequest`) - Type for the Fastify request object.
-- `TReply` (extends `FastifyReply`) - Type for the Fastify reply object.
+- `TContext` (extends `Context`) - Type for the Elysia context object.
 
 #### Returns
 
 The `createJhx` function returns an object containing the following properties:
-- `jhx` - An extended `jhx` function which is bound to the Fastify instance through the `handler` prop.
-- `JhxComponent` - An extended `JhxComponent` which is bound to the Fastify instance through the `handler` prop.
+- `jhx` - An extended `jhx` function which is bound to the Elysia instance through the `handler` prop.
+- `JhxComponent` - An extended `JhxComponent` which is bound to the Elysia instance through the `handler` prop.
 
 ---
 
-### `fastifyJhx`
+### `elysiaJhx`
 
-Fastify plugin which decorates a Fastify instance with [`jhx`](https://github.com/nick-hio/jhx/tree/main/packages/jhx#jhx-1) and [`JhxComponent`](https://github.com/nick-hio/jhx/tree/main/packages/jhx#jhxcomponent).
+Elysia plugin which decorates an Elysia's context object with [`jhx`](https://github.com/nick-hio/jhx/tree/main/packages/jhx#jhx-1) and [`JhxComponent`](https://github.com/nick-hio/jhx/tree/main/packages/jhx#jhxcomponent).
 
 #### Configuration
 
@@ -204,43 +202,43 @@ Same `config` object from the [`createJhx` function](#config-optional).
 #### Usage
 
 ```tsx
-import Fastify from 'fastify';
-import { createJhx, fastifyJhx } from '@jhxdev/fastify';
+import { Elysia } from 'elysia';
+import { elysiaJhx } from '@jhxdev/elysia';
 import { renderToString } from "react-dom/server";
 
-const fastify = Fastify();
-await fastify.register(fastifyJhx, {/* configuration */});
-
-// using the `jhx` function
-fastify.get('/function', (req, reply) => {
-    reply.type('text/html').send(`
-        <body>
-            <button ${fastify.jhx({
-                get: '/api/one',
-                swap: 'innerHTML',
-                handler: () => `<div>Response</div>`,
-            }, { stringify: true })}>
-                Load Data
-            </button>
-        </body>
-    `);
-});
-
-// using the `JhxComponent`
-fastify.get('/component', (req, reply) => {
-    reply.type('text/html').send(renderToString(
-        <body>
-            <fastify.JhxComponent
-                as='button'
-                get='/api/two'
-                swap='innerHTML'
-                handler={() => `<div>Response</div>`}
-            >
-                Load Data
-            </fastify.JhxComponent>
-        </body>
-    ));
-});
+const app = new Elysia()
+    .use(elysiaJhx({/* configuration */}))
+    // using the `jhx` function
+    .get('/function', ({ jhx, set }) => {
+        set.headers['content-type'] = 'text/html';
+        return `
+            <body>
+                <button ${jhx({
+                    get: '/api/one',
+                    swap: 'innerHTML',
+                    handler: () => '<div>Response</div>',
+                }, { stringify: true })}>
+                    Load Data
+                </button>
+            </body>
+        `;
+    })
+    // using the `JhxComponent`
+    .get('/component', ({ JhxComponent, set }) => {
+        set.headers['content-type'] = 'text/html';
+        return renderToString(
+            <body>
+                <JhxComponent
+                    as='button'
+                    get='/api/two'
+                    swap='innerHTML'
+                    handler={() => `<div>Response</div>`}
+                >
+                    Load Data
+                </JhxComponent>
+            </body>
+        );
+    });
 ```
 
 ---
@@ -326,7 +324,7 @@ Each `jhx` function instance has the following functions to help with managing i
 
 ### `JhxComponent`
 
-JSX wrapper element for the `jhx` function bound to the Fastify instance.
+JSX wrapper element for the `jhx` function bound to an Elysia's context object.
 
 ```ts
 function JhxComponent<TDom>(props: PropsWithChildren<JhxComponentProps<TDom>>): JSX.Element
@@ -365,13 +363,13 @@ function JhxComponent<TDom>(props: PropsWithChildren<JhxComponentProps<TDom>>): 
 
 ### Default `stringify`
 
-When initializing with the `createJhx` function or `fastifyJhx` plugin, you can set a default `config.stringify` value to be used for **all calls** to the `jhx` function.
+When initializing with the `createJhx` function or `elysiaJhx` plugin, you can set a default `config.stringify` value to be used for **all calls** to the `jhx` function.
 This can be overridden on a per-call basis.
 
 This can be useful when you **primarily use the string output (e.g., HTML templating)** in your application more often than the object output (e.g., JSX templating).
 
 ```tsx
-const { jhx, JhxComponent } = createJhx(fastify, {
+const { jhx, JhxComponent } = createJhx(elysia, {
     stringify: true, // set default 'stringify' to 'true'
 });
 
@@ -411,10 +409,11 @@ const RefreshButton = (
 You can reuse the same handler function for multiple routes.
 
 ```ts
-import { JhxHandler } from '@jhxdev/fastify';
+import { JhxHandler } from '@jhxdev/elysia';
 
-const handler: JhxHandler = (_req, reply) => {
-    reply.type('application/json').send({ message: 'Response' });
+const handler: JhxHandler = (ctx) => {
+    ctx.set.header['content-type'] = 'application/json';
+    return { message: 'Response' };
 };
 
 jhx({
@@ -451,31 +450,31 @@ jhx({
 
 ### Multiple Instances
 
-Multiple instances of `jhx` and `JhxComponent` can be bound to the same Fastify instance,
-but **only one plugin can be registered per Fastify instance**, so subsequent instances can be bound using the `createJhx` function.
+Multiple instances of `jhx` and `JhxComponent` can be bound to the same Elysia instance,
+but **only one plugin can be registered per Elysia instance**, so subsequent instances can be bound using the `createJhx` function.
 
 Each time you call the `createJhx` function, you **must provide a unique `config.prefix` value**.
 
 ```ts
-import Fastify from 'fastify';
-import { createJhx, fastifyJhx } from '@jhxdev/fastify';
+import { Elysia } from 'elysia';
+import { createJhx, elysiaJhx } from '@jhxdev/elysia';
 
-const fastify = Fastify();
+const app = new Elysia();
 
 // First instance
 const {
     jhx: jhx1,
     JhxComponent: JhxComponent1,
-} = createJhx(fastify, { prefix: '/api-one' });
+} = createJhx(app, { prefix: '/api-one' });
 
 // Second instance (via the plugin)
-await fastify.register(fastifyJhx); // 'config.prefix' defaults to '/_jhx'
+app.use(elysiaJhx()); // 'config.prefix' defaults to '/_jhx'
 
 // Third instance
 const {
     jhx: jhx3,
     JhxComponent: JhxComponent3,
-} = createJhx(fastify, { prefix: '/api-three' });
+} = createJhx(app, { prefix: '/api-three' });
 ```
 
 ---
@@ -488,13 +487,13 @@ The `render` handler processes the return values of **all handlers**, unless it 
 import { isValidElement } from "react";
 import { renderToString } from "react-dom/server";
 
-createJhx(fastify, {
-    render: async (payload, req, reply) => {
+createJhx(app, {
+    render: async (payload, ctx) => {
         if (isValidElement(payload)) {
             return renderToString(payload);
         }
         if (payload instanceof Blob) {
-            reply.header('Content-Type', 'application/octet-stream');
+            ctx.set.headers['content-type'] = 'application/octet-stream';
             return Buffer.from(await payload.arrayBuffer());
         }
         return payload;
@@ -511,23 +510,23 @@ You can define one or more middleware handlers to run before the route handlers 
 When a middleware handler returns a value other than `void`/`undefined`, the value will be sent directly and the route handler will not be executed.
 
 ```ts
-const { jhx, JhxComponent } = createJhx(fastify, {
+const { jhx, JhxComponent } = createJhx(app, {
     prefix: '/api',
-    middleware: (req, reply) => {
-        console.log(`Request made to: ${req.url}`);
+    middleware: ({ request }) => {
+        console.log(`Request made to: ${request.path}`);
     },
 });
 
-const { jhx: authJhx, JhxComponent: AuthJhxComponent } = createJhx(fastify, {
+const { jhx: authJhx, JhxComponent: AuthJhxComponent } = createJhx(app, {
     prefix: '/auth-api',
     middleware: [
-        (req) => {
-            console.log(`Auth route request made to: ${req.url}`);
+        ({ request }) => {
+            console.log(`Auth route request made to: ${request.path}`);
         },
-        async (req, reply) => {
-            const authorized = await checkAuth(req);
+        async ({ request, status }) => {
+            const authorized = await checkAuth(request);
             if (!authorized) {
-                reply.status(401);
+                status(401);
                 return `<div>Unauthorized</div>`;
             }
         },
@@ -542,15 +541,15 @@ const { jhx: authJhx, JhxComponent: AuthJhxComponent } = createJhx(fastify, {
 Since the `jhx` function registers routes at runtime, **some routes will not exist until their corresponding `jhx` function is called**.
 
 To ensure routes are available beforehand, define them by doing at least one of the following:
-1. Define the route(s) in the `config.routes` option when calling the `createJhx` function or `fastifyJhx` plugin.
-2. Call the `jhx` or `fastify.jhx` function before starting the server.
+1. Define the route(s) in the `config.routes` option when calling the `createJhx` function or `elysiaJhx` plugin.
+2. Call the `jhx` or `ctx.jhx` function before starting the server.
 3. Use the `addRoute` or `addRoutes` utility functions on the `jhx` instance.
 
 ```tsx
-const fastify = Fastify();
+const app = new Elysia();
 
 // 1.
-const { jhx } = createJhx(fastify, {
+const { jhx } = createJhx(app, {
     routes: [
         {
             route: '/latest', // defaults to 'GET' method
@@ -587,7 +586,7 @@ jhx.addRoute({
     handler: () => `<div>Info Route</div>`,
 });
 
-fastify.listen({ port: 3000 }, (err) => {/* ... */});
+app.listen(3000);
 ```
 
 ---
@@ -606,7 +605,7 @@ This can be overridden on a per-call basis.
 type BaseDom = { darkMode?: boolean };
 
 // the variables defined in `BaseDom` will be is available for `jhx` and `JhxComponent`
-const { jhx, JhxComponent } = createJhx<BaseDom>(fastify);
+const { jhx, JhxComponent } = createJhx<BaseDom>(app);
 
 jhx({
     vals: ({ darkMode }) => ({

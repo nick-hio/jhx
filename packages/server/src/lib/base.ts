@@ -1,20 +1,14 @@
 export type { HttpMethod, HttpMethodLowerCase, HttpMethodUpperCase, JhxOnRegistered } from '../types';
 export type { JhxServerErrorType, JhxServerError } from './jhx-server-error';
 
-export { htmx, attributesToString, JhxComponent as BaseJhxComponent } from 'jhx';
-
-export type {
-    JhxDefaultConfig as BaseJhxDefaultConfig,
-    JhxProps as BaseJhxProps,
-    JhxComponentType as BaseJhxComponentType,
-    JhxComponentProps as BaseJhxComponentProps,
-} from 'jhx';
+export { htmx, applyAttributes, attributesToString } from 'jhx';
 
 export type {
     ConditionalFunction,
     DomObjects,
     Duration,
     DomEventProps,
+    JhxDefaultConfig,
     JhxError,
     JhxValsError,
     JhxRequestError,

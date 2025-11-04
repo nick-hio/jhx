@@ -67,5 +67,6 @@ import path from 'path';
     } catch (e) {
         console.error(`❌  Prepack failed:`);
         console.error(e);
+        process.exit(1);
     }
 })();

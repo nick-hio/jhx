@@ -60,5 +60,6 @@ export const config = {
     } catch (e) {
         console.error('❌  Build failed:');
         console.error(e);
+        process.exit(1);
     }
 })();

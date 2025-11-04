@@ -15,7 +15,7 @@
   <a target="_blank" href="https://github.com/nick-hio/jhx/issues/new">Report an Issue</a>
 </div>
 
-# @jhxdev/fastify
+# @jhxdev/express
 
 - **Defines HTMX handlers inline within elements.**  
   Creates server endpoints for HTMX interactions without manually configuring routes.
@@ -28,7 +28,7 @@
 
 > [!NOTE]
 > Don't need server integration? **Check out the core package:**
-> 
+>
 > - [`jhx`](https://github.com/nick-hio/jhx/tree/main/packages/jhx)
 
 ## Table of Contents
@@ -36,53 +36,49 @@
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [API](#api)
-  - [`createJhx`](#createjhx)
-  - [`fastifyJhx`](#fastifyjhx)
-  - [`jhx`](#jhx)
-  - [`JhxComponent`](#jhxcomponent)
+    - [`createJhx`](#createjhx)
+    - [`jhx`](#jhx)
+    - [`JhxComponent`](#jhxcomponent)
 - [Examples](#examples)
-  - [Default `stringify`](#default-stringify)
-  - [Reusing Handlers](#reusing-handlers)
-  - [Multiple Instances](#multiple-instances)
-  - [Custom `render` Handler](#custom-render-handler)
-  - [Custom `middleware` Handler(s)](#custom-middleware-handlers)
-  - [Predefined `routes`](#predefined-routes)
-  - [DOM Interactions & Type Safety](#dom-interactions--type-safety)
+    - [Default `stringify`](#default-stringify)
+    - [Reusing Handlers](#reusing-handlers)
+    - [Multiple Instances](#multiple-instances)
+    - [Custom `render` Handler](#custom-render-handler)
+    - [Custom `middleware` Handler(s)](#custom-middleware-handlers)
+    - [Predefined `routes`](#predefined-routes)
+    - [DOM Interactions & Type Safety](#dom-interactions--type-safety)
 
 ## Installation
 
 Install via your preferred package manager:
 
 ```
-pnpm install @jhxdev/fastify
-npm install @jhxdev/fastify
-bun add @jhxdev/fastify
-yarn add @jhxdev/fastify
+pnpm install @jhxdev/express
+npm install @jhxdev/express
+bun add @jhxdev/express
+yarn add @jhxdev/express
 ```
 
 Import the package:
 
 ```ts
 // ESM import
-import { fastifyJhx, createJhx } from '@jhxdev/fastify';
+import { createJhx } from '@jhxdev/express';
 
 // CJS import
-const { fastifyJhx, createJhx } = require('@jhxdev/fastify');
+const { createJhx } = require('@jhxdev/express');
 ```
 
 ## Quick Start
 
-Call the `createJhx` function with your Fastify instance or register the `fastifyJhx` plugin with Fastify:
+Call the `createJhx` function with your Express instance:
 
 ```jsx
-import Fastify from 'fastify';
-import { createJhx, fastifyJhx } from '@jhxdev/fastify';
+import express from 'express';
+import { createJhx } from '@jhxdev/express';
 
-const fastify = Fastify();
-
-const { jhx, JhxComponent } = createJhx(fastify); // using the function
-// or
-await fastify.register(fastifyJhx); // using the plugin
+const app = express();
+const { jhx, JhxComponent } = createJhx(app);
 ```
 
 Create HTMX attributes for JSX props:
@@ -138,11 +134,11 @@ Documentation for the `jhx` and `JhxComponent` APIs can be found in the [`jhx` r
 
 ### `createJhx`
 
-Function which creates instances of `jhx` and `JhxComponent` bound to a Fastify instance.
+Function which creates instances of `jhx` and `JhxComponent` bound to an Express instance.
 
 ```ts
 function createJhx<TDomBase, TError, TReturn, TRequest, TReply>(
-    fastify: FastifyInstance,
+    express: Express,
     config?: CreateJhxConfig<TReturn, TError, JhxRenderReturn, TRequest, TReply>,
 ): {
     jhx: Jhx<TDomBase, TReturn, TRequest, TReply>;
@@ -152,9 +148,9 @@ function createJhx<TDomBase, TError, TReturn, TRequest, TReply>(
 
 #### Parameters
 
-##### `fastify`
+##### `express`
 
-A Fastify instance to bind the `jhx` function and `JhxComponent`.
+An Express instance to bind the `jhx` function and `JhxComponent`.
 
 ##### `config` (optional)
 
@@ -173,77 +169,22 @@ Configuration options for controlling the behavior of `jhx` and `JhxComponent`.
 | `renderMiddleware` | `boolean`                                           | Whether to execute the `render` function when a middleware handler returns a value. Defaults to `true`.                                                                                                                                                                                                                                                                                                                         |
 | `renderNotFound`   | `boolean`                                           | Whether to execute the `render` function with the not-found handler return value. Defaults to `true`.                                                                                                                                                                                                                                                                                                                           |
 | `render`           | `JhxRenderHandler \| 'static' \| 'string' \| false` | Determines how responses are rendered before being sent. Allows custom `JhxRenderHandler` function. Defaults to `'string'`.<br>- When `'string'`, **JSX payloads are rendered** using the `renderToString` function from React.<br>- When `'static'`, **JSX payloads are rendered** using the `renderToStaticMarkup` function from React.<br>- When `false`, no render function is executed and all payloads are sent directly. |
-| `routes`           | `JhxPartialRoute \| Array<JhxPartialRoute>`         | Predefined routes to register with the Fastify instance upon initialization.                                                                                                                                                                                                                                                                                                                                                    |
+| `routes`           | `JhxPartialRoute \| Array<JhxPartialRoute>`         | Predefined routes to register with the Express instance upon initialization.                                                                                                                                                                                                                                                                                                                                                    |
 | `trailingSlash`    | `'slash' \| 'no-slash' \| 'both'`                   | Controls how to handle trailing slashes in routes. Defaults to `'both'`.<br>- When `'slash'`, routes will **only accept** trailing slashes (e.g., `/api/`). <br>- When `'no-slash'`, routes will **not accept** trailing slashes (e.g., `/api`). <br>- When `'both'`, routes will **accept both** (e.g., `/api` or `/api/`).                                                                                                    |
-| `instanceOptions`  | `RouteShorthandOptions` (from Fastify)              | Additional route configuration options.                                                                                                                                                                                                                                                                                                                                                                                         |
 
 #### Generics
 
 - `TDom` (extends `object`) - Type for the additional DOM variables (see the [DOM Interactions & Type Safety](#dom-interactions--type-safety) section for usage).
 - `TError` (extends `JhxErrorType`) - Type for the error value passed to the error handler.
 - `TReturn` (extends `JhxHandlerReturn`) - Type for the return value of the handler functions.
-- `TRequest` (extends `FastifyRequest`) - Type for the Fastify request object.
-- `TReply` (extends `FastifyReply`) - Type for the Fastify reply object.
+- `TRequest` (extends `Request` from Express) - Type for the Express request object.
+- `TResponse` (extends `Response` from Express) - Type for the Express response object.
 
 #### Returns
 
 The `createJhx` function returns an object containing the following properties:
-- `jhx` - An extended `jhx` function which is bound to the Fastify instance through the `handler` prop.
-- `JhxComponent` - An extended `JhxComponent` which is bound to the Fastify instance through the `handler` prop.
-
----
-
-### `fastifyJhx`
-
-Fastify plugin which decorates a Fastify instance with [`jhx`](https://github.com/nick-hio/jhx/tree/main/packages/jhx#jhx-1) and [`JhxComponent`](https://github.com/nick-hio/jhx/tree/main/packages/jhx#jhxcomponent).
-
-#### Configuration
-
-Same `config` object from the [`createJhx` function](#config-optional).
-
-#### Usage
-
-```tsx
-import Fastify from 'fastify';
-import { createJhx, fastifyJhx } from '@jhxdev/fastify';
-import { renderToString } from "react-dom/server";
-
-const fastify = Fastify();
-await fastify.register(fastifyJhx, {/* configuration */});
-
-// using the `jhx` function
-fastify.get('/function', (req, reply) => {
-    reply.type('text/html').send(`
-        <body>
-            <button ${fastify.jhx({
-                get: '/api/one',
-                swap: 'innerHTML',
-                handler: () => `<div>Response</div>`,
-            }, { stringify: true })}>
-                Load Data
-            </button>
-        </body>
-    `);
-});
-
-// using the `JhxComponent`
-fastify.get('/component', (req, reply) => {
-    reply.type('text/html').send(renderToString(
-        <body>
-            <fastify.JhxComponent
-                as='button'
-                get='/api/two'
-                swap='innerHTML'
-                handler={() => `<div>Response</div>`}
-            >
-                Load Data
-            </fastify.JhxComponent>
-        </body>
-    ));
-});
-```
-
----
+- `jhx` - An extended `jhx` function which is bound to the Express instance through the `handler` prop.
+- `JhxComponent` - An extended `JhxComponent` which is bound to the Express instance through the `handler` prop.
 
 ### `jhx`
 
@@ -322,11 +263,9 @@ Each `jhx` function instance has the following functions to help with managing i
   jhx.removeRoute({ route: string, method: string }): boolean;
   ```
 
----
-
 ### `JhxComponent`
 
-JSX wrapper element for the `jhx` function bound to the Fastify instance.
+JSX wrapper element for the `jhx` function bound to the Express instance.
 
 ```ts
 function JhxComponent<TDom>(props: PropsWithChildren<JhxComponentProps<TDom>>): JSX.Element
@@ -365,13 +304,13 @@ function JhxComponent<TDom>(props: PropsWithChildren<JhxComponentProps<TDom>>): 
 
 ### Default `stringify`
 
-When initializing with the `createJhx` function or `fastifyJhx` plugin, you can set a default `config.stringify` value to be used for **all calls** to the `jhx` function.
+When initializing with the `createJhx` function, you can set a default `config.stringify` value to be used for **all calls** to the `jhx` function.
 This can be overridden on a per-call basis.
 
 This can be useful when you **primarily use the string output (e.g., HTML templating)** in your application more often than the object output (e.g., JSX templating).
 
 ```tsx
-const { jhx, JhxComponent } = createJhx(fastify, {
+const { jhx, JhxComponent } = createJhx(app, {
     stringify: true, // set default 'stringify' to 'true'
 });
 
@@ -411,7 +350,7 @@ const RefreshButton = (
 You can reuse the same handler function for multiple routes.
 
 ```ts
-import { JhxHandler } from '@jhxdev/fastify';
+import { JhxHandler } from '@jhxdev/express';
 
 const handler: JhxHandler = (_req, reply) => {
     reply.type('application/json').send({ message: 'Response' });
@@ -451,31 +390,33 @@ jhx({
 
 ### Multiple Instances
 
-Multiple instances of `jhx` and `JhxComponent` can be bound to the same Fastify instance,
-but **only one plugin can be registered per Fastify instance**, so subsequent instances can be bound using the `createJhx` function.
-
-Each time you call the `createJhx` function, you **must provide a unique `config.prefix` value**.
+Multiple instances of `jhx` and `JhxComponent` can be bound to the same Express instance by **providing a unique `config.prefix` value with every call** to the `createJhx` function.
 
 ```ts
-import Fastify from 'fastify';
-import { createJhx, fastifyJhx } from '@jhxdev/fastify';
+import express from 'express';
+import { createJhx } from '@jhxdev/express';
 
-const fastify = Fastify();
+const app = express();
 
 // First instance
 const {
     jhx: jhx1,
     JhxComponent: JhxComponent1,
-} = createJhx(fastify, { prefix: '/api-one' });
+} = createJhx(app, { prefix: '/api-one' });
 
-// Second instance (via the plugin)
-await fastify.register(fastifyJhx); // 'config.prefix' defaults to '/_jhx'
+// Second instance
+const {
+    jhx: jhx2,
+    JhxComponent: JhxComponent2,
+} = createJhx(app); // 'config.prefix' defaults to '/_jhx'
 
-// Third instance
+// Second instance
 const {
     jhx: jhx3,
     JhxComponent: JhxComponent3,
-} = createJhx(fastify, { prefix: '/api-three' });
+} = createJhx(app, { prefix: '/api-three' });
+
+
 ```
 
 ---
@@ -488,7 +429,7 @@ The `render` handler processes the return values of **all handlers**, unless it 
 import { isValidElement } from "react";
 import { renderToString } from "react-dom/server";
 
-createJhx(fastify, {
+createJhx(app, {
     render: async (payload, req, reply) => {
         if (isValidElement(payload)) {
             return renderToString(payload);
@@ -511,14 +452,14 @@ You can define one or more middleware handlers to run before the route handlers 
 When a middleware handler returns a value other than `void`/`undefined`, the value will be sent directly and the route handler will not be executed.
 
 ```ts
-const { jhx, JhxComponent } = createJhx(fastify, {
+const { jhx, JhxComponent } = createJhx(app, {
     prefix: '/api',
     middleware: (req, reply) => {
         console.log(`Request made to: ${req.url}`);
     },
 });
 
-const { jhx: authJhx, JhxComponent: AuthJhxComponent } = createJhx(fastify, {
+const { jhx: authJhx, JhxComponent: AuthJhxComponent } = createJhx(app, {
     prefix: '/auth-api',
     middleware: [
         (req) => {
@@ -542,15 +483,15 @@ const { jhx: authJhx, JhxComponent: AuthJhxComponent } = createJhx(fastify, {
 Since the `jhx` function registers routes at runtime, **some routes will not exist until their corresponding `jhx` function is called**.
 
 To ensure routes are available beforehand, define them by doing at least one of the following:
-1. Define the route(s) in the `config.routes` option when calling the `createJhx` function or `fastifyJhx` plugin.
-2. Call the `jhx` or `fastify.jhx` function before starting the server.
+1. Define the route(s) in the `config.routes` option when calling the `createJhx` function.
+2. Call the `jhx` function before starting the server.
 3. Use the `addRoute` or `addRoutes` utility functions on the `jhx` instance.
 
 ```tsx
-const fastify = Fastify();
+const app = express();
 
 // 1.
-const { jhx } = createJhx(fastify, {
+const { jhx } = createJhx(app, {
     routes: [
         {
             route: '/latest', // defaults to 'GET' method
@@ -587,7 +528,7 @@ jhx.addRoute({
     handler: () => `<div>Info Route</div>`,
 });
 
-fastify.listen({ port: 3000 }, (err) => {/* ... */});
+app.listen(3000, () => {/* ... */});
 ```
 
 ---
@@ -606,7 +547,7 @@ This can be overridden on a per-call basis.
 type BaseDom = { darkMode?: boolean };
 
 // the variables defined in `BaseDom` will be is available for `jhx` and `JhxComponent`
-const { jhx, JhxComponent } = createJhx<BaseDom>(fastify);
+const { jhx, JhxComponent } = createJhx<BaseDom>(app);
 
 jhx({
     vals: ({ darkMode }) => ({
@@ -628,3 +569,4 @@ jhx<SearchPageDom>({
     }),
 });
 ```
+
