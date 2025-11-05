@@ -106,7 +106,7 @@ describe('route error handling', () => {
     it('returns buffer (config.contentType=null)', async () => {
         const port = ports.getPort();
         const { jhx } = buildServer(testServers, port, {
-            contentType: null,
+            contentType: false,
             errorHandler: (err) => Buffer.from(err.message, 'utf-8'),
         });
 
@@ -144,7 +144,7 @@ describe('route error handling', () => {
     it('returns buffer (fs.readFile; config.contentType=null)', async () => {
         const port = ports.getPort();
         const { jhx } = buildServer(testServers, port, {
-            contentType: null,
+            contentType: false,
             errorHandler: (_err, _req, res) => {
                 const filepath = path.join(__dirname, 'data.txt');
                 fs.readFile(filepath, (err, buff) => res.send(err || buff));
@@ -166,7 +166,7 @@ describe('route error handling', () => {
     it('returns blob (config.contentType=null)', async () => {
         const port = ports.getPort();
         const { jhx } = buildServer(testServers, port, {
-            contentType: null,
+            contentType: false,
             errorHandler: () => Bun.file(path.join(__dirname, 'data.txt')),
         });
 
@@ -228,7 +228,7 @@ describe('route error handling', () => {
     it('returns object (config.contentType=null)', async () => {
         const port = ports.getPort();
         const { jhx } = buildServer(testServers, port, {
-            contentType: null,
+            contentType: false,
             errorHandler: (err) => ({ message: err.message }),
         });
 

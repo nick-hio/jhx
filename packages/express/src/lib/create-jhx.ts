@@ -60,7 +60,7 @@ export const createJhx = <
             const route = decodeURIComponent(req.url.split('?')[0] as string);
             const jhxHandler = routes.get(`${method}::${route}`);
 
-            if (baseConfig.contentType !== null) {
+            if (baseConfig.contentType) {
                 res.header('content-type', baseConfig.contentType);
             }
 

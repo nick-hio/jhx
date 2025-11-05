@@ -56,7 +56,7 @@ describe('middleware handling', () => {
 
     it('returns buffer (config.contentType=null)', async () => {
         const fastify = await buildServer({
-            contentType: null,
+            contentType: false,
             middleware: () => Buffer.from('middleware-ok', 'utf-8'),
         });
 
@@ -82,7 +82,7 @@ describe('middleware handling', () => {
 
     it('returns buffer (fs.readFile; config.contentType=null)', async () => {
         const fastify = await buildServer({
-            contentType: null,
+            contentType: false,
             middleware: (_req, res) => {
                 const filepath = path.join(__dirname, 'data.txt');
                 fs.readFile(filepath, (err, buff) => res.send(err || buff));
@@ -98,7 +98,7 @@ describe('middleware handling', () => {
 
     it('returns blob (config.contentType=null)', async () => {
         const fastify = await buildServer({
-            contentType: null,
+            contentType: false,
             middleware: () => Bun.file(path.join(__dirname, 'data.txt')),
         });
 
@@ -142,7 +142,7 @@ describe('middleware handling', () => {
 
     it('returns object (config.contentType=null)', async () => {
         const fastify = await buildServer({
-            contentType: null,
+            contentType: false,
             middleware: () => ({ message: 'ok' }),
         });
 

@@ -27,7 +27,7 @@ describe('middleware handling', async () => {
 
     it('returns Elysia File (config.contentType=null)', async () => {
         const { app, jhx } = buildServer({
-            contentType: null,
+            contentType: false,
             middleware: () => file(path.join(__dirname, 'data.txt')),
         });
 
@@ -97,7 +97,7 @@ describe('middleware handling', async () => {
 
     it('returns buffer (config.contentType=null)', async () => {
         const { app, jhx } = buildServer({
-            contentType: null,
+            contentType: false,
             middleware: () => Buffer.from('middleware-ok', 'utf-8'),
         });
 
@@ -123,7 +123,7 @@ describe('middleware handling', async () => {
 
     it('returns buffer (fs.readFile; config.contentType=null)', async () => {
         const { app, jhx } = buildServer({
-            contentType: null,
+            contentType: false,
             middleware: async () => {
                 const filepath = path.join(__dirname, 'data.txt');
                 return await fs.promises.readFile(filepath);
@@ -138,7 +138,7 @@ describe('middleware handling', async () => {
 
     it('returns blob (config.contentType=null)', async () => {
         const { app, jhx } = buildServer({
-            contentType: null,
+            contentType: false,
             middleware: () => Bun.file(path.join(__dirname, 'data.txt')),
         });
 
@@ -204,7 +204,7 @@ describe('middleware handling', async () => {
 
     it('returns object (config.contentType=null)', async () => {
         const { app, jhx } = buildServer({
-            contentType: null,
+            contentType: false,
             middleware: () => ({ message: 'middleware-ok' }),
         });
 

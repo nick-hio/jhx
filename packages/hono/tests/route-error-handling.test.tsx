@@ -93,7 +93,7 @@ describe('route error handling', async () => {
 
     it('returns buffer (config.contentType=null)', async () => {
         const { app, jhx } = buildServer({
-            contentType: null,
+            contentType: false,
             errorHandler: (err) => Buffer.from(err.message, 'utf-8'),
         });
 
@@ -129,7 +129,7 @@ describe('route error handling', async () => {
 
     it('returns blob (config.contentType=null)', async () => {
         const { app, jhx } = buildServer({
-            contentType: null,
+            contentType: false,
             errorHandler: () => Bun.file(path.join(__dirname, 'data.txt')),
         });
 
@@ -235,7 +235,7 @@ describe('route error handling', async () => {
 
     it('returns object (config.contentType=null)', async () => {
         const { app, jhx } = buildServer({
-            contentType: null,
+            contentType: false,
             errorHandler: (err) => ({ message: err.message }),
         });
 

@@ -27,7 +27,7 @@ describe('render handling', async () => {
 
     it('returns Elysia File (config.contentType=null)', async () => {
         const { app, jhx } = buildServer({
-            contentType: null,
+            contentType: false,
             render: () => file(path.join(__dirname, 'data.txt')),
         });
 
@@ -50,7 +50,7 @@ describe('render handling', async () => {
 
     it('returns buffer (config.contentType=null)', async () => {
         const { app, jhx } = buildServer({
-            contentType: null,
+            contentType: false,
             render: (payload) => Buffer.from(payload + '-rendered', 'utf-8'),
         });
 
@@ -76,7 +76,7 @@ describe('render handling', async () => {
 
     it('returns buffer (fs.readFile; config.contentType=null)', async () => {
         const { app, jhx } = buildServer({
-            contentType: null,
+            contentType: false,
             render: async () => {
                 const filepath = path.join(__dirname, 'data.txt');
                 return await fs.promises.readFile(filepath);
@@ -91,7 +91,7 @@ describe('render handling', async () => {
 
     it('returns blob (config.contentType=null)', async () => {
         const { app, jhx } = buildServer({
-            contentType: null,
+            contentType: false,
             render: () => Bun.file(path.join(__dirname, 'data.txt')),
         });
 
@@ -157,7 +157,7 @@ describe('render handling', async () => {
 
     it('returns object (config.contentType=null)', async () => {
         const { app, jhx } = buildServer({
-            contentType: null,
+            contentType: false,
             render: (payload) => ({ message: payload + '-rendered' }),
         });
 

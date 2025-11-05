@@ -30,7 +30,7 @@ describe('render handling', () => {
     it('returns buffer (config.contentType=null)', async () => {
         const port = ports.getPort();
         const { jhx } = buildServer(testServers, port, {
-            contentType: null,
+            contentType: false,
             render: (payload) => Buffer.from(payload + '-rendered', 'utf-8'),
         });
 
@@ -58,7 +58,7 @@ describe('render handling', () => {
     it('returns buffer (fs.readFile; config.contentType=null)', async () => {
         const port = ports.getPort();
         const { jhx } = buildServer(testServers, port, {
-            contentType: null,
+            contentType: false,
             render: (_payload, _req, res) => {
                 const filepath = path.join(__dirname, 'data.txt');
                 fs.readFile(filepath, (err, buff) => res.send(err || buff));
@@ -75,7 +75,7 @@ describe('render handling', () => {
     it('returns blob (config.contentType=null)', async () => {
         const port = ports.getPort();
         const { jhx } = buildServer(testServers, port, {
-            contentType: null,
+            contentType: false,
             render: () => Bun.file(path.join(__dirname, 'data.txt')),
         });
 
@@ -122,7 +122,7 @@ describe('render handling', () => {
     it('returns object (config.contentType=null)', async () => {
         const port = ports.getPort();
         const { jhx } = buildServer(testServers, port, {
-            contentType: null,
+            contentType: false,
             render: (payload) => ({ message: payload + '-rendered' }),
         });
 

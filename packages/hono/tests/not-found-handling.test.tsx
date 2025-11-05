@@ -56,7 +56,7 @@ describe('not found handling', async () => {
 
     it('returns buffer (config.contentType=null)', async () => {
         const { app } = buildServer({
-            contentType: null,
+            contentType: false,
             notFoundHandler: () => Buffer.from('dne', 'utf-8'),
         });
 
@@ -78,7 +78,7 @@ describe('not found handling', async () => {
 
     it('returns blob (config.contentType=null)', async () => {
         const { app } = buildServer({
-            contentType: null,
+            contentType: false,
             notFoundHandler: () => Bun.file(path.join(__dirname, 'data.txt')),
         });
 
@@ -151,7 +151,7 @@ describe('not found handling', async () => {
 
     it('returns object (config.contentType=null)', async () => {
         const { app } = buildServer({
-            contentType: null,
+            contentType: false,
             notFoundHandler: () => ({ message: 'dne' }),
         });
 
@@ -161,7 +161,6 @@ describe('not found handling', async () => {
 
     it('returns object (response header set)', async () => {
         const { app } = buildServer({
-            contentType: null,
             notFoundHandler: (context) => {
                 context.header('content-type', 'application/json');
                 return { message: 'dne' }

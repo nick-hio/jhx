@@ -21,7 +21,7 @@ describe('render handling', () => {
 
     it('returns buffer (config.contentType)', async () => {
         const fastify = await buildServer({
-            contentType: null,
+            contentType: false,
             render: (data) => Buffer.from(data + '-rendered', 'utf-8'),
         });
 
@@ -47,7 +47,7 @@ describe('render handling', () => {
 
     it('returns buffer (readFile)', async () => {
         const fastify = await buildServer({
-            contentType: null,
+            contentType: false,
             render: (_data, _req, res) => {
                 const filepath = path.join(__dirname, 'data.txt');
                 fs.readFile(filepath, (err, buff) => res.send(err || buff));
@@ -63,7 +63,7 @@ describe('render handling', () => {
 
     it('returns blob (config.contentType=null)', async () => {
         const fastify = await buildServer({
-            contentType: null,
+            contentType: false,
             render: () => Bun.file(path.join(__dirname, 'data.txt')),
         });
 
@@ -107,7 +107,7 @@ describe('render handling', () => {
 
     it('returns object (config.contentType)', async () => {
         const fastify = await buildServer({
-            contentType: null,
+            contentType: false,
             render: (data) => ({ message: data + '-rendered' }),
         });
 

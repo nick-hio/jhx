@@ -32,7 +32,7 @@ describe('route error handling', async () => {
 
     it('returns Elysia File (config.contentType=null)', async () => {
         const { app, jhx } = buildServer({
-            contentType: null,
+            contentType: false,
             errorHandler: () => file(path.join(__dirname, 'data.txt')),
         });
 
@@ -132,7 +132,7 @@ describe('route error handling', async () => {
 
     it('returns buffer (config.contentType=null)', async () => {
         const { app, jhx } = buildServer({
-            contentType: null,
+            contentType: false,
             errorHandler: (err) => Buffer.from(err.message, 'utf-8'),
         });
 
@@ -168,7 +168,7 @@ describe('route error handling', async () => {
 
     it('returns buffer (fs.readFile; config.contentType=null)', async () => {
         const { app, jhx } = buildServer({
-            contentType: null,
+            contentType: false,
             errorHandler: async () => {
                 const filepath = path.join(__dirname, 'data.txt');
                 return await fs.promises.readFile(filepath);
@@ -188,7 +188,7 @@ describe('route error handling', async () => {
 
     it('returns blob (config.contentType=null)', async () => {
         const { app, jhx } = buildServer({
-            contentType: null,
+            contentType: false,
             errorHandler: () => Bun.file(path.join(__dirname, 'data.txt')),
         });
 
@@ -274,7 +274,7 @@ describe('route error handling', async () => {
 
     it('returns object (config.contentType=null)', async () => {
         const { app, jhx } = buildServer({
-            contentType: null,
+            contentType: false,
             errorHandler: (err) => ({ message: err.message }),
         });
 

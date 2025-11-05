@@ -62,7 +62,7 @@ describe('route handling', async () => {
 
     it('returns buffer (config.contentType=null)', async () => {
         const fastify = await buildServer({
-            contentType: null,
+            contentType: false,
         });
 
         fastify.jhx({
@@ -91,7 +91,7 @@ describe('route handling', async () => {
 
     it('returns buffer (fs.readFile; config.contentType=null)', async () => {
         const fastify = await buildServer({
-            contentType: null,
+            contentType: false,
         });
 
         fastify.jhx({
@@ -108,15 +108,17 @@ describe('route handling', async () => {
     });
 
     it('returns blob (config.contentType=null)', async () => {
-        const fastify = await buildServer();
+        const fastify = await buildServer({
+            contentType: false,
+        });
 
         fastify.jhx({
             route,
-            handler: () => 'ok',
+            handler: () => Bun.file(path.join(__dirname, 'data.txt')),
         });
 
         const res = await fastify.inject({ method: 'GET', url });
-        expectResponse(res, 'ok', 'text/html');
+        expectResponse(res, 'file-data', 'text/plain;charset=utf-8');
     });
 
     it('returns stream (res.raw)', async () => {
@@ -155,7 +157,7 @@ describe('route handling', async () => {
 
     it('returns object (config.contentType=null)', async () => {
         const fastify = await buildServer({
-            contentType: null,
+            contentType: false,
         });
 
         fastify.jhx({

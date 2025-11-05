@@ -76,7 +76,7 @@ describe('route handling', async () => {
 
     it('returns buffer (config.contentType=null)', async () => {
         const { app, jhx } = buildServer({
-            contentType: null,
+            contentType: false,
         });
 
         jhx({
@@ -105,7 +105,7 @@ describe('route handling', async () => {
 
     it('returns blob (config.contentType=null)', async () => {
         const { app, jhx } = buildServer({
-            contentType: null,
+            contentType: false,
         });
 
         jhx({
@@ -192,7 +192,7 @@ describe('route handling', async () => {
 
     it('returns object (config.contentType=null)', async () => {
         const { app, jhx } = buildServer({
-            contentType: null,
+            contentType: false,
         });
 
         jhx({

@@ -79,7 +79,7 @@ export const createServerJhx = <
 ) => {
     const baseConfig = {
         contentType:
-            config.contentType === null ? null : (config.contentType ?? serverDefaultConfig.contentType),
+            config.contentType === false ? false : (config.contentType ?? serverDefaultConfig.contentType),
         debug: config.debug === serverDefaultConfig.debug,
         errorHandler: config.errorHandler,
         middleware: Array.isArray(config.middleware)
@@ -95,7 +95,7 @@ export const createServerJhx = <
             typeof config.render === 'function'
                 ? config.render
                 : (getRenderFunction<TResolved, TRendered, TReq, TRes>(
-                      config.render === undefined ? 'static' : config.render,
+                      config.render === undefined ? 'string' : config.render,
                   ) as TRenderHandler),
         renderError:
             typeof config.renderError === 'boolean' ? config.renderError : serverDefaultConfig.renderError,

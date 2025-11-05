@@ -15,7 +15,7 @@ export const getRenderFunction = <TRenderable, TRenderReturn, TRequest, TRespons
         | ServerJhxRenderHandler<TRenderable, TRenderReturn, TRequest, TResponse>
         | false,
 ): ServerJhxRenderHandler<TRenderable, TRenderReturn, TRequest, TResponse> | null => {
-    if (render === false) {
+    if (!render) {
         return null;
     }
     if (typeof render === 'function') {

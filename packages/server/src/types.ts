@@ -89,7 +89,7 @@ export type ServerCreateJhxConfig<
      *
      * Defaults to `text/html; charset=utf-8`.
      */
-    contentType?: string | null;
+    contentType?: string | false;
 
     /**
      * Whether to log additional route information to the console.
@@ -210,7 +210,7 @@ export type NormalizedServerJhxConfig<
     errorHandler: TErrorHandler | undefined;
     middleware: Array<THandler>;
     notFoundHandler: THandler;
-    render: TRenderHandler | null;
+    render: TRenderHandler | false;
 };
 
 export type ServerJhxProps<

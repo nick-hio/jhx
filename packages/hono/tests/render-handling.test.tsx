@@ -21,7 +21,7 @@ describe('render handling', async () => {
 
     it('returns buffer (config.contentType=null)', async () => {
         const { app, jhx } = buildServer({
-            contentType: null,
+            contentType: false,
             render: (payload) => Buffer.from(payload + '-rendered', 'utf-8'),
         });
 
@@ -47,7 +47,7 @@ describe('render handling', async () => {
 
     it('returns blob (config.contentType=null)', async () => {
         const { app, jhx } = buildServer({
-            contentType: null,
+            contentType: false,
             render: () => Bun.file(path.join(__dirname, 'data.txt')),
         });
 
@@ -128,7 +128,7 @@ describe('render handling', async () => {
 
     it('returns object (config.contentType=null)', async () => {
         const { app, jhx } = buildServer({
-            contentType: null,
+            contentType: false,
             render: (payload) => ({ message: payload + '-rendered' }),
         });
 
