@@ -22,7 +22,7 @@
 - **HTMX helper for React/JSX, HTML, and SSR/edge.**  
   Dedicated types with strong inference for HTMX patterns, features, and extensions.
 - **Type-safe HTMX attribute and event mapping.**  
-  Converts typed props into valid HTMX `hx-*` attributes for JSX and HTML templating.
+  Converts typed props into valid HTMX `hx-*` attributes for templating.
 - **Streamlines developer experience for complex HTMX applications.**  
   Simplifies the development of large HTMX applications with advanced interactions.
 

@@ -1,6 +1,6 @@
 {
   "name": "jhx",
-  "description": "",
+  "description": "HTMX helper with type-safe attribute mapping. Converts props into HTMX `hx-*` attributes for templating.",
   "version": "0.0.0",
   "author": "nick-hio",
   "homepage": "https://github.com/nick-hio/jhx/tree/main/packages/jhx#readme",
