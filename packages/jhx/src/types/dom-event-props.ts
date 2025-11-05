@@ -151,7 +151,7 @@ interface CommonDomEventProps<TDom extends object = object> {
 }
 
 interface CustomDomEventProps<TDom extends object = object> {
-    /* DOM event (only available when the config `stringify` property is set to `true`). */
+    /* DOM event. */
     [key: Exclude<`on${string}`, keyof CommonDomEventProps | keyof HtmxEventProps>]: <TEvent = Event>(
         args: { event: TEvent } & DomObjects & TDom,
     ) => void;

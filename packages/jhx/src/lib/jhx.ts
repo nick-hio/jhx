@@ -8,7 +8,7 @@ import { escapeAttributes } from './escape-attributes';
 
 /**
  * Returns an object or string containing HTMX and HTML attributes.
- * @template TDom Type for additional parameters from within the DOM.
+ * @template TDom Type for additional parameters from within the DOM. Defaults to `object`.
  */
 export function jhx<TDom extends object = object>(
     props: JhxDomProps<TDom>,

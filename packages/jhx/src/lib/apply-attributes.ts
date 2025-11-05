@@ -1,5 +1,5 @@
 /**
- * Applies a set of HTML attributes to a given element.
+ * Applies a key-value pairs of HTML attributes to a given element.
  *
  * @param element The target HTML element to apply the attributes to.
  * @param attributes An object containing key-value pairs of HTML attributes.

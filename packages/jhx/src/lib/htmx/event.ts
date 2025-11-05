@@ -285,7 +285,7 @@ export const event = {
     sseError: 'htmx:sseError',
 
     /**
-     * Triggered when a SSE source is opened.
+     * Triggered when an SSE source is opened.
      *
      * @see https://htmx.org/events#htmx:sseOpen
      * @see https://htmx.org/attributes/hx-on/

@@ -1,12 +1,12 @@
 import { escapeValue } from '../helpers/escape-value';
 
 /**
- * Converts a record of attributes into an HTML element attribute string.
+ * Converts a record of HTML attributes into an HTML element attribute string.
  *
  * Typically used to format the attributes before sending to the client.
  *
- * @param attributes An object representing HTML attributes.
- * @param escape Whether to escape the HTML characters in the string values. Defaults to `true`.
+ * @param attributes An object containing key-value pairs of HTML attributes.
+ * @param escape Whether to escape the HTML characters within string values. Defaults to `true`.
  *
  * @example
  * ```ts

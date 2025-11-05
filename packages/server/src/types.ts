@@ -83,97 +83,19 @@ export type ServerCreateJhxConfig<
     TPartialRoute extends ServerJhxPartialRoute<TReturn, TReq, TRes, THandler>,
     TInstanceOptions = undefined,
 > = JhxConfig & {
-    /**
-     * The default `Content-Type` header for the JHX handler responses.
-     * Can be overridden in the handlers or `render` function.
-     *
-     * Defaults to `text/html; charset=utf-8`.
-     */
     contentType?: string | false;
-
-    /**
-     * Whether to log additional route information to the console.
-     *
-     * Defaults to `false`.
-     */
     debug?: boolean;
-
-    /**
-     * Handler invoked when an error occurs during JHX route handling.
-     * The error is thrown if no handler is provided.
-     */
     errorHandler?: TErrorHandler;
-
-    /**
-     * Middleware function(s) to be applied to the JHX routes.
-     */
     middleware?: THandler | Array<THandler>;
-
-    /**
-     * Handler invoked when a JHX route is not found.
-     *
-     * Defaults to a 404 status response:
-     * ```ts
-     * async (req, res) => res.code(404).send()
-     * ```
-     */
     notFoundHandler?: THandler;
-
-    /**
-     * Callback function invoked when a JHX route is registered.
-     */
     onRegistered?: JhxOnRegistered;
-
-    /**
-     * The prefix for the JHX routes.
-     *
-     * Defaults to `"/_jhx"`.
-     */
     prefix?: string;
-
-    /**
-     * Whether to render the `errorHandler` responses.
-     *
-     * Defaults to `true`.
-     */
     renderError?: boolean;
-
-    /**
-     * Whether to render the `middleware` responses.
-     *
-     * Defaults to `true`.
-     */
     renderMiddleware?: boolean;
-
-    /**
-     * Whether to render the `notFoundHandler` responses.
-     *
-     * Defaults to `true`.
-     */
     renderNotFound?: boolean;
-
-    /**
-     * Determines how the route payloads will be rendered.
-     *
-     * - `"static"`: Renders the handler response using `renderToStaticMarkup` (from `react/server`) when the payload is JSX.
-     * - `"string"`: Renders the handler response using `renderToString` (from `react/server`) when the payload is JSX.
-     * - `JhxRenderFunction`: Function for customizing the rendering/delivering behavior of the route handlers.
-     *
-     * Defaults to `static`.
-     */
     render?: 'static' | 'string' | TRenderHandler | false;
-
-    /**
-     * Pre-configured JHX routes to be registered.
-     */
     routes?: TPartialRoute | Array<TPartialRoute>;
-
     trailingSlash?: 'slash' | 'no-slash' | 'both';
-
-    /**
-     * Framework-specific options.
-     * (e.g., Fastify `routeOptions` type, Elysia `ElysiaConfig` type)
-     */
     instanceOptions?: TInstanceOptions;
 };
 
@@ -220,9 +142,6 @@ export type ServerJhxProps<
     TRes,
     THandler extends ServerJhxHandler<TReturn, TReq, TRes>,
 > = BaseJhxProps<TDom> & {
-    /**
-     * JHX handler function for the HTMX interaction.
-     */
     handler?: THandler;
 };
 
@@ -233,11 +152,6 @@ export type ServerJhxDomProps<
     TRes,
     THandler extends ServerJhxHandler<TReturn, TReq, TRes>,
 > = BaseJhxDomProps<TDom> & {
-    /**
-     * JHX handler function for the HTMX interaction.
-     *
-     * When returning a Fastify response, ensure to call `.send()` to avoid hanging requests.
-     */
     handler?: THandler;
 };
 

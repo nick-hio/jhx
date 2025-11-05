@@ -20,11 +20,6 @@ import type { JhxConfig as BaseJhxConfig, JhxError } from 'jhx';
 
 declare module 'fastify' {
     export interface FastifyInstance {
-        /**
-         * Generates JHX routes for HTMX interactions.
-         * Returns an object or string containing HTMX and HTML attributes.
-         * @template TDom Type for additional parameters from within the DOM.
-         */
         jhx: Jhx;
         JhxComponent: JhxComponentType;
     }
@@ -54,21 +49,12 @@ export type JhxErrorType = Error | JhxError | JhxServerError | FastifyError;
 
 export type Resolved<TReturn = JhxHandlerReturn> = ServerResolved<TReturn>;
 
-/**
- * JHX handler function for HTMX interactions.
- *
- * When returning a Fastify reply, ensure to call `.send()` to avoid hanging requests.
- */
 export type JhxHandler<
     TReturn extends JhxHandlerReturn = JhxHandlerReturn,
     TRequest extends FastifyRequest = FastifyRequest,
     TReply extends FastifyReply = FastifyReply,
 > = ServerJhxHandler<TReturn, TRequest, TReply>;
 
-/**
- * Handler invoked when an error occurs during JHX route handling.
- * Errors will be thrown to Fastify if no handler is provided.
- */
 export type JhxErrorHandler<
     TError extends JhxErrorType = JhxErrorType,
     TReturn extends JhxHandlerReturn = JhxHandlerReturn,
@@ -76,13 +62,6 @@ export type JhxErrorHandler<
     TReply extends FastifyReply = FastifyReply,
 > = ServerJhxErrorHandler<TError, TReturn, TRequest, TReply>;
 
-/**
- * Function for rendering JHX handler responses.
- * Can be used to customize how the response is sent to the client.
- *
- * TPayload controls the type of the payload that this function receives.
- * It is inferred from the provided function or can be explicitly declared via generics.
- */
 export type JhxRenderHandler<
     TResolved extends Resolved = Resolved,
     TReturn extends JhxRenderReturn = JhxRenderReturn,
@@ -122,9 +101,6 @@ export type CreateJhxConfig<
     RouteShorthandOptions
 > & {};
 
-/**
- * Options for JHX.
- */
 export type JhxProps<
     TDom extends object = object,
     TReturn extends JhxHandlerReturn = JhxHandlerReturn,
@@ -132,9 +108,6 @@ export type JhxProps<
     TReply extends FastifyReply = FastifyReply,
 > = ServerJhxProps<TDom, TReturn, TRequest, TReply, JhxHandler<TReturn, TRequest, TReply>>;
 
-/**
- * Options for JHX.
- */
 export type JhxDomProps<
     TDom extends object = object,
     TReturn extends JhxHandlerReturn = JhxHandlerReturn,
@@ -142,11 +115,6 @@ export type JhxDomProps<
     TReply extends FastifyReply = FastifyReply,
 > = ServerJhxDomProps<TDom, TReturn, TRequest, TReply, JhxHandler<TReturn, TRequest, TReply>>;
 
-/**
- * Generates JHX routes for HTMX interactions.
- * Returns an object or string containing HTMX and HTML attributes.
- * @template TDom Type for additional parameters from within the DOM.
- */
 export interface Jhx<
     TDomBase extends object = object,
     TReturn extends JhxHandlerReturn = JhxHandlerReturn,

@@ -1,9 +1,9 @@
 import { escapeValue } from '../helpers/escape-value';
 
 /**
- * Escapes the HTML characters an object's string type values.
+ * Escapes HTML special characters in all string values within the provided object.
  *
- * @param attributes An object representing HTML attributes and event handlers.
+ * @param attributes An object containing key-value pairs of HTML attributes.
  */
 export const escapeAttributes = <T = Record<string, any>>(attributes: Record<string, any>): T => {
     const escapedAttributes: Record<string, any> = {};

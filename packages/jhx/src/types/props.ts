@@ -8,7 +8,6 @@ import type { JhxRouteProps } from './method-props';
  * @template TDom Type for additional parameters received from the DOM.
  */
 export type JhxProps<
-    /** Type for additional parameters received from the DOM. */
     TDom extends object = object,
 > = HtmxProps<TDom> & HtmxEventProps<TDom> & JhxRouteProps & {};
 
