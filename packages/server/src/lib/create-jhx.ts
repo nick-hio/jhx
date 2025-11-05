@@ -8,6 +8,7 @@ import type {
 
 import { addRoutesToMap } from '../helpers/add-routes-to-map';
 import { getRenderFunction } from '../helpers/get-render-function';
+import { getRouteFromProps } from '../helpers/get-route-from-props';
 import { hashFunction } from '../helpers/hash-function';
 import { normalizeEndpoint } from '../helpers/normalize-endpoint';
 import { validateRoutes } from '../helpers/validate-routes';
@@ -159,9 +160,9 @@ export const createServerJhx = <
         cfg?: JhxConfig,
     ): string | Record<JhxAttribute, unknown> {
         if (typeof props === 'object' && typeof props.handler === 'function') {
-            const method = props.method?.trim()?.toUpperCase() ?? 'GET';
+            const { method, route } = getRouteFromProps(props);
             const { noSlash, withSlash } = normalizeEndpoint(
-                props.route?.trim() || hashFunction(props.handler),
+                route || hashFunction(props.handler),
                 baseConfig.prefix,
             );
 

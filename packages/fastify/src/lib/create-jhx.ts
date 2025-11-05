@@ -23,8 +23,8 @@ import { defaultConfig } from './default-config';
 
 export const createJhx = <
     TDomBase extends object = object,
-    TReturn extends JhxHandlerReturn = JhxHandlerReturn,
     TError extends JhxErrorType = JhxErrorType,
+    TReturn extends JhxHandlerReturn = JhxHandlerReturn,
     TRequest extends FastifyRequest = FastifyRequest,
     TReply extends FastifyReply = FastifyReply,
     TBaseStringify extends boolean | undefined = undefined,

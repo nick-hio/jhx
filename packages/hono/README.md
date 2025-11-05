@@ -177,8 +177,7 @@ Configuration options for controlling the behavior of `jhx` and `JhxComponent`.
 - `TDom` (extends `object`) - Type for the additional DOM variables (see the [DOM Interactions & Type Safety](#dom-interactions--type-safety) section for usage).
 - `TError` (extends `JhxErrorType`) - Type for the error value passed to the error handler.
 - `TReturn` (extends `JhxHandlerReturn`) - Type for the return value of the handler functions.
-- `TRequest` (extends `Request` from Hono) - Type for the Hono request object.
-- `TResponse` (extends `Response` from Hono) - Type for the Hono response object.
+- `TContext` (extends `Context` from Hono) - Type for the Hono context object.
 
 #### Returns
 
