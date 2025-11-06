@@ -11,7 +11,6 @@ coverage.json
 
 npm-debug.log*
 yarn-debug.log*
-yarn-error.log*
 .pnpm-debug.log*
 pnpm-lock.yaml
 .pnp
@@ -28,4 +27,3 @@ pnpm-lock.yaml
 .vscode/
 
 llms.md
-llms-mini.md
