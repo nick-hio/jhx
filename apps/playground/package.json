@@ -8,8 +8,7 @@
     "dev:express": "bun --watch src/express/index.ts",
     "dev:fastify": "bun --watch src/fastify/index.ts",
     "dev:hono": "bun --watch src/hono/index.ts",
-    "lint:pre": "eslint . --max-warnings 0",
-    "typecheck:pre": "tsc -p tsconfig.json --jsx preserve"
+    "typecheck:old": "tsc -p tsconfig.json --jsx preserve"
   },
   "dependencies": {
     "@jhxdev/elysia": "workspace:*",

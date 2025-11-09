@@ -1,14 +1,16 @@
 import { describe, expect, it } from 'bun:test';
 
-import { jhx } from '../src';
+import { buildServer } from './helpers';
 
 type TDom = {
     customVar: string;
 }
 
-describe('other tests', () => {
-    it('allow DOM event handlers', () => {
-        const result = jhx<TDom>({
+describe('dom events', async () => {
+    it('allow DOM event handlers', async () => {
+        const fastify = await buildServer();
+
+        const result = fastify.jhx<TDom>({
             onMouseDown: () => console.log('test'),
             onClick: ({ document }) => console.log(document),
             onMouseOver: ({ window }) => console.log(window),
@@ -19,8 +21,10 @@ describe('other tests', () => {
         expect(result).toBe('onmousedown="(() &#61;&gt; { return console.log(&quot;test&quot;) })()" onclick="(({ document }) &#61;&gt; { return console.log(document) })({ document })" onmouseover="(({ window }) &#61;&gt; { return console.log(window) })({ window })" onmouseout="(({ customVar }) &#61;&gt; { return console.log(customVar) })({ customVar })"');
     });
 
-    it('allow other event handlers', () => {
-        const result = jhx<TDom>({
+    it('allow other event handlers', async () => {
+        const fastify = await buildServer();
+
+        const result = fastify.jhx<TDom>({
             onCustomEvent: () => console.log('test'),
             onOtherEvent: ({ document }) => console.log(document),
             onDifferentEvent: ({ window }) => console.log(window),

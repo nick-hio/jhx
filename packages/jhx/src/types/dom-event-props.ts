@@ -150,12 +150,18 @@ interface CommonDomEventProps<TDom extends object = object> {
     onToggle?: (args: { event: Event } & DomObjects & TDom) => void;
 }
 
-interface CustomDomEventProps<TDom extends object = object> {
+type CustomDomEvent<TArgs> = {
     /* DOM event. */
-    [key: Exclude<`on${string}`, keyof CommonDomEventProps | keyof HtmxEventProps>]: <TEvent = Event>(
-        args: { event: TEvent } & DomObjects & TDom,
-    ) => void;
-}
+    event(args: TArgs): void;
+}['event'];
+
+export type CustomDomEventProps<TDom extends object = object> = {
+    /* DOM event. */
+    [K in `on${string}` as Exclude<
+        K,
+        keyof CommonDomEventProps<TDom> | keyof HtmxEventProps
+    >]?: CustomDomEvent<{ event: Event } & DomObjects & TDom>;
+};
 
 export type DomEventProps<TDom extends object = object> = CommonDomEventProps<TDom>
     & CustomDomEventProps<TDom>;

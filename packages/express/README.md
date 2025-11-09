@@ -86,26 +86,26 @@ Create HTMX attributes for JSX props:
 ```jsx
 const attrs = jhx({
     get: '/api',
-    swap: 'innerHTML',
+    target: '#container',
 });
 
-const button = (<button {...attrs}>Load Data</button>);
-// <button hx-get="/_jhx/api" hx-swap="innerHTML">Load Data</button>
+const Button = () => (<button {...attrs}>Load Data</button>);
+// <button hx-get="/_jhx/api" hx-target="#container">Load Data</button>
 ```
 
 Create HTMX attributes as a string for HTML and with a generated endpoint:
 
 ```jsx
 const attrs = jhx({
-    swap: 'innerHTML',
     method: 'put', // set the method (defaults to 'get')
+    target: '#container',
     handler: () => {
         return `<div>DATA</div>`;
     },
 }, { stringify: true }); // set 'stringify' to 'true'
 
 const button = `<button ${attrs}>Load Data</button>`;
-// <button hx-put="/_jhx/<UNIQUE_ID>" hx-swap="innerHTML">Load Data</button>
+// <button hx-put="/_jhx/<UNIQUE_ID>" hx-target="#container">Load Data</button>
 ```
 
 Create HTMX attributes using the JSX component:
@@ -115,7 +115,7 @@ const button = (
     <JhxComponent
         as='button' // set the element tag (defaults to 'div')
         post='/api'
-        swap='innerHTML'
+        target='#container'
         handler={async () => {
             return `<div>${await db.getData()}</div>`;
         }}
@@ -123,7 +123,7 @@ const button = (
         Load Data
     </JhxComponent>
 );
-// <button hx-post="/_jhx/api" hx-swap="innerHTML">Load Data</button>
+// <button hx-post="/_jhx/api" hx-target="#container">Load Data</button>
 ```
 
 ## API
@@ -293,7 +293,7 @@ function JhxComponent<TDom>(props: PropsWithChildren<JhxComponentProps<TDom>>): 
 - [Predefined `routes`](#predefined-routes)
 - [DOM Interactions & Type Safety](#dom-interactions--type-safety)
 
-> See additional examples in the core [`jhx` repository](https://github.com/nick-hio/jhx/tree/main/packages/jhx):
+> See additional examples in the [`jhx` repository](https://github.com/nick-hio/jhx/tree/main/packages/jhx):
 >
 > - [Setting the Request Method](https://github.com/nick-hio/jhx/tree/main/packages/jhx#setting-the-request-method)
 > - [`jhx` in JSX (Object Output)](https://github.com/nick-hio/jhx/tree/main/packages/jhx#jhx-in-jsx-object-output)

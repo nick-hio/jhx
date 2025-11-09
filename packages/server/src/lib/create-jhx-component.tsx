@@ -18,6 +18,7 @@ const isJhxAttribute = (key: string): key is keyof JhxProps => {
         || key in htmx.eventAttr
         || key === 'route'
         || key === 'method'
+        || key === 'handler'
     );
 };
 

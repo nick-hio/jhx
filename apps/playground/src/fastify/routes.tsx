@@ -7,11 +7,9 @@ export const routes = (fastify: FastifyInstance, _opts: FastifyServerOptions, do
 <html lang="en">
     <body>
         <button ${jhx({
-            onOtherEvent: () => alert("Clicked!"),
+            // onOtherEvent: () => alert("Clicked!"),
             onClick: ({ document }) => {
                 console.log(document);
-                const message = "Clicked!";
-                alert(message);
             },
         }, { stringify: true })}>
             Load
@@ -30,8 +28,6 @@ export const routes = (fastify: FastifyInstance, _opts: FastifyServerOptions, do
             onOtherEvent: () => alert("Clicked!"),
             onClick: ({ document }) => {
                 console.log(document);
-                const message = "Clicked!";
-                alert(message);
             },
         }, { stringify: true, escape: false })}>
             Load

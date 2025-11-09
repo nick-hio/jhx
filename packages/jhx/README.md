@@ -78,11 +78,11 @@ import { jhx } from 'jhx';
 
 const attrs = jhx({
     get: '/api',
-    swap: 'innerHTML',
+    target: '#container',
 });
 
-const button = (<button {...attrs}>Load Data</button>);
-// <button hx-get="/api" hx-swap="innerHTML">Load Data</button>
+const Button = () => (<button {...attrs}>Load Data</button>);
+// <button hx-get="/api" hx-target="#container">Load Data</button>
 ```
 
 Generate HTMX attributes as a string for HTML templating:
@@ -92,11 +92,11 @@ import { jhx } from 'jhx';
 
 const attrs = jhx({
     get: '/api',
-    swap: 'innerHTML',
+    target: '#container',
 }, { stringify: true }); // set 'stringify' to 'true'
 
 const button = `<button ${attrs}>Load Data</button>`;
-// <button hx-get="/api" hx-swap="innerHTML">Load Data</button>
+// <button hx-get="/api" hx-target="#container">Load Data</button>
 ```
 
 Generate HTMX attributes with the JSX component:
@@ -107,13 +107,13 @@ import { JhxComponent } from 'jhx';
 const button = (
     <JhxComponent
         as='button' // set the element tag (defaults to 'div')
-        post='/api' // set the route and method
-        swap='innerHTML'
+        post='/api'
+        target='#container'
     >
         Load Data
     </JhxComponent>
 );
-// <button hx-post="/api" hx-swap="innerHTML">Load Data</button>
+// <button hx-post="/api" hx-target="#container">Load Data</button>
 ```
 
 ## API
@@ -250,6 +250,14 @@ htmx.sync; // synchronization strategies
 ```
 
 ## Examples
+
+- [Setting the Request Method](#setting-the-request-method)
+- [`jhx` in JSX (Object Output)](#jhx-in-jsx-object-output)
+- [`jhx` in HTML (String Output)](#jhx-in-html-string-output)
+- [`JhxComponent` in JSX](#jhxcomponent-in-jsx)
+- [HTMX & DOM Events](#htmx--dom-events)
+- [DOM Interactions & Type Safety](#dom-interactions--type-safety)
+- [Advanced Props](#advanced-props)
 
 ### Setting the Request Method
 
@@ -1138,5 +1146,3 @@ function LazySection() {
     );
 }
 ```
-
-
