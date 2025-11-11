@@ -7,7 +7,7 @@
     "./base": "./base.js"
   },
   "devDependencies": {
-    "rollup": "^4.46.2",
-    "rollup-plugin-dts": "^6.2.1"
+    "rollup": "^4.53.2",
+    "rollup-plugin-dts": "^6.2.3"
   }
 }
