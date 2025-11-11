@@ -42,6 +42,7 @@
     "format": "prettier --write . --list-different",
     "lint": "eslint . --max-warnings 0",
     "prepack": "bun ../../configs/scripts-config/prepack.js",
+    "prepare": "pnpm run validate && pnpm run build",
     "test": "bun test ./tests",
     "test:watch": "bun test --watch ./tests",
     "typecheck": "tsc -p tsconfig.json --jsx preserve",

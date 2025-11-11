@@ -1,5 +1,5 @@
 {
-  "name": "jhx-turborepo",
+  "name": "jhx-monorepo",
   "private": true,
   "scripts": {
     "build": "turbo run build",
@@ -7,8 +7,7 @@
     "dev": "turbo run dev",
     "format": "turbo run format",
     "lint": "turbo run lint",
-    "validate": "turbo run typecheck lint test format",
-    "publish-packages": "turbo run typecheck lint test format build && changeset version && changeset publish"
+    "validate": "turbo run typecheck lint test format"
   },
   "devDependencies": {
     "prettier": "^3.6.2",
