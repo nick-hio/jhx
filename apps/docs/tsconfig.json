@@ -1,0 +1,12 @@
+{
+  "extends": "@repo/typescript-config/base.json",
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx"
+  ],
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "NodeNext"
+  },
+  "exclude": ["node_modules"]
+}
