@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/nick-hio/jhx/main/assets/jhx-logo-light.svg">
-    <img src="https://raw.githubusercontent.com/nick-hio/jhx/main/assets/jhx-logo-dark.svg" height="90" alt="Logo for jhx">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/nick-hio/jhx/main/assets/jhx-logo-dark-background.svg">
+    <img src="https://raw.githubusercontent.com/nick-hio/jhx/main/assets/jhx-logo-light-background.svg" height="90" alt="Logo for jhx">
   </picture>
 </p>
 
