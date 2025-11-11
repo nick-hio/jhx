@@ -1,0 +1,29 @@
+{
+  "name": "docs",
+  "version": "0.0.0",
+  "homepage": "https://jhx.dev",
+  "type": "module",
+  "scripts": {
+    "format": "prettier --write . --list-different",
+    "lint": "eslint . --max-warnings 0",
+    "typecheck": "tsc -p tsconfig.json --jsx preserve",
+    "validate": "pnpm run typecheck && pnpm run lint && pnpm run format"
+  },
+  "dependencies": {
+    "@fastify/autoload": "^5.10.0",
+    "@fastify/sensible": "^5.6.0",
+    "fastify": "^5.6.2",
+    "fastify-plugin": "^4.5.1"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/prettier-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/bun": "^1.3.2",
+    "@types/node": "^20.19.24",
+    "@vercel/node": "^5.5.5",
+    "eslint": "^9.39.1",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.3"
+  }
+}
