@@ -1,0 +1,33 @@
+name: 🐜 Bug Report
+description: File a bug report for one or more jhx packages
+title: '[bug]: '
+labels: ['bug']
+body:
+  - type: checkboxes
+    attributes:
+      label: Package
+      description: Select the affected package(s).
+      options:
+        - label: jhx
+        - label: @jhxdev/elysia
+        - label: @jhxdev/express
+        - label: @jhxdev/fastify
+        - label: @jhxdev/hono
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Describe the bug
+      description: Please describe the bug as clear and concise as possible. Include the behavior you expected to happen without the bug.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Steps to reproduce
+      description: Describe how to reproduce the bug. Include any relevant code snippets and configuration.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Additional information
+      description: Other details related to the bug.
