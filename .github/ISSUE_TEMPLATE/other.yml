@@ -1,0 +1,14 @@
+name: 💡 Other Issue
+description: File a report for an issue not covered by other issue templates
+title: '[misc]: '
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to file an issue report. **Please ensure your issue does not fit into any of the other issue templates**.
+  - type: textarea
+    attributes:
+      label: Describe the issue
+      description: Please describe your issue as clear and concise as possible.
+    validations:
+      required: true
