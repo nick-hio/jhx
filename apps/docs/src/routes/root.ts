@@ -23,6 +23,9 @@ const root: FastifyPluginAsync<AutoloadPluginOptions> = async (fastify, _opts) =
                 padding: 0;
                 box-sizing: border-box;
             }
+            html {
+                background: #121212;
+            }
             body {
                 font-family: "Fustat", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
                 color: #fff;
@@ -31,7 +34,7 @@ const root: FastifyPluginAsync<AutoloadPluginOptions> = async (fastify, _opts) =
                 align-items: center;
                 justify-content: center;
                 background: #212121;
-                background: radial-gradient(circle,rgba(33, 33, 33, 1) 0%, rgba(18, 18, 18, 1) 30em);
+                background: radial-gradient(circle,rgba(33, 33, 33, 1) 0%, rgba(18, 18, 18, 1) 20em);
             }
             .container {
                 text-align: center;
@@ -48,12 +51,6 @@ const root: FastifyPluginAsync<AutoloadPluginOptions> = async (fastify, _opts) =
                 font-weight: bold;
                 font-size: 1.5rem;
             }
-            h1 {
-                font-size: 3rem;
-                font-weight: 700;
-                margin-bottom: 1rem;
-                color: white;
-            }
             .text-group {
                 margin-bottom: 2rem;
             }
@@ -69,54 +66,81 @@ const root: FastifyPluginAsync<AutoloadPluginOptions> = async (fastify, _opts) =
                 line-height: 1.6;
             }
             .link {
-              display: inline-block;
-              border-radius: 10px;
-              border: 1px solid rgba(255, 255, 255, 0.12);
-              background: rgba(255, 255, 255, 0.04);
-              transition: background 0.2s ease, border-color 0.2s ease, transform 0.05s ease;
+                display: inline-block;
+                border-radius: 10px;
+                border: 1px solid rgba(255, 255, 255, 0.12);
+                background: rgba(255, 255, 255, 0.04);
+                transition: background 0.2s ease, border-color 0.2s ease, transform 0.05s ease;
             }
             .link a {
-              display: inline-flex;
-              padding: 0.625rem 0.875rem;
-              color: #fff;
-              font-weight: 500;
-              text-decoration: none;
-              letter-spacing: 0.01em;
-              gap: 0.25rem;
+                display: inline-flex;
+                padding: 0.625rem 0.875rem;
+                color: #fff;
+                font-weight: 500;
+                font-size: 1.125rem;
+                text-decoration: none;
+                letter-spacing: 0.01em;
+                gap: 0.25rem;
+                line-height: 1.35rem;
             }
             .link i {
-              line-height: 1.35rem;
+                /*line-height: 1.35rem;*/
             }
             .link:hover {
-              background: rgba(255, 255, 255, 0.07);
-              border-color: rgba(255, 255, 255, 0.18);
+                background: rgba(255, 255, 255, 0.07);
+                border-color: rgba(255, 255, 255, 0.18);
             }
             .link:active {
-              transform: translateY(0.5px);
+                background: rgba(255, 255, 255, 0.07);
+                transform: translateY(0.5px);
             }
             .link a:focus-visible {
-              outline: 2px solid #7dd3fc;
-              outline-offset: 3px;
-              border-radius: 8px;
+                outline: 2px solid #7dd3fc;
+                outline-offset: 3px;
+                border-radius: 8px;
             }
             code {
-              font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-              font-size: 0.95rem;
-              font-weight: bold;
-              line-height: 1.35;
-              color: #e6edf3;
-              display: inline-block;
-              padding: 0.125rem 0.375rem;
-              margin: 0 0.15rem;
-              border-radius: 8px;
-              border: 1px solid rgba(255, 255, 255, 0.12);
-              background: rgba(255, 255, 255, 0.04);
-              overflow-wrap: anywhere;
+                font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+                font-size: 0.95rem;
+                font-weight: bold;
+                line-height: 1.35;
+                color: #e6edf3;
+                display: inline-block;
+                padding: 0.125rem 0.375rem;
+                margin: 0 0.15rem;
+                border-radius: 8px;
+                border: 1px solid rgba(255, 255, 255, 0.12);
+                background: rgba(255, 255, 255, 0.04);
+                overflow-wrap: anywhere;
             }
             code:focus-visible {
-              outline: 2px solid #7dd3fc;
-              outline-offset: 2px;
-              border-radius: 6px;
+                outline: 2px solid #7dd3fc;
+                outline-offset: 2px;
+                border-radius: 6px;
+            }
+            @media (max-width: 480px) {
+                body {
+                    background: #212121;
+                    background: radial-gradient(circle,rgba(33, 33, 33, 1) 0%, rgba(18, 18, 18, 1) 12.5em);
+                }
+                .text-group p {
+                    font-size: 1.4rem;
+                }
+                .text-group p.text-special {
+                    font-size: 1.4rem;
+                }
+                .link a {
+                    padding: 0.725rem 0.975rem;
+                    font-size: 1.3rem;
+                    gap: 0.4rem;
+                    line-height: 2rem;
+                }
+                .link i {
+                    line-height: 2rem;
+                }
+                code {
+                    font-size: 1.15rem;
+                }
             }
         </style>
     </head>
@@ -126,17 +150,16 @@ const root: FastifyPluginAsync<AutoloadPluginOptions> = async (fastify, _opts) =
             
             <div class="text-group">
                 <p>HTMX helper with type-safe attribute mapping.</p>
-                <!-- TODO: Create a styled '<code>' class -->
                 <p>Converts props into <code>hx-*</code> attributes for templating.</p>
             </div>
             
             <div class="text-group">
-                <p class="text-special">🚧 Under Construction! 🚧</p>
+                <p class="text-special">🚧 Under Construction 🚧</p>
                 <p>The documentation site will be launching soon. Stay tuned!</p>
             </div>
             
             <div class="link">
-                <a href="https://vercel.com/docs/frameworks/backend/fastify" target="_blank" rel="noreferrer">
+                <a href="https://github.com/nick-hio/jhx" target="_blank" rel="noreferrer">
                     <i class="fa-brands fa-github"></i> GitHub
                 </a>
             </div>
