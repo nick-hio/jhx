@@ -1,0 +1,13 @@
+<svg id="carets" xmlns="http://www.w3.org/2000/svg" width="294" height="293.5" viewBox="0 0 588 587">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #2e86de;
+        fill-rule: evenodd;
+      }
+    </style>
+  </defs>
+  <path id="left-arrow" class="cls-1" d="M263,440L1,324.377V260.626L263,145v80L101.137,292.5,263,360v80Z"/>
+  <path id="right-arrow" class="cls-1" d="M325,440L587,324.377V260.626L325,145v80l161.863,67.5L325,360v80Z"/>
+  <rect id="square" x="587" y="315" width="1" height="1"/>
+</svg>

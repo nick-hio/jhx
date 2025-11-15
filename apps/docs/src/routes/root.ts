@@ -9,14 +9,14 @@ const root: FastifyPluginAsync<AutoloadPluginOptions> = async (fastify, _opts) =
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Fastify on Vercel</title>
+        <title>jhx</title>
         
+        <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/nick-hio/jhx/refs/heads/main/assets/jhx-logo-textless.svg">
         <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin="anonymous">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fustat:wght@200..800&display=swap" crossorigin="anonymous">
-        
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />        
-        
+                
         <style>
             * {
                 margin: 0;
@@ -70,7 +70,26 @@ const root: FastifyPluginAsync<AutoloadPluginOptions> = async (fastify, _opts) =
                 border-radius: 10px;
                 border: 1px solid rgba(255, 255, 255, 0.12);
                 background: rgba(255, 255, 255, 0.04);
-                transition: background 0.2s ease, border-color 0.2s ease, transform 0.05s ease;
+                transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+                cursor: pointer;
+            }
+            .link:hover {
+                background: rgba(255, 255, 255, 0.08);
+                border-color: rgba(255, 255, 255, 0.24);
+            }
+            .link:active {
+                background: rgba(255, 255, 255, 0.12);
+                border-color: rgba(255, 255, 255, 0.28);
+            }
+            @media (hover: none) and (pointer: coarse) {
+                .link:hover {
+                    border: 1px solid rgba(255, 255, 255, 0.12);
+                    background: rgba(255, 255, 255, 0.04);
+                }
+                .link:active {
+                    background: rgba(255, 255, 255, 0.12);
+                    border-color: rgba(255, 255, 255, 0.28);
+                }
             }
             .link a {
                 display: inline-flex;
@@ -82,17 +101,6 @@ const root: FastifyPluginAsync<AutoloadPluginOptions> = async (fastify, _opts) =
                 letter-spacing: 0.01em;
                 gap: 0.25rem;
                 line-height: 1.35rem;
-            }
-            .link i {
-                /*line-height: 1.35rem;*/
-            }
-            .link:hover {
-                background: rgba(255, 255, 255, 0.07);
-                border-color: rgba(255, 255, 255, 0.18);
-            }
-            .link:active {
-                background: rgba(255, 255, 255, 0.07);
-                transform: translateY(0.5px);
             }
             .link a:focus-visible {
                 outline: 2px solid #7dd3fc;
@@ -146,7 +154,7 @@ const root: FastifyPluginAsync<AutoloadPluginOptions> = async (fastify, _opts) =
     </head>
     <body>
         <div class="container">
-            <img src="https://raw.githubusercontent.com/nick-hio/jhx/refs/heads/main/assets/jhx-logo-light.svg" alt="jhx logo" class="logo" />
+            <img src="https://raw.githubusercontent.com/nick-hio/jhx/refs/heads/main/assets/jhx-logo-dark-background.svg" alt="jhx logo" class="logo" />
             
             <div class="text-group">
                 <p>HTMX helper with type-safe attribute mapping.</p>
@@ -159,8 +167,9 @@ const root: FastifyPluginAsync<AutoloadPluginOptions> = async (fastify, _opts) =
             </div>
             
             <div class="link">
-                <a href="https://github.com/nick-hio/jhx" target="_blank" rel="noreferrer">
-                    <i class="fa-brands fa-github"></i> GitHub
+                <a href="https://github.com/nick-hio/jhx" target="_blank" rel="noreferrer" title="nick-hio/jhx - GitHub">
+                    <i class="fa-brands fa-github"></i>
+                    GitHub
                 </a>
             </div>
         </div>
