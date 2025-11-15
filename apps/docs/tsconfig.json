@@ -14,9 +14,7 @@
         "skipLibCheck": true,
         "strict": true,
         "target": "ESNext",
-        "customConditions": ["source", "default"],
 
-        "outDir": "dist",
         "allowJs": true,
         "forceConsistentCasingInFileNames": true,
         "jsx": "preserve",
