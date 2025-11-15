@@ -11,7 +11,7 @@
 
 <div align="center">
   <a target="_blank" href="https://github.com/nick-hio/jhx">GitHub</a> •
-  <a target="_blank" href="https://github.com/nick-hio/jhx">Documentation</a> •
+  <a target="_blank" href="https://jhx.dev">Documentation</a> •
   <a target="_blank" href="https://github.com/nick-hio/jhx/issues/new">Report an Issue</a>
 </div>
 
