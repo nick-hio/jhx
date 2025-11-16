@@ -11,11 +11,19 @@ const root: FastifyPluginAsync<AutoloadPluginOptions> = async (fastify, _opts) =
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>jhx</title>
         
-        <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/nick-hio/jhx/refs/heads/main/assets/jhx-logo-textless.svg">
+        <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/nick-hio/jhx/refs/heads/main/assets/jhx-logo-textless.svg">        
+<!--        <link rel="apple-touch-icon" href="touch-icon-iphone.png">-->
+<!--        <link rel="apple-touch-icon" sizes="152x152" href="touch-icon-ipad.png">-->
+<!--        <link rel="apple-touch-icon" sizes="180x180" href="touch-icon-iphone-retina.png">-->
+<!--        <link rel="apple-touch-icon" sizes="167x167" href="touch-icon-ipad-retina.png">-->
+<!--        <meta name='msapplication-square70x70logo' content='https://raw.githubusercontent.com/nick-hio/jhx/refs/heads/main/assets/jhx-logo-textless.svg'>-->
+<!--        <meta name='msapplication-square150x150logo' content='https://raw.githubusercontent.com/nick-hio/jhx/refs/heads/main/assets/jhx-logo-textless.svg'>-->
+<!--        <meta name='msapplication-wide310x150logo' content='https://raw.githubusercontent.com/nick-hio/jhx/refs/heads/main/assets/jhx-logo-textless.svg'>-->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />        
+
         <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin="anonymous">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fustat:wght@200..800&display=swap" crossorigin="anonymous">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />        
                 
         <style>
             * {

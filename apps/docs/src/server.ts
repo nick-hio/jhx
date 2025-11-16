@@ -8,9 +8,9 @@ const __dirname = dirname(__filename);
 
 const fastify = Fastify({ logger: true });
 
-// fastify.register(AutoLoad, {
-//     dir: join(__dirname, 'plugins'),
-// });
+fastify.register(AutoLoad, {
+    dir: join(__dirname, 'plugins'),
+});
 fastify.register(AutoLoad, {
     dir: join(__dirname, 'routes'),
 });
