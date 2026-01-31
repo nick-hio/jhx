@@ -9,7 +9,7 @@ describe('config.escape', () => {
         }, {
             stringify: true,
         });
-        expect(result).toBe('onclick="(() &#61;&gt; { return alert(&quot;Clicked!&quot;) })()"');
+        expect(result).toBe('onclick="(() =&gt; { return alert(&quot;Clicked!&quot;) })()"');
     });
 
     it('true', () => {
@@ -19,7 +19,7 @@ describe('config.escape', () => {
             stringify: true,
             escape: true,
         });
-        expect(result).toBe('onclick="(() &#61;&gt; { return alert(&quot;Clicked!&quot;) })()"');
+        expect(result).toBe('onclick="(() =&gt; { return alert(&quot;Clicked!&quot;) })()"');
     });
 
     it('false', () => {
