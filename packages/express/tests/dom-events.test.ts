@@ -27,7 +27,7 @@ describe('dom events', async () => {
         }, {
             stringify: true,
         });
-        expect(result).toBe('onmousedown="(() &#61;&gt; { return console.log(&quot;test&quot;) })()" onclick="(({ document }) &#61;&gt; { return console.log(document) })({ document })" onmouseover="(({ window }) &#61;&gt; { return console.log(window) })({ window })" onmouseout="(({ customVar }) &#61;&gt; { return console.log(customVar) })({ customVar })"');
+        expect(result).toBe('onmousedown="(() =&gt; { return console.log(&quot;test&quot;) })()" onclick="(({ document }) =&gt; { return console.log(document) })({ document })" onmouseover="(({ window }) =&gt; { return console.log(window) })({ window })" onmouseout="(({ customVar }) =&gt; { return console.log(customVar) })({ customVar })"');
     });
 
     it('allow other event handlers', async () => {
@@ -42,6 +42,6 @@ describe('dom events', async () => {
         }, {
             stringify: true,
         });
-        expect(result).toBe('oncustomevent="(() &#61;&gt; { return console.log(&quot;test&quot;) })()" onotherevent="(({ document }) &#61;&gt; { return console.log(document) })({ document })" ondifferentevent="(({ window }) &#61;&gt; { return console.log(window) })({ window })" onnewevent="(({ customVar }) &#61;&gt; { return console.log(customVar) })({ customVar })"');
+        expect(result).toBe('oncustomevent="(() =&gt; { return console.log(&quot;test&quot;) })()" onotherevent="(({ document }) =&gt; { return console.log(document) })({ document })" ondifferentevent="(({ window }) =&gt; { return console.log(window) })({ window })" onnewevent="(({ customVar }) =&gt; { return console.log(customVar) })({ customVar })"');
     });
 });

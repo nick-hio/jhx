@@ -5,6 +5,14 @@ export const config = {
     external: [
         'http',
         'node:stream',
+        'node:*',
+        'elysia',
+        'express',
+        'fastify',
+        'hono',
+        'htmx.org',
+        'react',
+        'react-dom',
     ],
     input: './src/index.ts',
     output: {
