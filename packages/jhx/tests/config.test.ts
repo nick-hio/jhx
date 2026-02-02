@@ -5,32 +5,32 @@ import { jhx } from '../src';
 describe('config.escape', () => {
     it('default', () => {
         const result = jhx({
-            onClick: () => alert('Clicked!'),
+            onClick: () => alert('<Clicked!>'),
         }, {
             stringify: true,
         });
-        expect(result).toBe('onclick="(() =&gt; { return alert(&quot;Clicked!&quot;) })()"');
+        expect(result).toBe(`onclick="(() =&gt; { return alert('&lt;Clicked!&gt;') })()"`);
     });
 
     it('true', () => {
         const result = jhx({
-            onClick: () => alert('Clicked!'),
+            onClick: () => alert('<Clicked!>'),
         }, {
             stringify: true,
             escape: true,
         });
-        expect(result).toBe('onclick="(() =&gt; { return alert(&quot;Clicked!&quot;) })()"');
+        expect(result).toBe(`onclick="(() =&gt; { return alert('&lt;Clicked!&gt;') })()"`);
     });
 
     it('false', () => {
         const result = jhx({
-            onClick: () => alert('Clicked!'),
+            onClick: () => alert('<Clicked!>'),
         }, {
             stringify: true,
             escape: false,
         });
 
-        expect(result).toBe('onclick="(() => { return alert("Clicked!") })()"');
+        expect(result).toBe(`onclick="(() => { return alert('<Clicked!>') })()"`);
     });
 });
 

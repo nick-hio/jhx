@@ -1,3 +1,5 @@
+import { normalizeStringQuotes } from './normalize-string-quotes';
+
 const matchFunctionString = (
     funcString: string,
 ): {
@@ -77,7 +79,7 @@ export const extractFunction = (
         return null;
     }
 
-    const funcString = func.toString();
+    const funcString = func.toString().replaceAll('void 0', 'undefined');
     const funcMatch = matchFunctionString(funcString);
 
     if (!funcMatch) {
@@ -86,6 +88,6 @@ export const extractFunction = (
 
     return {
         params: splitParams(funcMatch.paramStr),
-        body: funcMatch.bodyStr,
+        body: normalizeStringQuotes(funcMatch.bodyStr),
     };
 };
