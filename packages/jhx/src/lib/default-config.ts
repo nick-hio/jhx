@@ -8,5 +8,4 @@ export type JhxDefaultConfig = Required<JhxConfig>;
 export const defaultConfig: JhxDefaultConfig = {
     logger: console,
     stringify: false,
-    escape: true,
 } as const;

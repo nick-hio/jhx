@@ -4,7 +4,6 @@ import { convertJhxEventAttributes } from '../helpers/convert-jhx-event-attribut
 import type { JhxAttribute, JhxConfig, JhxDomProps, JhxProps } from '../types';
 import { attributesToString } from './attributes-to-string';
 import { defaultConfig } from './default-config';
-import { escapeAttributes } from './escape-attributes';
 
 /**
  * Returns an object or string containing HTMX and HTML attributes.
@@ -32,14 +31,10 @@ export function jhx<TDom extends object = object>(
     };
 
     const attributes = {
-        ...convertJhxAttributes(props, fullConfig),
+        ...convertJhxAttributes(props, fullConfig.logger),
         ...convertJhxEventAttributes(props),
         ...convertDomEventAttributes(props),
     } as Record<JhxAttribute, string>;
 
-    return fullConfig.stringify === true
-        ? attributesToString(attributes, Boolean(fullConfig.escape))
-        : fullConfig.escape === true
-          ? escapeAttributes(attributes)
-          : attributes;
+    return fullConfig.stringify === true ? attributesToString(attributes) : attributes;
 }

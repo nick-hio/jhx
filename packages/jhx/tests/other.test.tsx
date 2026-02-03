@@ -8,14 +8,40 @@ type TDom = {
 }
 
 describe('other tests', () => {
+    it('stringified function with no new lines', () => {
+        const result = jhx({
+            vals: () => {
+                return {
+                    foo: 'bar',
+                    bar: 'foo',
+                }
+            },
+        });
+        expect(result as object).toEqual({
+            'hx-vals': "js:{...(() => { return { foo: 'bar', bar: 'foo' }; })()}",
+        });
+    });
+
+    it('stringified function with new lines removed', () => {
+        const result = jhx({
+            vals: ({ document }) => {
+                console.log(`${document}`)
+                return 'test'
+            },
+        });
+        expect(result as object).toEqual({
+            'hx-vals': "js:{...(({ document }) => { console.log(`${document}`); return 'test'; })({ document })}",
+        });
+    });
+
     it('stringified function with backtick', () => {
         const result = jhx<TDom>({
             vals: ({ document, customVar }) => console.log(`${document}${customVar}`),
             request: ({ otherVar }) => ({ timeout: otherVar }),
         });
         expect(result as object).toEqual({
-            'hx-vals': 'js:{...(({ document, customVar }) =&gt; { return console.log(`${document}${customVar}`) })({ document, customVar })}',
-            'hx-request': 'js: (({ timeout, credentials, noHeaders }) =&gt; ({ timeout, credentials, noHeaders }))((({ otherVar }) =&gt; { return ({ timeout: otherVar }) })({ otherVar }))',
+            'hx-vals': 'js:{...(({ document, customVar }) => { return console.log(`${document}${customVar}`) })({ document, customVar })}',
+            'hx-request': 'js: (({ timeout, credentials, noHeaders }) => ({ timeout, credentials, noHeaders }))((({ otherVar }) => { return ({ timeout: otherVar }) })({ otherVar }))',
         });
     });
 
@@ -24,7 +50,7 @@ describe('other tests', () => {
             vals: ({ document, customVar }) => console.log('Document: ', document, customVar),
         });
         expect(result as object).toEqual({
-            'hx-vals': `js:{...(({ document, customVar }) =&gt; { return console.log('Document: ', document, customVar) })({ document, customVar })}`,
+            'hx-vals': `js:{...(({ document, customVar }) => { return console.log('Document: ', document, customVar) })({ document, customVar })}`,
         });
     });
 
@@ -33,7 +59,7 @@ describe('other tests', () => {
             vals: ({ document, customVar }) => console.log("Document: ", document, customVar),
         });
         expect(result as object).toEqual({
-            'hx-vals': `js:{...(({ document, customVar }) =&gt; { return console.log('Document: ', document, customVar) })({ document, customVar })}`,
+            'hx-vals': `js:{...(({ document, customVar }) => { return console.log('Document: ', document, customVar) })({ document, customVar })}`,
         });
     });
 
@@ -46,7 +72,7 @@ describe('other tests', () => {
         }, {
             stringify: true,
         });
-        expect(result).toBe(`onmousedown="(() =&gt; { return console.log('test') })()" onclick="(({ document }) =&gt; { return console.log(document) })({ document })" onmouseover="(({ window }) =&gt; { return console.log(window) })({ window })" onmouseout="(({ customVar }) =&gt; { return console.log(customVar) })({ customVar })"`);
+        expect(result).toBe(`onmousedown="(() => { return console.log('test') })()" onclick="(({ document }) => { return console.log(document) })({ document })" onmouseover="(({ window }) => { return console.log(window) })({ window })" onmouseout="(({ customVar }) => { return console.log(customVar) })({ customVar })"`);
     });
 
     it('allow other event handlers', () => {
@@ -58,6 +84,6 @@ describe('other tests', () => {
         }, {
             stringify: true,
         });
-        expect(result).toBe(`oncustomevent="(() =&gt; { return console.log('test') })()" onotherevent="(({ document }) =&gt; { return console.log(document) })({ document })" ondifferentevent="(({ window }) =&gt; { return console.log(window) })({ window })" onnewevent="(({ customVar }) =&gt; { return console.log(customVar) })({ customVar })"`);
+        expect(result).toBe(`oncustomevent="(() => { return console.log('test') })()" onotherevent="(({ document }) => { return console.log(document) })({ document })" ondifferentevent="(({ window }) => { return console.log(window) })({ window })" onnewevent="(({ customVar }) => { return console.log(customVar) })({ customVar })"`);
     });
 });
