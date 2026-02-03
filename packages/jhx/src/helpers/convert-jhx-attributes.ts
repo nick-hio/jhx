@@ -1,22 +1,22 @@
 import { JhxErrorThrowable } from '../lib/jhx-error';
-import type { HtmxAttribute, HtmxProps, JhxConfig, JhxRouteProps } from '../types';
+import type { HtmxAttribute, HtmxProps, JhxRouteProps, Logger } from '../types';
 import { extractFunction } from './extract-function';
 import { toJhxSwapAttribute } from './to-jhx-swap-attribute';
 import { toJhxTargetAttribute } from './to-jhx-target-attribute';
 import { toJhxTriggerAttribute } from './to-jhx-trigger-attribute';
 
-const requestKeys = ['get', 'post', 'put', 'patch', 'delete', 'route'] as const;
+const REQUEST_KEYS = ['get', 'post', 'put', 'patch', 'delete', 'route'] as const;
 
 export const convertJhxAttributes = <TDom extends object = object>(
     options: HtmxProps<TDom> & JhxRouteProps,
-    config: Required<JhxConfig>,
+    log: Logger,
 ): Record<HtmxAttribute, string> => {
     const attributes: Record<string, string> = {};
     if (!options || typeof options !== 'object') {
         return attributes;
     }
 
-    const methodKey = requestKeys.find((k) => Boolean(options[k]));
+    const methodKey = REQUEST_KEYS.find((k) => Boolean(options[k]));
     if (methodKey) {
         if (methodKey === 'route') {
             const method = options.method?.toLowerCase() || 'get';
@@ -25,7 +25,7 @@ export const convertJhxAttributes = <TDom extends object = object>(
             attributes[`hx-${methodKey}`] = String(options[methodKey]);
         }
     } else if (options.method) {
-        config.logger.warn(
+        log.warn(
             "[jhx] The 'method' prop must be paired with a 'route' prop to generate a request attribute.",
         );
     }
@@ -87,7 +87,7 @@ export const convertJhxAttributes = <TDom extends object = object>(
             try {
                 attributes['hx-headers'] = `${JSON.stringify(options.headers)}`;
             } catch (e) {
-                config.logger.error('[jhx] Error while parsing the `hx-headers` object.');
+                log.error('[jhx] Error while parsing the `hx-headers` object.');
                 throw new JhxErrorThrowable("[jhx] Error while parsing 'hx-request' object", {
                     attribute: 'hx-headers',
                     cause: e as TypeError,
@@ -274,7 +274,7 @@ export const convertJhxAttributes = <TDom extends object = object>(
     }
 
     if (options.vars) {
-        config.logger.warn(
+        log.warn(
             '[jhx] The `hx-vars` attribute has been deprecated because of XSS vulnerabilities. Recommended to use the `hx-vals` attribute.',
         );
         attributes['hx-vars'] = options.vars;
