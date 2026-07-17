@@ -2,38 +2,6 @@ import { describe, expect, it } from 'bun:test';
 
 import { jhx } from '../src';
 
-describe('config.escape', () => {
-    it('default', () => {
-        const result = jhx({
-            onClick: () => alert('Clicked!'),
-        }, {
-            stringify: true,
-        });
-        expect(result).toBe('onclick="(() =&gt; { return alert(&quot;Clicked!&quot;) })()"');
-    });
-
-    it('true', () => {
-        const result = jhx({
-            onClick: () => alert('Clicked!'),
-        }, {
-            stringify: true,
-            escape: true,
-        });
-        expect(result).toBe('onclick="(() =&gt; { return alert(&quot;Clicked!&quot;) })()"');
-    });
-
-    it('false', () => {
-        const result = jhx({
-            onClick: () => alert('Clicked!'),
-        }, {
-            stringify: true,
-            escape: false,
-        });
-
-        expect(result).toBe('onclick="(() => { return alert("Clicked!") })()"');
-    });
-});
-
 const expectRecord = (v: Record<string, unknown>) => v;
 const expectString = (v: string) => v;
 

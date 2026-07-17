@@ -1,12 +1,9 @@
-import { escapeValue } from '../helpers/escape-value';
-
 /**
  * Converts a record of HTML attributes into an HTML element attribute string.
  *
  * Typically used to format the attributes before sending to the client.
  *
  * @param attributes An object containing key-value pairs of HTML attributes.
- * @param escape Whether to escape the HTML characters within string values. Defaults to `true`.
  *
  * @example
  * ```ts
@@ -21,13 +18,9 @@ import { escapeValue } from '../helpers/escape-value';
  * const html = `<button ${attrs}>Click Me</button>`;
  * ```
  */
-export const attributesToString = (attributes: Record<string, unknown>, escape: boolean = true): string => {
+export const attributesToString = (attributes: Record<string, unknown>): string => {
     return Object.entries(attributes)
-        .map(([key, value]) => {
-            return typeof value === 'object'
-                ? `${key}="${JSON.stringify(value)}"`
-                : `${key}="${typeof value === 'string' && escape ? escapeValue(value) : value}"`;
-        })
+        .map(([key, value]) => `${key}="${typeof value === 'object' ? JSON.stringify(value) : value}"`)
         .filter(Boolean)
         .join(' ');
 };

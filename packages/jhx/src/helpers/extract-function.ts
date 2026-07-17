@@ -1,3 +1,30 @@
+import { normalizeStringQuotes } from './normalize-string-quotes';
+
+const removeNewlines = (body: string): string => {
+    const lines = body
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter(Boolean);
+
+    return lines
+        .map((line, index) => {
+            // Skip if this is the last line or line already ends with a semi-colon or control character
+            if (index === lines.length - 1) return line;
+
+            const nextLine = lines[index + 1];
+            const endsWithBlock = /[{},;:\])]$/.test(line);
+            const nextStartsWithBlock = /^[{})\]]/.test(nextLine ?? '');
+
+            // Add semi-colon if line doesn't end with a control character and next line doesn't start with one
+            if (!endsWithBlock && !nextStartsWithBlock) {
+                return `${line};`;
+            }
+
+            return line;
+        })
+        .join(' ');
+};
+
 const matchFunctionString = (
     funcString: string,
 ): {
@@ -77,7 +104,7 @@ export const extractFunction = (
         return null;
     }
 
-    const funcString = func.toString();
+    const funcString = func.toString().replaceAll('void 0', 'undefined');
     const funcMatch = matchFunctionString(funcString);
 
     if (!funcMatch) {
@@ -86,6 +113,6 @@ export const extractFunction = (
 
     return {
         params: splitParams(funcMatch.paramStr),
-        body: funcMatch.bodyStr,
+        body: normalizeStringQuotes(removeNewlines(funcMatch.bodyStr)),
     };
 };

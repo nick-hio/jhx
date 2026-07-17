@@ -1,7 +1,7 @@
 {
   "name": "@jhxdev/hono",
   "description": "HTMX helper with type-safe attribute mapping with inline Hono route declaration. Converts props into `hx-*` attributes for templating.",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "author": "nick-hio",
   "homepage": "https://github.com/nick-hio/jhx/tree/main/packages/hono#readme",
   "repository": {
@@ -63,7 +63,7 @@
     "@repo/typescript-config": "workspace:*",
     "@rollup/plugin-alias": "^5.1.1",
     "@types/bun": "^1.3.8",
-    "@types/node": "^24.10.9",
+    "@types/node": "^24.10.10",
     "@types/react": "^19.2.10",
     "@types/react-dom": "^19.2.3",
     "esbuild": "^0.25.12",
