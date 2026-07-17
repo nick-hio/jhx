@@ -6,7 +6,9 @@ import type { DomObjects } from '../dom-objects.ts';
  * @template TDom Type for additional parameters received from the DOM.
  */
 export type JhxEvaluableAttribute<TBaseDom extends object = object> =
-    | (<TDom extends TBaseDom | object = object>(dom: DomObjects & TDom) => Record<string, any> | object)
+    | (<TDom extends TBaseDom | object = TBaseDom>(
+          dom: DomObjects & TBaseDom & TDom,
+      ) => Record<string, any> | object)
     | Record<string, any>
     | object
     | string;

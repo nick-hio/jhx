@@ -12,5 +12,8 @@ export interface JhxRequestArgs {
  */
 export type JhxRequestAttribute<
     /** Type for additional parameters received from the DOM. */
-    TDom extends object = object,
-> = ((dom: DomObjects & TDom) => JhxRequestArgs) | JhxRequestArgs | string;
+    TBaseDom extends object = object,
+> =
+    | (<TDom extends TBaseDom | object = TBaseDom>(dom: DomObjects & TBaseDom & TDom) => JhxRequestArgs)
+    | JhxRequestArgs
+    | string;
